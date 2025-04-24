@@ -1,0 +1,9 @@
+# Ignorar o próprio arquivo de configuração do prettier
+.prettierrc
+.prettierrc.js
+
+# Diretórios comuns para ignorar
+node_modules/
+dist/
+build/
+.git/
