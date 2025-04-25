@@ -29,18 +29,22 @@ app.get("/", (req, res) => {
 
 // Importação das rotas
 const authRoutes = require("./routes/authRoutes");
+const googleAuthRoutes = require("./routes/googleAuthRoutes");
 const notebookRoutes = require("./routes/notebookRoutes");
 const noteRoutes = require("./routes/noteRoutes");
 const tagRoutes = require("./routes/tagRoutes");
 const searchRoutes = require("./routes/searchRoutes");
+const syncRoutes = require("./routes/syncRoutes");
 // const userRoutes = require('./routes/userRoutes');
 
 // Configuração das rotas
 app.use("/api/auth", authRoutes);
+app.use("/api/auth", googleAuthRoutes);
 app.use("/api/notebooks", notebookRoutes);
 app.use("/api/notes", noteRoutes);
 app.use("/api/tags", tagRoutes);
 app.use("/api/search", searchRoutes);
+app.use("/api/sync", syncRoutes);
 // app.use('/api/users', userRoutes);
 
 // Rota para tratamento de 404
