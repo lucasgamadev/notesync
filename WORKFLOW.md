@@ -22,22 +22,22 @@
   - Definir critérios de aceitação para cada item
 
 ## 2. Configuração do Ambiente
-- [ ] Inicializar repositório Git
-  - Executar `git init`
-  - Configurar `.gitignore` para Node.js, Next.js e PostgreSQL
-  - Criar branches `main`, `develop` e estratégia de branching
-- [ ] Configurar ambiente frontend
-  - Executar `npx create-next-app@latest frontend --typescript --tailwind --eslint`
-  - Configurar estrutura de pastas (components, hooks, pages, styles, utils)
-  - Instalar dependências: `npm i axios react-query zustand tiptap`
-- [ ] Configurar ambiente backend
-  - Executar `npm init -y` e criar estrutura de pastas (controllers, routes, services, models)
-  - Instalar dependências: `npm i express prisma @prisma/client jsonwebtoken bcrypt cors dotenv`
+- [x] Inicializar repositório Git
+  - Executar `git init` ✓
+  - Configurar `.gitignore` para Node.js, Next.js e PostgreSQL ✓
+  - Criar branches `main`, `develop` e estratégia de branching ✓
+- [x] Configurar ambiente frontend
+  - Executar `npx create-next-app@latest frontend --typescript --tailwind --eslint` ✓
+  - Configurar estrutura de pastas (components, hooks, pages, styles, utils) ✓
+  - Instalar dependências: `npm i axios react-query zustand tiptap` ✓
+- [x] Configurar ambiente backend
+  - Executar `npm init -y` e criar estrutura de pastas (controllers, routes, services, models) ✓
+  - Instalar dependências: `npm i express prisma @prisma/client jsonwebtoken bcrypt cors dotenv` ✓
   - Configurar ESLint e Prettier
-- [ ] Configurar PostgreSQL
-  - Criar Dockerfile e docker-compose.yml para PostgreSQL
-  - Definir scripts de migração e seed
-  - Configurar conexão no backend com variáveis de ambiente
+- [x] Configurar PostgreSQL
+  - Criar Dockerfile e docker-compose.yml para PostgreSQL ✓
+  - Definir scripts de migração e seed ✓
+  - Configurar conexão no backend com variáveis de ambiente ✓
 - [ ] Configurar Docker
   - Criar Dockerfile para frontend e backend
   - Configurar docker-compose.yml com todos os serviços
@@ -52,11 +52,11 @@
   - Criar `server.js` com configuração Express
   - Implementar middleware de autenticação, CORS e tratamento de erros
   - Configurar rotas base e estrutura de API RESTful
-- [ ] Configurar Prisma ORM
-  - Executar `npx prisma init`
-  - Definir modelos em `prisma/schema.prisma` (User, Notebook, Note, Tag)
+- [x] Configurar Prisma ORM
+  - Executar `npx prisma init` ✓
+  - Definir modelos em `prisma/schema.prisma` (User, Notebook, Note, Tag) ✓
   - Criar migrations com `npx prisma migrate dev`
-  - Implementar PrismaClient em `lib/prisma.js`
+  - Implementar PrismaClient em `lib/prisma.js` ✓
 - [ ] Implementar autenticação
   - Criar endpoints `/auth/register` e `/auth/login`
   - Implementar geração e validação de JWT
