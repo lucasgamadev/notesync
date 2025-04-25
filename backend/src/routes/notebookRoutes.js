@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const authenticateToken = require("../middleware/authenticateToken");
+const notebookController = require("../controllers/notebookController");
 
 /**
  * Rotas para gerenciamento de cadernos
@@ -11,33 +12,18 @@ const authenticateToken = require("../middleware/authenticateToken");
 router.use(authenticateToken);
 
 // Listar todos os cadernos do usuário
-router.get("/", (req, res) => {
-  // Implementação será feita posteriormente
-  res.status(501).json({ message: "Endpoint em implementação" });
-});
+router.get("/", notebookController.getAllNotebooks);
 
 // Obter um caderno específico
-router.get("/:id", (req, res) => {
-  // Implementação será feita posteriormente
-  res.status(501).json({ message: "Endpoint em implementação" });
-});
+router.get("/:id", notebookController.getNotebookById);
 
 // Criar um novo caderno
-router.post("/", (req, res) => {
-  // Implementação será feita posteriormente
-  res.status(501).json({ message: "Endpoint em implementação" });
-});
+router.post("/", notebookController.createNotebook);
 
 // Atualizar um caderno existente
-router.put("/:id", (req, res) => {
-  // Implementação será feita posteriormente
-  res.status(501).json({ message: "Endpoint em implementação" });
-});
+router.put("/:id", notebookController.updateNotebook);
 
 // Excluir um caderno
-router.delete("/:id", (req, res) => {
-  // Implementação será feita posteriormente
-  res.status(501).json({ message: "Endpoint em implementação" });
-});
+router.delete("/:id", notebookController.deleteNotebook);
 
 module.exports = router;
