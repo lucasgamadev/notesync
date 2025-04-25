@@ -114,19 +114,19 @@
   - Implementar sistema de navegação e layout ✓
   - Adicionar componentes de feedback (Toast, Alert, Skeleton) ✓
   - Criar sistema de ícones com SVG ✓
-- [ ] Desenvolver autenticação frontend
-  - Criar páginas `/login` e `/register`
-  - Implementar formulários com validação
-  - Configurar interceptors de Axios para tokens
-  - Adicionar proteção de rotas com HOC ou middleware
-- [ ] Implementar dashboard
-  - Criar layout de dashboard com sidebar e área principal
-  - Implementar widgets de estatísticas e atividade recente
-  - Adicionar filtros e visualizações personalizáveis
-- [ ] Desenvolver gerenciador de cadernos
-  - Criar interface de listagem com visualização em grade/lista
-  - Implementar CRUD de cadernos com modais
-  - Adicionar funcionalidade de drag-and-drop para organização
+- [x] Desenvolver autenticação frontend
+  - Criar páginas `/login` e `/register` ✓
+  - Implementar formulários com validação ✓
+  - Configurar interceptors de Axios para tokens ✓
+  - Adicionar proteção de rotas com HOC ou middleware ✓
+- [x] Implementar dashboard
+  - Criar layout de dashboard com sidebar e área principal ✓
+  - Implementar widgets de estatísticas e atividade recente ✓
+  - Adicionar filtros e visualizações personalizáveis ✓
+- [x] Desenvolver gerenciador de cadernos
+  - Criar interface de listagem com visualização em grade/lista ✓
+  - Implementar CRUD de cadernos com modais ✓
+  - Adicionar funcionalidade de drag-and-drop para organização ✓
 - [ ] Implementar editor de notas
   - Configurar TipTap com extensões personalizadas
   - Implementar toolbar com formatação rich text
