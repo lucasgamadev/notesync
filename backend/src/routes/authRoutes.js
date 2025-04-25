@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const authController = require("../controllers/authController");
 
 /**
  * Rotas de autenticação
@@ -7,27 +8,15 @@ const router = express.Router();
  */
 
 // Rota para registro de usuário
-router.post("/register", (req, res) => {
-  // Implementação será feita posteriormente
-  res.status(501).json({ message: "Endpoint em implementação" });
-});
+router.post("/register", authController.register);
 
 // Rota para login
-router.post("/login", (req, res) => {
-  // Implementação será feita posteriormente
-  res.status(501).json({ message: "Endpoint em implementação" });
-});
+router.post("/login", authController.login);
 
 // Rota para refresh token
-router.post("/refresh-token", (req, res) => {
-  // Implementação será feita posteriormente
-  res.status(501).json({ message: "Endpoint em implementação" });
-});
+router.post("/refresh-token", authController.refreshToken);
 
 // Rota para logout
-router.post("/logout", (req, res) => {
-  // Implementação será feita posteriormente
-  res.status(501).json({ message: "Endpoint em implementação" });
-});
+router.post("/logout", authController.logout);
 
 module.exports = router;
