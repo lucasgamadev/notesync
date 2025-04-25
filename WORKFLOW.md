@@ -4,10 +4,10 @@
 - [ ] Definir requisitos funcionais e não-funcionais usando formato de user stories
   - Criar documento `docs/requirements.md` com casos de uso detalhados
   - Definir métricas de aceitação para cada funcionalidade
-- [ ] Criar wireframes no Figma
+- [ ] Criar wireframes diretamente na IDE
   - Desenhar fluxos de navegação completos
   - Definir sistema de design (cores, tipografia, componentes)
-  - Exportar assets para implementação
+  - Preparar assets para implementação
 - [ ] Modelar banco de dados PostgreSQL
   - Criar diagrama ER com todas as entidades e relacionamentos
   - Definir esquema SQL com tipos de dados, chaves e índices
