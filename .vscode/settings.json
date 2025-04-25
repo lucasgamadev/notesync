@@ -65,12 +65,7 @@
   "eslint.options": {
     "overrideConfigFile": "eslint.config.js"
   },
-  "eslint.probe": [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact"
-  ],
+  "eslint.probe": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
   "eslint.codeActionsOnSave.mode": "all",
   "eslint.alwaysShowStatus": true,
   "editor.formatOnPaste": true,
@@ -79,5 +74,8 @@
   "files.associations": {
     "*.md": "markdown",
     "*.json": "json"
+  },
+  "[dockerfile]": {
+    "editor.defaultFormatter": "ms-azuretools.vscode-docker"
   }
 }
