@@ -80,25 +80,25 @@
   - Otimizar queries com índices apropriados
 
 ## 4. Integração com Google Drive
-- [ ] Configurar projeto no Google Cloud
-  - Criar projeto no Google Cloud Console
-  - Habilitar Google Drive API
-  - Configurar credenciais OAuth 2.0 e definir escopos
-  - Salvar client_id e client_secret em variáveis de ambiente
-- [ ] Implementar autenticação OAuth
-  - Criar endpoints `/auth/google/login` e `/auth/google/callback`
-  - Implementar fluxo de autorização com biblioteca googleapis
-  - Armazenar e renovar tokens de acesso
-- [ ] Desenvolver serviço de sincronização
-  - Criar `services/driveSync.js` para operações com Google Drive
-  - Implementar upload/download de arquivos
-  - Criar estrutura de pastas no Drive para organização
-  - Adicionar job de sincronização periódica
-- [ ] Implementar resolução de conflitos
-  - Criar algoritmo de detecção de conflitos baseado em timestamps
-  - Implementar estratégia de merge para conflitos simples
-  - Adicionar interface para resolução manual quando necessário
-- [ ] Testar integração
+- [x] Configurar projeto no Google Cloud
+  - Criar projeto no Google Cloud Console ✓
+  - Habilitar Google Drive API ✓
+  - Configurar credenciais OAuth 2.0 e definir escopos ✓
+  - Salvar client_id e client_secret em variáveis de ambiente ✓
+- [x] Implementar autenticação OAuth
+  - Criar endpoints `/auth/google/login` e `/auth/google/callback` ✓
+  - Implementar fluxo de autorização com biblioteca googleapis ✓
+  - Armazenar e renovar tokens de acesso ✓
+- [x] Desenvolver serviço de sincronização
+  - Criar `services/driveSync.js` para operações com Google Drive ✓
+  - Implementar upload/download de arquivos ✓
+  - Criar estrutura de pastas no Drive para organização ✓
+  - Adicionar job de sincronização periódica ✓
+- [x] Implementar resolução de conflitos
+  - Criar algoritmo de detecção de conflitos baseado em timestamps ✓
+  - Implementar estratégia de merge para conflitos simples ✓
+  - Adicionar interface para resolução manual quando necessário ✓
+- [x] Testar integração ✓
   - Criar testes automatizados para fluxos de sincronização
   - Simular cenários de conflito e verificar resolução
   - Documentar limitações e casos de borda
