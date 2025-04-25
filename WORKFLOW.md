@@ -1,25 +1,25 @@
 # Workflow de Desenvolvimento
 
 ## 1. Planejamento e Design
-- [ ] Definir requisitos funcionais e não-funcionais usando formato de user stories
-  - Criar documento `docs/requirements.md` com casos de uso detalhados
-  - Definir métricas de aceitação para cada funcionalidade
-- [ ] Criar wireframes diretamente na IDE
-  - Desenhar fluxos de navegação completos
-  - Definir sistema de design (cores, tipografia, componentes)
-  - Preparar assets para implementação
-- [ ] Modelar banco de dados PostgreSQL
-  - Criar diagrama ER com todas as entidades e relacionamentos
-  - Definir esquema SQL com tipos de dados, chaves e índices
-  - Documentar em `docs/database_schema.md`
-- [ ] Definir arquitetura técnica
-  - Criar diagrama de arquitetura em `docs/architecture.md`
-  - Documentar padrões de API e comunicação entre camadas
-  - Definir estratégia de cache e otimização
-- [ ] Planejar sprints de desenvolvimento
-  - Criar backlog no GitHub Projects
-  - Estimar pontos para cada tarefa
-  - Definir critérios de aceitação para cada item
+- [x] Definir requisitos funcionais e não-funcionais usando formato de user stories ✓
+  - Criar documento `docs/requirements.md` com casos de uso detalhados ✓
+  - Definir métricas de aceitação para cada funcionalidade ✓
+- [x] Criar wireframes diretamente na IDE ✓
+  - Desenhar fluxos de navegação completos ✓
+  - Definir sistema de design (cores, tipografia, componentes) ✓
+  - Preparar assets para implementação ✓
+- [x] Modelar banco de dados PostgreSQL ✓
+  - Criar diagrama ER com todas as entidades e relacionamentos ✓
+  - Definir esquema SQL com tipos de dados, chaves e índices ✓
+  - Documentar em `docs/database_schema.md` ✓
+- [x] Definir arquitetura técnica ✓
+  - Criar diagrama de arquitetura em `docs/architecture.md` ✓
+  - Documentar padrões de API e comunicação entre camadas ✓
+  - Definir estratégia de cache e otimização ✓
+- [x] Planejar sprints de desenvolvimento ✓
+  - Criar backlog no GitHub Projects ✓
+  - Estimar pontos para cada tarefa ✓
+  - Definir critérios de aceitação para cada item ✓
 
 ## 2. Configuração do Ambiente
 - [x] Inicializar repositório Git
