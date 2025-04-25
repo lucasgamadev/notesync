@@ -33,51 +33,51 @@
 - [x] Configurar ambiente backend
   - Executar `npm init -y` e criar estrutura de pastas (controllers, routes, services, models) ✓
   - Instalar dependências: `npm i express prisma @prisma/client jsonwebtoken bcrypt cors dotenv` ✓
-  - Configurar ESLint e Prettier
+  - Configurar ESLint e Prettier ✓
 - [x] Configurar PostgreSQL
   - Criar Dockerfile e docker-compose.yml para PostgreSQL ✓
   - Definir scripts de migração e seed ✓
   - Configurar conexão no backend com variáveis de ambiente ✓
-- [ ] Configurar Docker
-  - Criar Dockerfile para frontend e backend
-  - Configurar docker-compose.yml com todos os serviços
-  - Definir volumes para persistência de dados
+- [x] Configurar Docker
+  - Criar Dockerfile para frontend e backend ✓
+  - Configurar docker-compose.yml com todos os serviços ✓
+  - Definir volumes para persistência de dados ✓
 - [ ] Configurar CI/CD
   - Criar workflow GitHub Actions em `.github/workflows/ci.yml`
   - Configurar testes automatizados e linting
   - Definir pipeline de deploy para ambientes de staging e produção
 
 ## 3. Desenvolvimento do Backend
-- [ ] Implementar estrutura base do servidor
-  - Criar `server.js` com configuração Express
-  - Implementar middleware de autenticação, CORS e tratamento de erros
-  - Configurar rotas base e estrutura de API RESTful
+- [x] Implementar estrutura base do servidor
+  - Criar `server.js` com configuração Express ✓
+  - Implementar middleware de autenticação, CORS e tratamento de erros ✓
+  - Configurar rotas base e estrutura de API RESTful ✓
 - [x] Configurar Prisma ORM
   - Executar `npx prisma init` ✓
   - Definir modelos em `prisma/schema.prisma` (User, Notebook, Note, Tag) ✓
-  - Criar migrations com `npx prisma migrate dev`
+  - Criar migrations com `npx prisma migrate dev` ✓
   - Implementar PrismaClient em `lib/prisma.js` ✓
-- [ ] Implementar autenticação
-  - Criar endpoints `/auth/register` e `/auth/login`
-  - Implementar geração e validação de JWT
-  - Criar middleware `authenticateToken.js`
-  - Adicionar refresh tokens e logout
-- [ ] Desenvolver API de cadernos
-  - Criar CRUD completo em `/api/notebooks`
-  - Implementar filtros, ordenação e paginação
-  - Adicionar validação de dados com Joi/Zod
-- [ ] Desenvolver API de notas
-  - Criar CRUD completo em `/api/notes`
-  - Implementar suporte a conteúdo rich text
-  - Adicionar sistema de versionamento de notas
-- [ ] Implementar sistema de etiquetas
-  - Criar endpoints para gerenciamento de tags
-  - Implementar relações many-to-many com notas
-  - Adicionar endpoints para filtrar notas por tags
-- [ ] Desenvolver funcionalidade de pesquisa
-  - Implementar full-text search no PostgreSQL
-  - Criar endpoint `/api/search` com filtros avançados
-  - Otimizar queries com índices apropriados
+- [x] Implementar autenticação
+  - Criar endpoints `/auth/register` e `/auth/login` ✓
+  - Implementar geração e validação de JWT ✓
+  - Criar middleware `authenticateToken.js` ✓
+  - Adicionar refresh tokens e logout ✓
+- [x] Desenvolver API de cadernos
+  - Criar CRUD completo em `/api/notebooks` ✓
+  - Implementar filtros, ordenação e paginação ✓
+  - Adicionar validação de dados com Joi/Zod ✓
+- [x] Desenvolver API de notas
+  - Criar CRUD completo em `/api/notes` ✓
+  - Implementar suporte a conteúdo rich text ✓
+  - Adicionar sistema de versionamento de notas ✓
+- [x] Implementar sistema de etiquetas
+  - Criar endpoints para gerenciamento de tags ✓
+  - Implementar relações many-to-many com notas ✓
+  - Adicionar endpoints para filtrar notas por tags ✓
+- [x] Desenvolver funcionalidade de pesquisa
+  - Implementar full-text search no PostgreSQL ✓
+  - Criar endpoint `/api/search` com filtros avançados ✓
+  - Otimizar queries com índices apropriados ✓
 
 ## 4. Integração com Google Drive
 - [x] Configurar projeto no Google Cloud
@@ -98,22 +98,22 @@
   - Criar algoritmo de detecção de conflitos baseado em timestamps ✓
   - Implementar estratégia de merge para conflitos simples ✓
   - Adicionar interface para resolução manual quando necessário ✓
-- [x] Testar integração ✓
-  - Criar testes automatizados para fluxos de sincronização
-  - Simular cenários de conflito e verificar resolução
-  - Documentar limitações e casos de borda
+- [x] Testar integração
+  - Criar testes automatizados para fluxos de sincronização ✓
+  - Simular cenários de conflito e verificar resolução ✓
+  - Documentar limitações e casos de borda ✓
 
 ## 5. Desenvolvimento do Frontend
-- [ ] Configurar projeto Next.js
-  - Estruturar pastas seguindo padrões recomendados
-  - Configurar Tailwind com tema personalizado
-  - Implementar layout base responsivo
-  - Configurar gerenciamento de estado com Zustand
-- [ ] Implementar componentes base
-  - Criar componentes reutilizáveis (Button, Input, Card, Modal)
-  - Implementar sistema de navegação e layout
-  - Adicionar componentes de feedback (Toast, Alert, Skeleton)
-  - Criar sistema de ícones com SVG
+- [x] Configurar projeto Next.js
+  - Estruturar pastas seguindo padrões recomendados ✓
+  - Configurar Tailwind com tema personalizado ✓
+  - Implementar layout base responsivo ✓
+  - Configurar gerenciamento de estado com Zustand ✓
+- [x] Implementar componentes base
+  - Criar componentes reutilizáveis (Button, Input, Card, Modal) ✓
+  - Implementar sistema de navegação e layout ✓
+  - Adicionar componentes de feedback (Toast, Alert, Skeleton) ✓
+  - Criar sistema de ícones com SVG ✓
 - [ ] Desenvolver autenticação frontend
   - Criar páginas `/login` e `/register`
   - Implementar formulários com validação
