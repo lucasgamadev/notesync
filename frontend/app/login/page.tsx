@@ -16,18 +16,13 @@ export default function Login() {
     setError("");
     setLoading(true);
 
-    // Login fictício para fase beta
+    // Login beta: autentica qualquer usuário ao pressionar "Entrar"
     setTimeout(() => {
-      if (email === "admin" && password === "admin") {
-        // Simula armazenamento de token fictício
-        localStorage.setItem("accessToken", "fake-token");
-        localStorage.setItem("refreshToken", "fake-refresh-token");
-        router.push("/dashboard");
-      } else {
-        setError("Usuário ou senha inválidos. Use admin/admin.");
-      }
+      localStorage.setItem("accessToken", "fake-token");
+      localStorage.setItem("refreshToken", "fake-refresh-token");
+      router.push("/dashboard");
       setLoading(false);
-    }, 800); // Simula um pequeno delay
+    }, 500);
   };
 
   return (
