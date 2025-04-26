@@ -42,6 +42,7 @@ export default function Register() {
 
       // Redirecionar para login após registro bem-sucedido
       router.push("/login?registered=true");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "Erro desconhecido");
     } finally {
