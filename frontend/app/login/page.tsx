@@ -16,36 +16,18 @@ export default function Login() {
     setError("");
     setLoading(true);
 
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email, password })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Erro ao fazer login");
-      }
-
-      // Armazenar tokens no localStorage
-      localStorage.setItem("accessToken", data.accessToken);
-      localStorage.setItem("refreshToken", data.refreshToken);
-
-      // Redirecionar para o dashboard
-      router.push("/dashboard");
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
+    // Login fictício para fase beta
+    setTimeout(() => {
+      if (email === "admin" && password === "admin") {
+        // Simula armazenamento de token fictício
+        localStorage.setItem("accessToken", "fake-token");
+        localStorage.setItem("refreshToken", "fake-refresh-token");
+        router.push("/dashboard");
       } else {
-        setError("Erro desconhecido");
+        setError("Usuário ou senha inválidos. Use admin/admin.");
       }
-    } finally {
       setLoading(false);
-    }
+    }, 800); // Simula um pequeno delay
   };
 
   return (
