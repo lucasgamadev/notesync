@@ -42,12 +42,8 @@ export default function Register() {
 
       // Redirecionar para login após registro bem-sucedido
       router.push("/login?registered=true");
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("Erro desconhecido");
-      }
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : "Erro desconhecido");
     } finally {
       setLoading(false);
     }
