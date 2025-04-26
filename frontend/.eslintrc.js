@@ -1,0 +1,8 @@
+module.exports = {
+  extends: 'next/core-web-vitals',
+  rules: {
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
+  },
+  ignorePatterns: ['**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx']
+};
