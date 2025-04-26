@@ -37,8 +37,7 @@ export default function Login() {
 
       // Redirecionar para o dashboard
       router.push("/dashboard");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: unknown) {
+    } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
       } else {
