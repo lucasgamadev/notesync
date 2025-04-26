@@ -42,10 +42,10 @@
   - Criar Dockerfile para frontend e backend ✓
   - Configurar docker-compose.yml com todos os serviços ✓
   - Definir volumes para persistência de dados ✓
-- [ ] Configurar CI/CD
-  - Criar workflow GitHub Actions em `.github/workflows/ci.yml`
-  - Configurar testes automatizados e linting
-  - Definir pipeline de deploy para ambientes de staging e produção
+- [x] Configurar CI/CD ✓
+  - Criar workflow GitHub Actions em `.github/workflows/ci.yml` ✓
+  - Configurar testes automatizados e linting ✓
+  - Definir pipeline de deploy para ambientes de staging e produção ✓
 
 ## 3. Desenvolvimento do Backend
 - [x] Implementar estrutura base do servidor
