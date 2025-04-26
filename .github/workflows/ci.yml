@@ -1,0 +1,89 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      
+      # Backend tests
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          npm ci
+      
+      - name: Lint backend
+        run: |
+          cd backend
+          npm run lint
+      
+      - name: Test backend
+        run: |
+          cd backend
+          npm test
+      
+      # Frontend tests
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm ci
+      
+      - name: Lint frontend
+        run: |
+          cd frontend
+          npm run lint
+      
+      - name: Test frontend
+        run: |
+          cd frontend
+          npm test
+  
+  deploy-staging:
+    needs: lint-and-test
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Deploy backend to staging
+        run: echo "Deploy backend to staging environment"
+        # Aqui seria implementado o deploy real para o ambiente de staging
+        # Exemplo: railway up --service backend --environment staging
+      
+      - name: Deploy frontend to staging
+        run: echo "Deploy frontend to staging environment"
+        # Aqui seria implementado o deploy real para o ambiente de staging
+        # Exemplo: vercel --prod --scope notesync-staging
+  
+  deploy-production:
+    needs: lint-and-test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Deploy backend to production
+        run: echo "Deploy backend to production environment"
+        # Aqui seria implementado o deploy real para o ambiente de produção
+        # Exemplo: railway up --service backend --environment production
+      
+      - name: Deploy frontend to production
+        run: echo "Deploy frontend to production environment"
+        # Aqui seria implementado o deploy real para o ambiente de produção
+        # Exemplo: vercel --prod --scope notesync-production
