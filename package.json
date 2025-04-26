@@ -1,5 +1,9 @@
 {
-  "type": "module",\n  "scripts": {\n    "lint": "eslint --config eslint.config.js ./**/*.js"\n  },\n  "devDependencies": {
+  "type": "module",
+  "scripts": {
+    "lint": "eslint --config eslint.config.js ./**/*.js"
+  },
+  "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.31.0",
     "@typescript-eslint/parser": "^8.31.0",
     "eslint": "^9.25.1",
