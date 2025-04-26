@@ -7,33 +7,33 @@ const Sidebar = () => {
   return (
     <div className="w-64 bg-indigo-800 text-white h-full fixed left-0 top-0 overflow-y-auto">
       <div className="p-4">
-        <h1 className="text-2xl font-bold mb-8">NoteSync</h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-8">NoteSync</h1>
 
         <nav className="space-y-2">
           <a
             href="/dashboard"
-            className="block py-2.5 px-4 rounded bg-indigo-900 hover:bg-indigo-700"
+            className="block py-2.5 px-4 rounded bg-indigo-900 hover:bg-indigo-700 text-gray-300"
           >
             Dashboard
           </a>
-          <a href="/dashboard/notebooks" className="block py-2.5 px-4 rounded hover:bg-indigo-700">
+          <a href="/dashboard/notebooks" className="block py-2.5 px-4 rounded hover:bg-indigo-700 text-gray-300">
             Cadernos
           </a>
-          <a href="/dashboard/notes" className="block py-2.5 px-4 rounded hover:bg-indigo-700">
+          <a href="/dashboard/notes" className="block py-2.5 px-4 rounded hover:bg-indigo-700 text-gray-300">
             Notas
           </a>
-          <a href="/dashboard/tags" className="block py-2.5 px-4 rounded hover:bg-indigo-700">
+          <a href="/dashboard/tags" className="block py-2.5 px-4 rounded hover:bg-indigo-700 text-gray-300">
             Etiquetas
           </a>
         </nav>
       </div>
 
       <div className="absolute bottom-0 left-0 right-0 p-4">
-        <a href="/dashboard/settings" className="block py-2.5 px-4 rounded hover:bg-indigo-700">
+        <a href="/dashboard/settings" className="block py-2.5 px-4 rounded hover:bg-indigo-700 text-gray-300">
           Configurações
         </a>
         <button
-          className="block w-full text-left py-2.5 px-4 rounded hover:bg-indigo-700"
+          className="block w-full text-left py-2.5 px-4 rounded hover:bg-indigo-700 text-gray-300"
           onClick={() => {
             localStorage.removeItem("accessToken");
             localStorage.removeItem("refreshToken");
@@ -64,8 +64,8 @@ const StatsWidget = ({
           <span className="text-xl">{icon}</span>
         </div>
         <div>
-          <p className="text-sm text-gray-500">{title}</p>
-          <p className="text-xl font-semibold">{value}</p>
+          <p className="text-sm text-gray-700">{title}</p>
+          <p className="text-xl font-bold text-gray-900">{value}</p>
         </div>
       </div>
     </div>
@@ -83,7 +83,7 @@ const RecentActivity = () => {
 
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <h3 className="text-lg font-semibold mb-4">Atividade Recente</h3>
+      <h3 className="text-lg font-bold text-gray-900 mb-4">Atividade Recente</h3>
       <div className="space-y-4">
         {activities.map((activity) => (
           <div key={activity.id} className="flex items-center border-b pb-3">
@@ -91,15 +91,15 @@ const RecentActivity = () => {
               <span className="text-sm">{activity.type === "note" ? "📝" : "📘"}</span>
             </div>
             <div className="flex-1">
-              <p className="font-medium">{activity.title}</p>
-              <p className="text-sm text-gray-500">{activity.date}</p>
+              <p className="font-semibold text-gray-800">{activity.title}</p>
+              <p className="text-sm text-gray-600">{activity.date}</p>
             </div>
           </div>
         ))}
       </div>
       <a
         href="/dashboard/activity"
-        className="text-indigo-600 text-sm font-medium mt-4 inline-block"
+        className="text-indigo-700 text-sm font-semibold mt-4 inline-block"
       >
         Ver todas as atividades
       </a>
@@ -123,7 +123,7 @@ export default function Dashboard() {
         <Sidebar />
 
         <div className="ml-64 p-8">
-          <h2 className="text-2xl font-bold mb-6">Dashboard</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Dashboard</h2>
 
           {/* Estatísticas */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -138,24 +138,24 @@ export default function Dashboard() {
 
             {/* Notas Recentes */}
             <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-semibold mb-4">Notas Recentes</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Notas Recentes</h3>
               <div className="space-y-2">
                 <a href="#" className="block p-3 hover:bg-gray-50 rounded">
-                  <p className="font-medium">Anotações de Reunião</p>
-                  <p className="text-sm text-gray-500">Atualizado há 2 horas</p>
+                  <p className="font-semibold text-gray-800">Anotações de Reunião</p>
+                  <p className="text-sm text-gray-600">Atualizado há 2 horas</p>
                 </a>
                 <a href="#" className="block p-3 hover:bg-gray-50 rounded">
-                  <p className="font-medium">Lista de Tarefas</p>
-                  <p className="text-sm text-gray-500">Atualizado há 1 dia</p>
+                  <p className="font-semibold text-gray-800">Lista de Tarefas</p>
+                  <p className="text-sm text-gray-600">Atualizado há 1 dia</p>
                 </a>
                 <a href="#" className="block p-3 hover:bg-gray-50 rounded">
-                  <p className="font-medium">Ideias para Projeto</p>
-                  <p className="text-sm text-gray-500">Atualizado há 3 dias</p>
+                  <p className="font-semibold text-gray-800">Ideias para Projeto</p>
+                  <p className="text-sm text-gray-600">Atualizado há 3 dias</p>
                 </a>
               </div>
               <a
                 href="/dashboard/notes"
-                className="text-indigo-600 text-sm font-medium mt-4 inline-block"
+                className="text-indigo-700 text-sm font-semibold mt-4 inline-block"
               >
                 Ver todas as notas
               </a>
