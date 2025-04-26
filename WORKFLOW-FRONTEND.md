@@ -5,6 +5,7 @@ Este documento lista todas as funcionalidades e tarefas necessárias para o dese
 ## 1. Autenticação
 
 - [ ] Tela de Login
+  - [ ] Fase beta: autenticação ocorre apenas ao pressionar o botão "Entrar" (sem validação de usuário/senha)
   - [ ] Formulário de usuário e senha
   - [ ] Validação de campos
   - [ ] Feedback de erro
