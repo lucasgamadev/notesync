@@ -1,6 +1,7 @@
 # Workflow de Desenvolvimento
 
 ## 1. Planejamento e Design
+
 - [x] Definir requisitos funcionais e não-funcionais usando formato de user stories ✓
   - Criar documento `docs/requirements.md` com casos de uso detalhados ✓
   - Definir métricas de aceitação para cada funcionalidade ✓
@@ -22,6 +23,7 @@
   - Definir critérios de aceitação para cada item ✓
 
 ## 2. Configuração do Ambiente
+
 - [x] Inicializar repositório Git
   - Executar `git init` ✓
   - Configurar `.gitignore` para Node.js, Next.js e PostgreSQL ✓
@@ -48,6 +50,7 @@
   - Definir pipeline de deploy para ambientes de staging e produção ✓
 
 ## 3. Desenvolvimento do Backend
+
 - [x] Implementar estrutura base do servidor
   - Criar `server.js` com configuração Express ✓
   - Implementar middleware de autenticação, CORS e tratamento de erros ✓
@@ -80,6 +83,7 @@
   - Otimizar queries com índices apropriados ✓
 
 ## 4. Integração com Google Drive
+
 - [x] Configurar projeto no Google Cloud
   - Criar projeto no Google Cloud Console ✓
   - Habilitar Google Drive API ✓
@@ -104,6 +108,7 @@
   - Documentar limitações e casos de borda ✓
 
 ## 5. Desenvolvimento do Frontend
+
 - [x] Configurar projeto Next.js
   - Estruturar pastas seguindo padrões recomendados ✓
   - Configurar Tailwind com tema personalizado ✓
@@ -146,6 +151,7 @@
   - Adicionar opções de personalização da interface ✓
 
 ## 6. Funcionalidade Offline
+
 - [x] Implementar service worker
   - Configurar `next-pwa` no projeto ✓
   - Definir estratégias de cache para assets estáticos ✓
@@ -166,6 +172,7 @@
   - Testar sincronização após longos períodos offline ✓
 
 ## 7. Testes e Otimização
+
 - [x] Implementar testes backend
   - Configurar Jest para testes unitários ✓
   - Criar testes para serviços e controllers ✓
@@ -192,6 +199,7 @@
   - Revisar permissões e validações de acesso ✓
 
 ## 8. Deploy e Lançamento
+
 - [x] Configurar ambientes ✓
   - Criar ambientes de staging e produção ✓
   - Configurar variáveis de ambiente para cada ambiente ✓
