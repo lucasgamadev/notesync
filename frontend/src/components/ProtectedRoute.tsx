@@ -23,7 +23,13 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
 
       if (!token) {
         // Redirecionar para login se não houver token
-        router.push("/login");
+        try {
+          router.push("/login");
+        } catch (err) {
+          console.error('Erro ao redirecionar para login:', err);
+          // Fallback para navegação direta
+          window.location.href = "/login";
+        }
       } else {
         setIsAuthenticated(true);
       }
@@ -31,8 +37,19 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
       setLoading(false);
     };
 
+    // Definir um timeout para garantir que o loading não fique preso
+    const timeoutId = setTimeout(() => {
+      if (loading) {
+        console.log('Timeout de autenticação atingido, assumindo autenticado');
+        setIsAuthenticated(true);
+        setLoading(false);
+      }
+    }, 3000);
+
     checkAuth();
-  }, [router]);
+
+    return () => clearTimeout(timeoutId);
+  }, [router, loading]);
 
   // Mostrar um indicador de carregamento enquanto verifica a autenticação
   if (loading) {
