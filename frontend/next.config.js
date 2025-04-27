@@ -8,6 +8,15 @@ const nextConfig = {
     // Ignorar erros de TypeScript durante o build
     ignoreBuildErrors: true,
   },
+  // Configuração de proxy para redirecionar requisições de API para o backend
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://localhost:5000/api/:path*',
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
