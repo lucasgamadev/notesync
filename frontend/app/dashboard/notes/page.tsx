@@ -111,7 +111,25 @@ function NotesPageContent() {
 
   // Função para criar uma nova nota
   const handleCreateNote = () => {
-    router.push('/dashboard/notes/new');
+    try {
+      // Usar o método push do router para navegar para a página de nova nota
+      router.push('/dashboard/notes/new');
+      
+      // Adicionar log para depuração
+      console.log('Navegando para /dashboard/notes/new');
+      
+      // Alternativa: usar navegação direta se o router falhar
+      setTimeout(() => {
+        if (window.location.pathname !== '/dashboard/notes/new') {
+          console.log('Navegação com router falhou, tentando alternativa');
+          window.location.href = '/dashboard/notes/new';
+        }
+      }, 500);
+    } catch (err) {
+      console.error('Erro ao navegar para nova nota:', err);
+      // Fallback para navegação direta
+      window.location.href = '/dashboard/notes/new';
+    }
   };
 
   // Função para alternar a seleção de tags
