@@ -126,7 +126,7 @@ export default function NotePage({ params }: { params: { id: string } }) {
     return () => {
       clearTimeout(window.saveTimeout);
     };
-  }, [isNewNote, params.id, editor]);
+  }, [isNewNote, params.id, editor !== undefined]);
 
   // Função para salvar a nota
   const handleSave = async () => {
