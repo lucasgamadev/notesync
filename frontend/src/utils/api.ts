@@ -1,8 +1,9 @@
 import axios from "axios";
 
 // Criando instância do axios com URL base da API
+// Utilizando o proxy configurado no Next.js para redirecionar para http://localhost:5000/api
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: '/api',
   headers: {
     "Content-Type": "application/json"
   }
@@ -45,7 +46,8 @@ api.interceptors.response.use(
           return Promise.reject(error);
         }
 
-        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh-token`, {
+        // Usando a instância api para garantir que a requisição passe pelo proxy do Next.js
+        const response = await api.post(`/auth/refresh-token`, {
           refreshToken
         });
 
@@ -57,7 +59,8 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;
 
         // Repetir a requisição original com o novo token
-        return axios(originalRequest);
+        // Usando a instância api para manter a consistência
+        return api(originalRequest);
       } catch (refreshError) {
         // Se falhar ao renovar o token, limpar localStorage e redirecionar para login
         localStorage.removeItem("accessToken");
