@@ -30,9 +30,9 @@ export default function Login() {
       <div className="max-w-md w-full space-y-8 p-10 bg-white rounded-xl shadow-lg">
         <div className="text-center">
           <h2 className="mt-6 text-3xl font-bold text-gray-900">Entre na sua conta</h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-gray-700 font-medium">
             Ou{" "}
-            <Link href="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
+            <Link href="/register" className="font-semibold text-indigo-700 hover:text-indigo-600">
               crie uma nova conta
             </Link>
           </p>
@@ -95,7 +95,7 @@ export default function Login() {
             </div>
 
             <div className="text-sm">
-              <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
+              <a href="#" className="font-semibold text-indigo-700 hover:text-indigo-600">
                 Esqueceu sua senha?
               </a>
             </div>
