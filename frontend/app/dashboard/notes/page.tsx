@@ -1,5 +1,6 @@
 'use client';
 
+import FloatingActionButton from '@/src/components/FloatingActionButton';
 import ProtectedRoute from '@/src/components/ProtectedRoute';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
@@ -90,6 +91,34 @@ function NotesPageContent() {
     
     return matchesSearch && matchesTags;
   });
+  
+  // Estado para o modal de criação rápida de nota
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [newNoteTitle, setNewNoteTitle] = useState('');
+  const [newNoteContent, setNewNoteContent] = useState('');
+  
+  // Função para criar uma nova nota rapidamente
+  const handleCreateNote = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('/api/notes', {
+        title: newNoteTitle,
+        content: newNoteContent,
+        notebookId: 'notebook1', // Usa o caderno padrão 'Geral'
+      });
+      
+      // Adiciona a nova nota à lista
+      setNotes([response.data, ...notes]);
+      setIsCreateModalOpen(false);
+      
+      // Limpa os campos
+      setNewNoteTitle('');
+      setNewNoteContent('');
+    } catch (err) {
+      console.error('Erro ao criar nota:', err);
+      alert('Não foi possível criar a nota. Tente novamente.');
+    }
+  };
 
   // Função para excluir uma nota
   const handleDeleteNote = async (noteId: string) => {
@@ -109,27 +138,72 @@ function NotesPageContent() {
     router.push(`/dashboard/notes/${noteId}`);
   };
 
-  // Função para criar uma nova nota
-  const handleCreateNote = () => {
-    try {
-      // Usar o método push do router para navegar para a página de nova nota
-      router.push('/dashboard/notes/new');
-      
-      // Adicionar log para depuração
-      console.log('Navegando para /dashboard/notes/new');
-      
-      // Alternativa: usar navegação direta se o router falhar
-      setTimeout(() => {
-        if (window.location.pathname !== '/dashboard/notes/new') {
-          console.log('Navegação com router falhou, tentando alternativa');
-          window.location.href = '/dashboard/notes/new';
-        }
-      }, 500);
-    } catch (err) {
-      console.error('Erro ao navegar para nova nota:', err);
-      // Fallback para navegação direta
-      window.location.href = '/dashboard/notes/new';
-    }
+  // Função para abrir o modal de criação de nota
+  const openCreateNoteModal = () => {
+    setIsCreateModalOpen(true);
+  };
+  
+  // Modal de criação rápida de nota
+  const renderCreateNoteModal = () => {
+    if (!isCreateModalOpen) return null;
+    
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg w-full max-w-md p-6 shadow-xl transform transition-all">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold text-gray-900">Nova Nota</h2>
+            <button 
+              onClick={() => setIsCreateModalOpen(false)}
+              className="text-gray-500 hover:text-gray-700 focus:outline-none"
+            >
+              ✕
+            </button>
+          </div>
+          
+          <form onSubmit={handleCreateNote}>
+            <div className="mb-4">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">Título</label>
+              <input
+                type="text"
+                value={newNoteTitle}
+                onChange={(e) => setNewNoteTitle(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                placeholder="Digite o título da nota"
+                autoFocus
+                required
+              />
+            </div>
+            
+            <div className="mb-4">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">Conteúdo</label>
+              <textarea
+                value={newNoteContent}
+                onChange={(e) => setNewNoteContent(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 h-32 transition-colors"
+                placeholder="Digite o conteúdo da nota"
+                required
+              />
+            </div>
+            
+            <div className="flex justify-end space-x-3">
+              <button
+                type="button"
+                onClick={() => setIsCreateModalOpen(false)}
+                className="px-4 py-2 border border-gray-300 rounded-md text-gray-800 font-medium hover:bg-gray-50 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors shadow-md"
+              >
+                Criar Nota
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    );
   };
 
   // Função para alternar a seleção de tags
@@ -186,6 +260,7 @@ function NotesPageContent() {
   return (
     <div className="min-h-screen bg-gray-100">
       <Sidebar />
+      <FloatingActionButton />
       
       <div className="ml-64 p-8">
         <h1 className="text-2xl font-bold text-gray-900 mb-6 pb-2 border-b border-gray-200">Minhas Notas</h1>
@@ -202,16 +277,17 @@ function NotesPageContent() {
           </div>
           
           <button 
-            onClick={handleCreateNote}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md ml-4"
+            onClick={openCreateNoteModal}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md ml-4 flex items-center shadow-md transition-all duration-200 transform hover:scale-105"
           >
+            <span className="mr-2">📝</span>
             Nova Nota
           </button>
         </div>
 
         {/* Filtros de tags */}
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Filtrar por tags</label>
+          <label className="block text-sm font-semibold text-gray-800 mb-1">Filtrar por tags</label>
           <div className="flex flex-wrap gap-2">
             {availableTags.map(tag => (
               <button
@@ -233,6 +309,9 @@ function NotesPageContent() {
             {error}
           </div>
         )}
+        
+        {/* Renderiza o modal de criação de nota */}
+        {renderCreateNoteModal()}
 
         {/* Estado de carregamento */}
         {loading ? (
@@ -250,18 +329,18 @@ function NotesPageContent() {
                 >
                   <div className="p-4">
                     <h2 className="text-xl font-semibold mb-2 truncate">{note.title}</h2>
-                    <div className="text-gray-600 mb-4 line-clamp-3" 
+                    <div className="text-gray-700 mb-4 line-clamp-3" 
                         dangerouslySetInnerHTML={{ __html: note.content.substring(0, 150) + '...' }} />
                     
                     <div className="flex flex-wrap gap-1 mb-3">
                       {note.tags.map(tag => (
-                        <span key={tag.id} className="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded">
+                        <span key={tag.id} className="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded font-medium">
                           {tag.name}
                         </span>
                       ))}
                     </div>
                     
-                    <div className="flex justify-between items-center text-sm text-gray-500">
+                    <div className="flex justify-between items-center text-sm text-gray-700 font-medium">
                       <span>Atualizado: {new Date(note.updatedAt).toLocaleDateString('pt-BR')}</span>
                     </div>
                   </div>
@@ -283,7 +362,7 @@ function NotesPageContent() {
                 </div>
               ))
             ) : (
-              <div className="col-span-full text-center py-12 text-gray-500">
+              <div className="col-span-full text-center py-12 text-gray-700 font-medium">
                 {searchTerm || selectedTags.length > 0 ? 
                   'Nenhuma nota encontrada com os filtros aplicados.' : 
                   'Você ainda não tem notas. Clique em "Nova Nota" para começar.'}
