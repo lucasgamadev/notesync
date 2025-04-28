@@ -335,7 +335,7 @@ export default function NotePage({ params }: { params: { id: string } }) {
         
         <div className="flex items-center gap-2">
           {saveStatus === 'saving' && (
-            <span className="text-gray-500 text-sm">Salvando...</span>
+            <span className="text-gray-700 text-sm font-medium">Salvando...</span>
           )}
           {saveStatus === 'saved' && (
             <span className="text-green-500 text-sm">Salvo</span>
@@ -379,7 +379,7 @@ export default function NotePage({ params }: { params: { id: string } }) {
 
           {/* Seleção de caderno */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Caderno</label>
+            <label className="block text-sm font-semibold text-gray-800 mb-1">Caderno</label>
             <select
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
               value={note.notebookId || ''}
@@ -396,7 +396,7 @@ export default function NotePage({ params }: { params: { id: string } }) {
 
           {/* Seleção de tags */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Tags</label>
+            <label className="block text-sm font-semibold text-gray-800 mb-1">Tags</label>
             <div className="flex flex-wrap gap-2 mb-2">
               {availableTags.map(tag => (
                 <button
