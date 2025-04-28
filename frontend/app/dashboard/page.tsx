@@ -1,6 +1,7 @@
 "use client";
 
 import ProtectedRoute from "@/src/components/ProtectedRoute";
+import QuickActionButtons from "@/src/components/QuickActionButtons";
 
 // Componente de Sidebar
 const Sidebar = () => {
@@ -92,7 +93,7 @@ const RecentActivity = () => {
             </div>
             <div className="flex-1">
               <p className="font-semibold text-gray-800">{activity.title}</p>
-              <p className="text-sm text-gray-600">{activity.date}</p>
+              <p className="text-sm text-gray-700 font-medium">{activity.date}</p>
             </div>
           </div>
         ))}
@@ -124,6 +125,9 @@ export default function Dashboard() {
 
         <div className="ml-64 p-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Dashboard</h2>
+          
+          {/* Botões de Ação Rápida */}
+          <QuickActionButtons />
 
           {/* Estatísticas */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -142,15 +146,15 @@ export default function Dashboard() {
               <div className="space-y-2">
                 <a href="#" className="block p-3 hover:bg-gray-50 rounded">
                   <p className="font-semibold text-gray-800">Anotações de Reunião</p>
-                  <p className="text-sm text-gray-600">Atualizado há 2 horas</p>
+                  <p className="text-sm text-gray-700 font-medium">Atualizado há 2 horas</p>
                 </a>
                 <a href="#" className="block p-3 hover:bg-gray-50 rounded">
                   <p className="font-semibold text-gray-800">Lista de Tarefas</p>
-                  <p className="text-sm text-gray-600">Atualizado há 1 dia</p>
+                  <p className="text-sm text-gray-700 font-medium">Atualizado há 1 dia</p>
                 </a>
                 <a href="#" className="block p-3 hover:bg-gray-50 rounded">
                   <p className="font-semibold text-gray-800">Ideias para Projeto</p>
-                  <p className="text-sm text-gray-600">Atualizado há 3 dias</p>
+                  <p className="text-sm text-gray-700 font-medium">Atualizado há 3 dias</p>
                 </a>
               </div>
               <a
