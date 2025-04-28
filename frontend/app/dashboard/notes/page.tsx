@@ -278,7 +278,7 @@ function NotesPageContent() {
           
           <button 
             onClick={openCreateNoteModal}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md ml-4 flex items-center shadow-md transition-all duration-200 transform hover:scale-105"
+            className="bg-indigo-700 hover:bg-indigo-800 text-white px-4 py-2 rounded-md ml-4 flex items-center shadow-md transition-all duration-200 transform hover:scale-105 font-medium"
           >
             <span className="mr-2">📝</span>
             Nova Nota
@@ -293,8 +293,8 @@ function NotesPageContent() {
               <button
                 key={tag.id}
                 onClick={() => toggleTagSelection(tag.id)}
-                className={`px-3 py-1 rounded-full text-sm ${selectedTags.includes(tag.id) 
-                  ? 'bg-indigo-600 text-white' 
+                className={`px-3 py-1 rounded-full text-sm font-medium ${selectedTags.includes(tag.id) 
+                  ? 'bg-indigo-700 text-white' 
                   : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`}
               >
                 {tag.name}
