@@ -18,9 +18,9 @@ const NotebookCard = ({
       <div className={`h-2 ${notebook.color}`}></div>
       <div className="p-5">
         <h3 className="text-lg font-semibold mb-2">{notebook.title}</h3>
-        <p className="text-gray-600 text-sm mb-4">{notebook.description}</p>
+        <p className="text-gray-700 text-sm font-medium mb-4">{notebook.description}</p>
         <div className="flex justify-between items-center">
-          <span className="text-sm text-gray-500">{notebook.notesCount} notas</span>
+          <span className="text-sm text-gray-700 font-medium">{notebook.notesCount} notas</span>
           <div className="flex space-x-2">
             <button
               onClick={() => onEdit(notebook.id)}
@@ -88,7 +88,7 @@ const NotebookModal = ({
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Título</label>
+            <label className="block text-sm font-semibold text-gray-800 mb-1">Título</label>
             <input
               type="text"
               value={title}
@@ -99,7 +99,7 @@ const NotebookModal = ({
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Descrição</label>
+            <label className="block text-sm font-semibold text-gray-800 mb-1">Descrição</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -109,7 +109,7 @@ const NotebookModal = ({
           </div>
 
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Cor</label>
+            <label className="block text-sm font-semibold text-gray-800 mb-1">Cor</label>
             <div className="flex space-x-2">
               {colorOptions.map((option) => (
                 <button
@@ -395,13 +395,13 @@ export default function NotebooksPage() {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                       Título
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                       Descrição
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                       Notas
                     </th>
                     <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -415,11 +415,11 @@ export default function NotebooksPage() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className={`w-3 h-3 rounded-full ${notebook.color} mr-3`}></div>
-                          <div className="text-sm font-medium text-gray-900">{notebook.title}</div>
+                          <div className="text-sm font-semibold text-gray-900">{notebook.title}</div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-sm text-gray-500 truncate max-w-xs">
+                        <div className="text-sm text-gray-700 truncate max-w-xs">
                           {notebook.description}
                         </div>
                       </td>
