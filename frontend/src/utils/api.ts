@@ -1,4 +1,8 @@
 import axios from "axios";
+import mockApi from "./mockApi";
+
+// Flag para controlar se devemos usar o mock API em vez do backend real
+const USE_MOCK_API = true; // Altere para false quando quiser usar o backend real
 
 // Criando instância do axios com URL base da API
 // Utilizando o proxy configurado no Next.js para redirecionar para http://localhost:5000/api
@@ -25,6 +29,38 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
+// Função para substituir as chamadas de API pelo mock quando necessário
+const apiProxy = {
+  get: async (url: string) => {
+    if (USE_MOCK_API) {
+      console.log(`[MOCK API] GET ${url}`);
+      return mockApi.get(url);
+    }
+    return api.get(url);
+  },
+  post: async (url: string, data: any) => {
+    if (USE_MOCK_API) {
+      console.log(`[MOCK API] POST ${url}`, data);
+      return mockApi.post(url, data);
+    }
+    return api.post(url, data);
+  },
+  put: async (url: string, data: any) => {
+    if (USE_MOCK_API) {
+      console.log(`[MOCK API] PUT ${url}`, data);
+      return mockApi.put(url, data);
+    }
+    return api.put(url, data);
+  },
+  delete: async (url: string) => {
+    if (USE_MOCK_API) {
+      console.log(`[MOCK API] DELETE ${url}`);
+      return mockApi.delete(url);
+    }
+    return api.delete(url);
+  }
+};
 
 // Interceptor para lidar com erros de autenticação (token expirado)
 api.interceptors.response.use(
@@ -74,4 +110,4 @@ api.interceptors.response.use(
   }
 );
 
-export default api;
+export default USE_MOCK_API ? apiProxy : api;
