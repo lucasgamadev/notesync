@@ -207,42 +207,42 @@ export default function NotePage({ params }: { params: { id: string } }) {
       <div className="border border-gray-300 rounded-t-md p-2 flex flex-wrap gap-2 bg-indigo-50">
         <button
           onClick={() => editor.chain().focus().toggleBold().run()}
-          className={`p-1 rounded ${editor.isActive('bold') ? 'bg-indigo-200' : 'hover:bg-indigo-100'}`}
+          className={`p-1 rounded ${editor.isActive('bold') ? 'bg-indigo-300 text-indigo-800' : 'bg-white text-indigo-700 hover:bg-indigo-100'}`}
           title="Negrito"
         >
           <strong>B</strong>
         </button>
         <button
           onClick={() => editor.chain().focus().toggleItalic().run()}
-          className={`p-1 rounded ${editor.isActive('italic') ? 'bg-indigo-200' : 'hover:bg-indigo-100'}`}
+          className={`p-1 rounded ${editor.isActive('italic') ? 'bg-indigo-300 text-indigo-800' : 'bg-white text-indigo-700 hover:bg-indigo-100'}`}
           title="Itálico"
         >
           <em>I</em>
         </button>
         <button
           onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-          className={`p-1 rounded ${editor.isActive('heading', { level: 1 }) ? 'bg-indigo-200' : 'hover:bg-indigo-100'}`}
+          className={`p-1 rounded ${editor.isActive('heading', { level: 1 }) ? 'bg-indigo-300 text-indigo-800' : 'bg-white text-indigo-700 hover:bg-indigo-100'}`}
           title="Título 1"
         >
           H1
         </button>
         <button
           onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-          className={`p-1 rounded ${editor.isActive('heading', { level: 2 }) ? 'bg-indigo-200' : 'hover:bg-indigo-100'}`}
+          className={`p-1 rounded ${editor.isActive('heading', { level: 2 }) ? 'bg-indigo-300 text-indigo-800' : 'bg-white text-indigo-700 hover:bg-indigo-100'}`}
           title="Título 2"
         >
           H2
         </button>
         <button
           onClick={() => editor.chain().focus().toggleBulletList().run()}
-          className={`p-1 rounded ${editor.isActive('bulletList') ? 'bg-indigo-200' : 'hover:bg-indigo-100'}`}
+          className={`p-1 rounded ${editor.isActive('bulletList') ? 'bg-indigo-300 text-indigo-800' : 'bg-white text-indigo-700 hover:bg-indigo-100'}`}
           title="Lista com marcadores"
         >
           • Lista
         </button>
         <button
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          className={`p-1 rounded ${editor.isActive('orderedList') ? 'bg-indigo-200' : 'hover:bg-indigo-100'}`}
+          className={`p-1 rounded ${editor.isActive('orderedList') ? 'bg-indigo-300 text-indigo-800' : 'bg-white text-indigo-700 hover:bg-indigo-100'}`}
           title="Lista numerada"
         >
           1. Lista
@@ -254,7 +254,7 @@ export default function NotePage({ params }: { params: { id: string } }) {
               editor.chain().focus().setLink({ href: url }).run();
             }
           }}
-          className={`p-1 rounded ${editor.isActive('link') ? 'bg-indigo-200' : 'hover:bg-indigo-100'}`}
+          className={`p-1 rounded ${editor.isActive('link') ? 'bg-indigo-300 text-indigo-800' : 'bg-white text-indigo-700 hover:bg-indigo-100'}`}
           title="Inserir link"
         >
           Link
@@ -266,7 +266,7 @@ export default function NotePage({ params }: { params: { id: string } }) {
               editor.chain().focus().setImage({ src: url }).run();
             }
           }}
-          className="p-1 rounded hover:bg-indigo-100"
+          className="p-1 rounded bg-white text-indigo-700 hover:bg-indigo-100"
           title="Inserir imagem"
         >
           Imagem
@@ -335,19 +335,19 @@ export default function NotePage({ params }: { params: { id: string } }) {
         
         <div className="flex items-center gap-2">
           {saveStatus === 'saving' && (
-            <span className="text-gray-700 text-sm font-medium">Salvando...</span>
+            <span className="text-gray-800 text-sm font-medium bg-gray-100 px-2 py-1 rounded">Salvando...</span>
           )}
           {saveStatus === 'saved' && (
-            <span className="text-green-500 text-sm">Salvo</span>
+            <span className="text-green-800 text-sm font-medium bg-green-100 px-2 py-1 rounded">Salvo</span>
           )}
           {saveStatus === 'error' && (
-            <span className="text-red-500 text-sm">Erro ao salvar</span>
+            <span className="text-red-800 text-sm font-medium bg-red-100 px-2 py-1 rounded">Erro ao salvar</span>
           )}
           
           <button 
             onClick={handleSave}
             disabled={saving || !note.title}
-            className={`bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md disabled:bg-indigo-300 disabled:cursor-not-allowed`}
+            className={`bg-indigo-700 hover:bg-indigo-800 text-white px-4 py-2 rounded-md font-medium shadow-md disabled:bg-indigo-300 disabled:cursor-not-allowed`}
           >
             {saving ? 'Salvando...' : 'Salvar'}
           </button>
@@ -402,8 +402,8 @@ export default function NotePage({ params }: { params: { id: string } }) {
                 <button
                   key={tag.id}
                   onClick={() => toggleTagSelection(tag.id)}
-                  className={`px-3 py-1 rounded-full text-sm ${selectedTags.includes(tag.id) 
-                    ? 'bg-indigo-600 text-white' 
+                  className={`px-3 py-1 rounded-full text-sm font-medium ${selectedTags.includes(tag.id) 
+                    ? 'bg-indigo-700 text-white' 
                     : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`}
                 >
                   {tag.name}
