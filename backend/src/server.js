@@ -18,7 +18,7 @@ app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({
     message: "Erro interno do servidor",
-    error: process.env.NODE_ENV === "development" ? err.message : undefined,
+    error: process.env.NODE_ENV === "development" ? err.message : undefined
   });
 });
 
@@ -30,6 +30,7 @@ app.get("/", (req, res) => {
 // Importação das rotas
 const authRoutes = require("./routes/authRoutes");
 const googleAuthRoutes = require("./routes/googleAuthRoutes");
+const googleSignInRoutes = require("./routes/googleSignInRoutes");
 const notebookRoutes = require("./routes/notebookRoutes");
 const noteRoutes = require("./routes/noteRoutes");
 const tagRoutes = require("./routes/tagRoutes");
@@ -40,6 +41,7 @@ const syncRoutes = require("./routes/syncRoutes");
 // Configuração das rotas
 app.use("/api/auth", authRoutes);
 app.use("/api/auth", googleAuthRoutes);
+app.use("/api/auth", googleSignInRoutes);
 app.use("/api/notebooks", notebookRoutes);
 app.use("/api/notes", noteRoutes);
 app.use("/api/tags", tagRoutes);
