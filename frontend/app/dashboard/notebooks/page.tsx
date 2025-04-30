@@ -17,10 +17,10 @@ const NotebookCard = ({
     <div className="bg-white rounded-lg shadow overflow-hidden">
       <div className={`h-2 ${notebook.color}`}></div>
       <div className="p-5">
-        <h3 className="text-lg font-semibold mb-2">{notebook.title}</h3>
-        <p className="text-gray-900 text-sm font-medium mb-4">{notebook.description}</p>
+        <h3 className="text-lg font-bold text-black mb-2">{notebook.title}</h3>
+        <p className="text-black text-sm font-semibold mb-4">{notebook.description}</p>
         <div className="flex justify-between items-center">
-          <span className="text-sm text-gray-900 font-medium">{notebook.notesCount} notas</span>
+          <span className="text-sm text-black font-semibold">{notebook.notesCount} notas</span>
           <div className="flex space-x-2">
             <button
               onClick={() => onEdit(notebook.id)}
@@ -299,7 +299,7 @@ export default function NotebooksPage() {
     return (
       <div className="w-64 bg-indigo-800 text-white h-full fixed left-0 top-0 overflow-y-auto">
         <div className="p-4">
-          <h1 className="text-2xl font-bold mb-8">NoteSync</h1>
+          <h1 className="text-2xl font-bold text-white mb-8">NoteSync</h1>
 
           <nav className="space-y-2">
             <a href="/dashboard" className="block py-2.5 px-4 rounded hover:bg-indigo-700">
@@ -346,7 +346,7 @@ export default function NotebooksPage() {
 
         <div className="ml-64 p-8">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold">Meus Cadernos</h2>
+            <h2 className="text-2xl font-bold text-black">Meus Cadernos</h2>
 
             <div className="flex space-x-4">
               {/* Botões de visualização */}
@@ -395,16 +395,16 @@ export default function NotebooksPage() {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">
                       Título
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">
                       Descrição
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">
                       Notas
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-800 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-right text-xs font-bold text-black uppercase tracking-wider">
                       Ações
                     </th>
                   </tr>
@@ -415,27 +415,27 @@ export default function NotebooksPage() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className={`w-3 h-3 rounded-full ${notebook.color} mr-3`}></div>
-                          <div className="text-sm font-semibold text-gray-900">{notebook.title}</div>
+                          <div className="text-sm font-bold text-black">{notebook.title}</div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-sm text-gray-900 truncate max-w-xs">
+                        <div className="text-sm font-semibold text-black truncate max-w-xs">
                           {notebook.description}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-800 font-medium">{notebook.notesCount}</div>
+                        <div className="text-sm text-black font-semibold">{notebook.notesCount}</div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-bold">
                         <button
                           onClick={() => handleEditNotebook(notebook.id)}
-                          className="text-indigo-600 hover:text-indigo-900 mr-3"
+                          className="text-indigo-700 hover:text-indigo-900 mr-3 font-bold"
                         >
                           Editar
                         </button>
                         <button
                           onClick={() => handleDeleteClick(notebook.id)}
-                          className="text-red-600 hover:text-red-900"
+                          className="text-red-700 hover:text-red-900 font-bold"
                         >
                           Excluir
                         </button>
