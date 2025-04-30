@@ -18,19 +18,19 @@ const NotebookCard = ({
       <div className={`h-2 ${notebook.color}`}></div>
       <div className="p-5">
         <h3 className="text-lg font-semibold mb-2">{notebook.title}</h3>
-        <p className="text-gray-700 text-sm font-medium mb-4">{notebook.description}</p>
+        <p className="text-gray-900 text-sm font-medium mb-4">{notebook.description}</p>
         <div className="flex justify-between items-center">
-          <span className="text-sm text-gray-700 font-medium">{notebook.notesCount} notas</span>
+          <span className="text-sm text-gray-900 font-medium">{notebook.notesCount} notas</span>
           <div className="flex space-x-2">
             <button
               onClick={() => onEdit(notebook.id)}
-              className="p-1.5 text-gray-600 hover:text-indigo-600 rounded-full hover:bg-gray-100"
+              className="p-1.5 text-gray-800 hover:text-indigo-600 rounded-full hover:bg-gray-100"
             >
               ✏️
             </button>
             <button
               onClick={() => onDelete(notebook.id)}
-              className="p-1.5 text-gray-600 hover:text-red-600 rounded-full hover:bg-gray-100"
+              className="p-1.5 text-gray-800 hover:text-red-600 rounded-full hover:bg-gray-100"
             >
               🗑️
             </button>
@@ -127,7 +127,7 @@ const NotebookModal = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+              className="px-4 py-2 text-sm font-medium text-gray-900 bg-gray-100 rounded-md hover:bg-gray-200"
             >
               Cancelar
             </button>
@@ -167,7 +167,7 @@ const DeleteConfirmationModal = ({
         <div className="flex justify-end space-x-3">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+            className="px-4 py-2 text-sm font-medium text-gray-900 bg-gray-100 rounded-md hover:bg-gray-200"
           >
             Cancelar
           </button>
@@ -353,13 +353,13 @@ export default function NotebooksPage() {
               <div className="flex bg-white rounded-md shadow">
                 <button
                   onClick={() => setViewMode("grid")}
-                  className={`px-3 py-1.5 ${viewMode === "grid" ? "bg-indigo-100 text-indigo-700" : "text-gray-600"}`}
+                  className={`px-3 py-1.5 ${viewMode === "grid" ? "bg-indigo-100 text-indigo-700" : "text-gray-800"}`}
                 >
                   Grade
                 </button>
                 <button
                   onClick={() => setViewMode("list")}
-                  className={`px-3 py-1.5 ${viewMode === "list" ? "bg-indigo-100 text-indigo-700" : "text-gray-600"}`}
+                  className={`px-3 py-1.5 ${viewMode === "list" ? "bg-indigo-100 text-indigo-700" : "text-gray-800"}`}
                 >
                   Lista
                 </button>
@@ -404,7 +404,7 @@ export default function NotebooksPage() {
                     <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                       Notas
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-800 uppercase tracking-wider">
                       Ações
                     </th>
                   </tr>
@@ -419,12 +419,12 @@ export default function NotebooksPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-sm text-gray-700 truncate max-w-xs">
+                        <div className="text-sm text-gray-900 truncate max-w-xs">
                           {notebook.description}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-500">{notebook.notesCount}</div>
+                        <div className="text-sm text-gray-800 font-medium">{notebook.notesCount}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <button
