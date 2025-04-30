@@ -8,7 +8,7 @@ const Sidebar = () => {
   return (
     <div className="w-64 bg-indigo-800 text-white h-full fixed left-0 top-0 overflow-y-auto">
       <div className="p-4">
-        <h1 className="text-2xl font-bold text-gray-900 mb-8">NoteSync</h1>
+        <h1 className="text-2xl font-bold text-white mb-8">NoteSync</h1>
 
         <nav className="space-y-2">
           <a
