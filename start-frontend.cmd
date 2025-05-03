@@ -1,12 +1,16 @@
 @echo off
 setlocal enabledelayedexpansion
 
-echo Iniciando o servidor de desenvolvimento do frontend...
+title NoteSync - Servidor de Desenvolvimento Frontend
+
+echo ===================================================
+echo    NoteSync - Servidor de Desenvolvimento Frontend
+echo ===================================================
 echo.
 
 REM Verifica se o diretório frontend existe
 if not exist frontend (
-    echo Erro: O diretório frontend não foi encontrado.
+    echo [ERRO] O diretório frontend não foi encontrado.
     echo Certifique-se de estar executando este script na pasta raiz do projeto.
     echo.
     echo Pressione qualquer tecla para fechar esta janela...
@@ -14,13 +18,14 @@ if not exist frontend (
     exit /b 1
 )
 
+REM Entra no diretório frontend
 cd frontend
 
-echo Verificando dependências...
-npm install
+echo [INFO] Verificando dependências...
+call npm install
 if !errorlevel! neq 0 (
     echo.
-    echo Erro: Falha ao instalar as dependências.
+    echo [ERRO] Falha ao instalar as dependências.
     echo Verifique sua conexão com a internet ou execute o comando manualmente.
     cd ..
     echo.
@@ -30,17 +35,22 @@ if !errorlevel! neq 0 (
 )
 
 echo.
-echo Iniciando o servidor de desenvolvimento...
+echo [INFO] Iniciando o servidor de desenvolvimento...
+echo [INFO] Acesse a aplicação em http://localhost:3000
+echo [INFO] Pressione Ctrl+C para encerrar o servidor quando desejar
 echo.
 
-REM Usa cmd /k para manter a janela aberta após a execução do comando
-cmd /k "npm run dev"
+REM Executa o comando npm run dev diretamente (sem cmd /k)
+REM Isso mantém a janela aberta até que o processo seja encerrado
+npm run dev
 
-REM O código abaixo só será executado se o usuário fechar manualmente o servidor
-REM ou se o comando cmd /k falhar
+REM O código abaixo será executado quando o servidor for encerrado
+echo.
+echo [INFO] O servidor de desenvolvimento foi encerrado.
+
+REM Retorna ao diretório original
 cd ..
+
 echo.
-echo O servidor de desenvolvimento foi encerrado.
 echo Pressione qualquer tecla para fechar esta janela...
-echo.
 pause >nul
