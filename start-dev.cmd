@@ -1,6 +1,9 @@
 @echo off
 setlocal enabledelayedexpansion
 
+REM Define codificação UTF-8 para suportar acentos
+chcp 65001 >nul
+
 title NoteSync - Ambiente de Desenvolvimento
 
 echo ===================================================
