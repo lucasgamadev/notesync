@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import Image from '@tiptap/extension-image';
-import Link from '@tiptap/extension-link';
-import Table from '@tiptap/extension-table';
-import TableCell from '@tiptap/extension-table-cell';
-import TableHeader from '@tiptap/extension-table-header';
-import TableRow from '@tiptap/extension-table-row';
-import { EditorContent, useEditor } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import axios, { AxiosError } from 'axios';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import Image from "@tiptap/extension-image";
+import Link from "@tiptap/extension-link";
+import Table from "@tiptap/extension-table";
+import TableCell from "@tiptap/extension-table-cell";
+import TableHeader from "@tiptap/extension-table-header";
+import TableRow from "@tiptap/extension-table-row";
+import { EditorContent, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import axios, { AxiosError } from "axios";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 // Tipos para as notas e tags
 interface Note {
@@ -30,26 +30,26 @@ interface Tag {
 
 /**
  * Página de Edição de Nota
- * 
+ *
  * Permite visualizar, editar ou criar uma nova nota com editor rich text.
  * Suporta formatação avançada, imagens, links e tabelas.
  */
 export default function NotePage({ params }: { params: { id: string } }) {
   const router = useRouter();
-  const isNewNote = params.id === 'new';
+  const isNewNote = params.id === "new";
   const [note, setNote] = useState<Partial<Note>>({
-    title: '',
-    content: '',
+    title: "",
+    content: "",
     tags: [],
-    notebookId: ''
+    notebookId: ""
   });
   const [availableTags, setAvailableTags] = useState<Tag[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [notebooks, setNotebooks] = useState<{id: string, name: string}[]>([]);
+  const [notebooks, setNotebooks] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(!isNewNote);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'error'>('saved');
+  const [saveStatus, setSaveStatus] = useState<"saved" | "saving" | "error">("saved");
 
   // Configuração do editor TipTap
   const editor = useEditor({
@@ -57,22 +57,22 @@ export default function NotePage({ params }: { params: { id: string } }) {
       StarterKit,
       Image,
       Link.configure({
-        openOnClick: false,
+        openOnClick: false
       }),
       Table.configure({
-        resizable: true,
+        resizable: true
       }),
       TableRow,
       TableCell,
-      TableHeader,
+      TableHeader
     ],
     content: note.content,
     onUpdate: ({ editor }) => {
-      setNote(prev => ({ ...prev, content: editor.getHTML() }));
+      setNote((prev) => ({ ...prev, content: editor.getHTML() }));
       // Ativar autosave
-      setSaveStatus('saving');
+      setSaveStatus("saving");
       debouncedSave();
-    },
+    }
   });
 
   // Função para salvar com debounce
@@ -96,8 +96,8 @@ export default function NotePage({ params }: { params: { id: string } }) {
             editor.commands.setContent(response.data.content);
           }
         } catch (err) {
-          console.error('Erro ao buscar nota:', err);
-          setError('Não foi possível carregar a nota. Por favor, tente novamente.');
+          console.error("Erro ao buscar nota:", err);
+          setError("Não foi possível carregar a nota. Por favor, tente novamente.");
         } finally {
           setLoading(false);
         }
@@ -110,13 +110,13 @@ export default function NotePage({ params }: { params: { id: string } }) {
     const fetchTagsAndNotebooks = async () => {
       try {
         const [tagsResponse, notebooksResponse] = await Promise.all([
-          axios.get('/api/tags'),
-          axios.get('/api/notebooks')
+          axios.get("/api/tags"),
+          axios.get("/api/notebooks")
         ]);
         setAvailableTags(tagsResponse.data);
         setNotebooks(notebooksResponse.data);
       } catch (err) {
-        console.error('Erro ao buscar dados:', err);
+        console.error("Erro ao buscar dados:", err);
       }
     };
 
@@ -134,7 +134,7 @@ export default function NotePage({ params }: { params: { id: string } }) {
 
     try {
       setSaving(true);
-      setSaveStatus('saving');
+      setSaveStatus("saving");
 
       const noteData = {
         ...note,
@@ -145,17 +145,17 @@ export default function NotePage({ params }: { params: { id: string } }) {
       let response;
       if (isNewNote) {
         try {
-          response = await axios.post('/api/notes', noteData);
+          response = await axios.post("/api/notes", noteData);
           // Redirecionar para a página de edição após criar
           router.push(`/dashboard/notes/${response.data.id}`);
         } catch (err) {
           const apiErr = err as AxiosError;
-          console.error('Erro na API ao criar nota:', apiErr);
+          console.error("Erro na API ao criar nota:", apiErr);
           // Se o backend não estiver disponível, crie uma nota temporária e continue
-          if (apiErr.code === 'ECONNREFUSED' || apiErr.message?.includes('Network Error')) {
-            console.log('Backend não disponível, criando nota temporária');
+          if (apiErr.code === "ECONNREFUSED" || apiErr.message?.includes("Network Error")) {
+            console.log("Backend não disponível, criando nota temporária");
             // Simular resposta para desenvolvimento
-            const tempId = 'temp-' + Date.now();
+            const tempId = "temp-" + Date.now();
             router.push(`/dashboard/notes/${tempId}`);
           } else {
             throw apiErr; // Re-lançar para ser capturado pelo catch externo
@@ -167,19 +167,21 @@ export default function NotePage({ params }: { params: { id: string } }) {
           setNote(response.data);
         } catch (err) {
           const apiErr = err as AxiosError;
-          console.error('Erro na API ao atualizar nota:', apiErr);
+          console.error("Erro na API ao atualizar nota:", apiErr);
           // Se o backend não estiver disponível, apenas continue
-          if (!(apiErr.code === 'ECONNREFUSED' || apiErr.message?.includes('Network Error'))) {
+          if (!(apiErr.code === "ECONNREFUSED" || apiErr.message?.includes("Network Error"))) {
             throw apiErr; // Re-lançar para ser capturado pelo catch externo
           }
         }
       }
-      
-      setSaveStatus('saved');
+
+      setSaveStatus("saved");
     } catch (err) {
-      console.error('Erro ao salvar nota:', err);
-      setError('Não foi possível salvar a nota. Por favor, verifique se o servidor backend está em execução.');
-      setSaveStatus('error');
+      console.error("Erro ao salvar nota:", err);
+      setError(
+        "Não foi possível salvar a nota. Por favor, verifique se o servidor backend está em execução."
+      );
+      setSaveStatus("error");
     } finally {
       setSaving(false);
     }
@@ -187,16 +189,14 @@ export default function NotePage({ params }: { params: { id: string } }) {
 
   // Função para alternar a seleção de tags
   const toggleTagSelection = (tagId: string) => {
-    setSelectedTags(prev => 
-      prev.includes(tagId) 
-        ? prev.filter(id => id !== tagId) 
-        : [...prev, tagId]
+    setSelectedTags((prev) =>
+      prev.includes(tagId) ? prev.filter((id) => id !== tagId) : [...prev, tagId]
     );
   };
 
   // Função para voltar à lista de notas
   const handleBack = () => {
-    router.push('/dashboard/notes');
+    router.push("/dashboard/notes");
   };
 
   // Renderizar barra de ferramentas do editor
@@ -207,61 +207,61 @@ export default function NotePage({ params }: { params: { id: string } }) {
       <div className="border border-gray-300 rounded-t-md p-2 flex flex-wrap gap-2 bg-indigo-50">
         <button
           onClick={() => editor.chain().focus().toggleBold().run()}
-          className={`p-1 rounded ${editor.isActive('bold') ? 'bg-indigo-300 text-indigo-800' : 'bg-white text-indigo-700 hover:bg-indigo-100'}`}
+          className={`p-1 rounded ${editor.isActive("bold") ? "bg-indigo-300 text-indigo-800" : "bg-white text-indigo-700 hover:bg-indigo-100"}`}
           title="Negrito"
         >
           <strong>B</strong>
         </button>
         <button
           onClick={() => editor.chain().focus().toggleItalic().run()}
-          className={`p-1 rounded ${editor.isActive('italic') ? 'bg-indigo-300 text-indigo-800' : 'bg-white text-indigo-700 hover:bg-indigo-100'}`}
+          className={`p-1 rounded ${editor.isActive("italic") ? "bg-indigo-300 text-indigo-800" : "bg-white text-indigo-700 hover:bg-indigo-100"}`}
           title="Itálico"
         >
           <em>I</em>
         </button>
         <button
           onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-          className={`p-1 rounded ${editor.isActive('heading', { level: 1 }) ? 'bg-indigo-300 text-indigo-800' : 'bg-white text-indigo-700 hover:bg-indigo-100'}`}
+          className={`p-1 rounded ${editor.isActive("heading", { level: 1 }) ? "bg-indigo-300 text-indigo-800" : "bg-white text-indigo-700 hover:bg-indigo-100"}`}
           title="Título 1"
         >
           H1
         </button>
         <button
           onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-          className={`p-1 rounded ${editor.isActive('heading', { level: 2 }) ? 'bg-indigo-300 text-indigo-800' : 'bg-white text-indigo-700 hover:bg-indigo-100'}`}
+          className={`p-1 rounded ${editor.isActive("heading", { level: 2 }) ? "bg-indigo-300 text-indigo-800" : "bg-white text-indigo-700 hover:bg-indigo-100"}`}
           title="Título 2"
         >
           H2
         </button>
         <button
           onClick={() => editor.chain().focus().toggleBulletList().run()}
-          className={`p-1 rounded ${editor.isActive('bulletList') ? 'bg-indigo-300 text-indigo-800' : 'bg-white text-indigo-700 hover:bg-indigo-100'}`}
+          className={`p-1 rounded ${editor.isActive("bulletList") ? "bg-indigo-300 text-indigo-800" : "bg-white text-indigo-700 hover:bg-indigo-100"}`}
           title="Lista com marcadores"
         >
           • Lista
         </button>
         <button
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          className={`p-1 rounded ${editor.isActive('orderedList') ? 'bg-indigo-300 text-indigo-800' : 'bg-white text-indigo-700 hover:bg-indigo-100'}`}
+          className={`p-1 rounded ${editor.isActive("orderedList") ? "bg-indigo-300 text-indigo-800" : "bg-white text-indigo-700 hover:bg-indigo-100"}`}
           title="Lista numerada"
         >
           1. Lista
         </button>
         <button
           onClick={() => {
-            const url = window.prompt('URL:');
+            const url = window.prompt("URL:");
             if (url) {
               editor.chain().focus().setLink({ href: url }).run();
             }
           }}
-          className={`p-1 rounded ${editor.isActive('link') ? 'bg-indigo-300 text-indigo-800' : 'bg-white text-indigo-700 hover:bg-indigo-100'}`}
+          className={`p-1 rounded ${editor.isActive("link") ? "bg-indigo-300 text-indigo-800" : "bg-white text-indigo-700 hover:bg-indigo-100"}`}
           title="Inserir link"
         >
           Link
         </button>
         <button
           onClick={() => {
-            const url = window.prompt('URL da imagem:');
+            const url = window.prompt("URL da imagem:");
             if (url) {
               editor.chain().focus().setImage({ src: url }).run();
             }
@@ -283,23 +283,38 @@ export default function NotePage({ params }: { params: { id: string } }) {
           <h1 className="text-2xl font-bold mb-8">NoteSync</h1>
 
           <nav className="space-y-2">
-            <a href="/dashboard" className="block py-2.5 px-4 rounded hover:bg-indigo-700 text-gray-300">
+            <a
+              href="/dashboard"
+              className="block py-2.5 px-4 rounded hover:bg-indigo-700 text-gray-300"
+            >
               Dashboard
             </a>
-            <a href="/dashboard/notebooks" className="block py-2.5 px-4 rounded hover:bg-indigo-700 text-gray-300">
+            <a
+              href="/dashboard/notebooks"
+              className="block py-2.5 px-4 rounded hover:bg-indigo-700 text-gray-300"
+            >
               Cadernos
             </a>
-            <a href="/dashboard/notes" className="block py-2.5 px-4 rounded bg-indigo-900 hover:bg-indigo-700 text-gray-300">
+            <a
+              href="/dashboard/notes"
+              className="block py-2.5 px-4 rounded bg-indigo-900 hover:bg-indigo-700 text-gray-300"
+            >
               Notas
             </a>
-            <a href="/dashboard/tags" className="block py-2.5 px-4 rounded hover:bg-indigo-700 text-gray-300">
+            <a
+              href="/dashboard/tags"
+              className="block py-2.5 px-4 rounded hover:bg-indigo-700 text-gray-300"
+            >
               Etiquetas
             </a>
           </nav>
         </div>
 
         <div className="absolute bottom-0 left-0 right-0 p-4">
-          <a href="/dashboard/settings" className="block py-2.5 px-4 rounded hover:bg-indigo-700 text-gray-300">
+          <a
+            href="/dashboard/settings"
+            className="block py-2.5 px-4 rounded hover:bg-indigo-700 text-gray-300"
+          >
             Configurações
           </a>
           <button
@@ -320,109 +335,117 @@ export default function NotePage({ params }: { params: { id: string } }) {
   return (
     <div className="min-h-screen bg-gray-100">
       <Sidebar />
-      
+
       <div className="ml-64 p-8">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6 pb-2 border-b border-gray-200">
-        {isNewNote ? 'Nova Nota' : 'Editar Nota'}
-      </h1>
-      <div className="mb-6 flex justify-between items-center">
-        <button 
-          onClick={handleBack}
-          className="text-indigo-600 hover:text-indigo-800 flex items-center"
-        >
-          ← Voltar para notas
-        </button>
-        
-        <div className="flex items-center gap-2">
-          {saveStatus === 'saving' && (
-            <span className="text-gray-800 text-sm font-medium bg-gray-100 px-2 py-1 rounded">Salvando...</span>
-          )}
-          {saveStatus === 'saved' && (
-            <span className="text-green-800 text-sm font-medium bg-green-100 px-2 py-1 rounded">Salvo</span>
-          )}
-          {saveStatus === 'error' && (
-            <span className="text-red-800 text-sm font-medium bg-red-100 px-2 py-1 rounded">Erro ao salvar</span>
-          )}
-          
-          <button 
-            onClick={handleSave}
-            disabled={saving || !note.title}
-            className={`bg-indigo-700 hover:bg-indigo-800 text-white px-4 py-2 rounded-md font-medium shadow-md disabled:bg-indigo-300 disabled:cursor-not-allowed`}
+        <h1 className="text-2xl font-bold text-gray-900 mb-6 pb-2 border-b border-gray-200">
+          {isNewNote ? "Nova Nota" : "Editar Nota"}
+        </h1>
+        <div className="mb-6 flex justify-between items-center">
+          <button
+            onClick={handleBack}
+            className="text-indigo-600 hover:text-indigo-800 flex items-center"
           >
-            {saving ? 'Salvando...' : 'Salvar'}
+            ← Voltar para notas
           </button>
-        </div>
-      </div>
 
-      {/* Mensagem de erro */}
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md mb-4 shadow-sm">
-          {error}
-        </div>
-      )}
+          <div className="flex items-center gap-2">
+            {saveStatus === "saving" && (
+              <span className="text-gray-800 text-sm font-medium bg-gray-100 px-2 py-1 rounded">
+                Salvando...
+              </span>
+            )}
+            {saveStatus === "saved" && (
+              <span className="text-green-800 text-sm font-medium bg-green-100 px-2 py-1 rounded">
+                Salvo
+              </span>
+            )}
+            {saveStatus === "error" && (
+              <span className="text-red-800 text-sm font-medium bg-red-100 px-2 py-1 rounded">
+                Erro ao salvar
+              </span>
+            )}
 
-      {/* Estado de carregamento */}
-      {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {/* Título da nota */}
-          <input
-            type="text"
-            placeholder="Título da nota"
-            className="w-full px-4 py-2 text-xl font-bold border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            value={note.title}
-            onChange={(e) => setNote({ ...note, title: e.target.value })}
-          />
-
-          {/* Seleção de caderno */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-800 mb-1">Caderno</label>
-            <select
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              value={note.notebookId || ''}
-              onChange={(e) => setNote({ ...note, notebookId: e.target.value })}
+            <button
+              onClick={handleSave}
+              disabled={saving || !note.title}
+              className={`bg-indigo-700 hover:bg-indigo-800 text-white px-4 py-2 rounded-md font-medium shadow-md disabled:bg-indigo-300 disabled:cursor-not-allowed`}
             >
-              <option value="">Selecione um caderno</option>
-              {notebooks.map(notebook => (
-                <option key={notebook.id} value={notebook.id}>
-                  {notebook.name}
-                </option>
-              ))}
-            </select>
+              {saving ? "Salvando..." : "Salvar"}
+            </button>
           </div>
+        </div>
 
-          {/* Seleção de tags */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-800 mb-1">Tags</label>
-            <div className="flex flex-wrap gap-2 mb-2">
-              {availableTags.map(tag => (
-                <button
-                  key={tag.id}
-                  onClick={() => toggleTagSelection(tag.id)}
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${selectedTags.includes(tag.id) 
-                    ? 'bg-indigo-700 text-white' 
-                    : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`}
-                >
-                  {tag.name}
-                </button>
-              ))}
+        {/* Mensagem de erro */}
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md mb-4 shadow-sm">
+            {error}
+          </div>
+        )}
+
+        {/* Estado de carregamento */}
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {/* Título da nota */}
+            <input
+              type="text"
+              placeholder="Título da nota"
+              className="w-full px-4 py-2 text-xl font-bold border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-gray-600"
+              value={note.title}
+              onChange={(e) => setNote({ ...note, title: e.target.value })}
+            />
+
+            {/* Seleção de caderno */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-800 mb-1">Caderno</label>
+              <select
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                value={note.notebookId || ""}
+                onChange={(e) => setNote({ ...note, notebookId: e.target.value })}
+              >
+                <option value="">Selecione um caderno</option>
+                {notebooks.map((notebook) => (
+                  <option key={notebook.id} value={notebook.id}>
+                    {notebook.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Seleção de tags */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-800 mb-1">Tags</label>
+              <div className="flex flex-wrap gap-2 mb-2">
+                {availableTags.map((tag) => (
+                  <button
+                    key={tag.id}
+                    onClick={() => toggleTagSelection(tag.id)}
+                    className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      selectedTags.includes(tag.id)
+                        ? "bg-indigo-700 text-white"
+                        : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                    }`}
+                  >
+                    {tag.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Editor de conteúdo */}
+            <div className="border border-gray-300 rounded-md overflow-hidden shadow-sm">
+              {renderToolbar()}
+              <EditorContent
+                editor={editor}
+                className="prose max-w-none p-4 min-h-[300px] focus:outline-none bg-white placeholder:text-gray-600"
+              />
             </div>
           </div>
-
-          {/* Editor de conteúdo */}
-          <div className="border border-gray-300 rounded-md overflow-hidden shadow-sm">
-            {renderToolbar()}
-            <EditorContent 
-              editor={editor} 
-              className="prose max-w-none p-4 min-h-[300px] focus:outline-none bg-white"
-            />
-          </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
     </div>
   );
 }
