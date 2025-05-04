@@ -29,14 +29,14 @@ O NoteSync é um sistema web moderno para criação e gerenciamento de notas org
 
 - **Node.js**: Ambiente de execução JavaScript do lado do servidor
 - **Express.js**: Framework web minimalista e flexível para Node.js
-- **Prisma**: ORM moderno para acesso ao banco de dados
+- **fs-extra**: Extensão do fs para manipulação de arquivos JSON
 - **JWT**: Autenticação baseada em tokens
 - **Google Drive API**: Integração para sincronização de dados
 
-### Banco de Dados
+### Armazenamento de Dados
 
-- **PostgreSQL**: Banco de dados relacional robusto e confiável
-- **Redis**: Cache em memória para melhorar a performance
+- **Arquivos JSON**: Armazenamento simples e portátil em formato JSON
+- **LocalStorage**: Cache local para melhorar a performance e suporte offline
 
 ### DevOps
 
@@ -91,11 +91,11 @@ cp frontend/.env.example frontend/.env
 docker-compose up -d
 ```
 
-6. Execute as migrações do banco de dados:
+6. Inicialize os arquivos JSON para armazenamento de dados:
 
 ```bash
 cd backend
-npx prisma migrate dev
+npm run init-data
 ```
 
 7. Inicie o servidor de desenvolvimento do backend:
@@ -118,7 +118,7 @@ npm run dev
 ```text
 notesync/
 ├── backend/                # Servidor Node.js/Express
-│   ├── prisma/             # Modelos e migrações do Prisma
+│   ├── data/              # Diretório para arquivos JSON
 │   ├── src/
 │   │   ├── controllers/    # Controladores das rotas
 │   │   ├── middlewares/    # Middlewares Express
