@@ -115,7 +115,7 @@ async function createNote(noteData, userId) {
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     // Garantir que tags seja um array
-    tags: noteData.tags || [],
+    tags: noteData.tags || []
   };
 
   notes.push(newNote);
@@ -135,7 +135,7 @@ async function updateNote(id, noteData, userId) {
   const updatedNote = {
     ...notes[noteIndex],
     ...noteData,
-    updatedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   };
 
   notes[noteIndex] = updatedNote;
@@ -174,7 +174,7 @@ async function createNotebook(notebookData, userId) {
     ...notebookData,
     userId,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   };
 
   notebooks.push(newNotebook);
@@ -195,7 +195,7 @@ async function updateNotebook(id, notebookData, userId) {
   const updatedNotebook = {
     ...notebooks[notebookIndex],
     ...notebookData,
-    updatedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   };
 
   notebooks[notebookIndex] = updatedNotebook;
@@ -236,7 +236,7 @@ async function createTag(tagData, userId) {
     ...tagData,
     userId,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   };
 
   tags.push(newTag);
@@ -255,7 +255,7 @@ async function updateTag(id, tagData, userId) {
   const updatedTag = {
     ...tags[tagIndex],
     ...tagData,
-    updatedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   };
 
   tags[tagIndex] = updatedTag;
@@ -275,6 +275,82 @@ async function deleteTag(id, userId) {
   return true;
 }
 
+// Funções para manipulação de usuários
+async function getAllUsers() {
+  return await readJsonFile(USERS_FILE);
+}
+
+async function getUserById(id) {
+  const users = await readJsonFile(USERS_FILE);
+  return users.find((user) => user.id === id);
+}
+
+async function getUserByEmail(email) {
+  const users = await readJsonFile(USERS_FILE);
+  return users.find((user) => user.email === email);
+}
+
+async function createUser(userData) {
+  const users = await readJsonFile(USERS_FILE);
+
+  // Verificar se o email já existe
+  if (users.some((user) => user.email === userData.email)) {
+    throw new Error("Email já cadastrado");
+  }
+
+  const newUser = {
+    id: uuidv4(),
+    ...userData,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    isGoogleAccount: userData.isGoogleAccount || false,
+    googleDriveConnected: userData.googleDriveConnected || false
+  };
+
+  users.push(newUser);
+  await writeJsonFile(USERS_FILE, users);
+  return newUser;
+}
+
+async function updateUser(id, userData) {
+  const users = await readJsonFile(USERS_FILE);
+  const userIndex = users.findIndex((user) => user.id === id);
+
+  if (userIndex === -1) {
+    return null;
+  }
+
+  // Se houver atualização de email, verificar se já existe
+  if (userData.email && userData.email !== users[userIndex].email) {
+    const emailExists = users.some((user) => user.email === userData.email && user.id !== id);
+    if (emailExists) {
+      throw new Error("Email já cadastrado por outro usuário");
+    }
+  }
+
+  const updatedUser = {
+    ...users[userIndex],
+    ...userData,
+    updatedAt: new Date().toISOString()
+  };
+
+  users[userIndex] = updatedUser;
+  await writeJsonFile(USERS_FILE, users);
+  return updatedUser;
+}
+
+async function deleteUser(id) {
+  const users = await readJsonFile(USERS_FILE);
+  const filteredUsers = users.filter((user) => user.id !== id);
+
+  if (filteredUsers.length === users.length) {
+    return false; // Usuário não encontrado
+  }
+
+  await writeJsonFile(USERS_FILE, filteredUsers);
+  return true;
+}
+
 // Funções para sincronização com Google Drive
 async function getDataForSync(userId) {
   const notes = await getAllNotes(userId);
@@ -284,7 +360,7 @@ async function getDataForSync(userId) {
   return {
     notes,
     notebooks,
-    tags,
+    tags
   };
 }
 
@@ -337,7 +413,14 @@ module.exports = {
   createTag,
   updateTag,
   deleteTag,
+  // Usuários
+  getAllUsers,
+  getUserById,
+  getUserByEmail,
+  createUser,
+  updateUser,
+  deleteUser,
   // Sincronização
   getDataForSync,
-  importDataFromSync,
+  importDataFromSync
 };
