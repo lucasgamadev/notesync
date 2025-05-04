@@ -1,4 +1,5 @@
 const storageService = require("../services/storageService");
+const syncService = require("../services/syncService");
 
 /**
  * Controlador de sincronização com Google Drive
