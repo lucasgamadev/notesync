@@ -40,8 +40,8 @@ const search = async (req, res) => {
     // Aplicar filtro por tags se especificado
     if (tags) {
       const tagArray = Array.isArray(tags) ? tags : [tags];
-      notes = notes.filter((note) =>
-        note.tags && note.tags.some((tag) => tagArray.includes(tag.name))
+      notes = notes.filter(
+        (note) => note.tags && note.tags.some((tag) => tagArray.includes(tag.name))
       );
     }
 
