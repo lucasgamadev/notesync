@@ -17,6 +17,7 @@ O NoteSync é um sistema web moderno para criação e gerenciamento de notas org
 ## Tecnologias Utilizadas
 
 ### Frontend
+
 - **Next.js 14**: Framework React com renderização híbrida para melhor performance e SEO
 - **TypeScript**: Tipagem estática para código mais seguro e manutenível
 - **Tailwind CSS**: Framework CSS utilitário para design responsivo e customizável
@@ -25,6 +26,7 @@ O NoteSync é um sistema web moderno para criação e gerenciamento de notas org
 - **React Query**: Gerenciamento de estado do servidor e cache
 
 ### Backend
+
 - **Node.js**: Ambiente de execução JavaScript do lado do servidor
 - **Express.js**: Framework web minimalista e flexível para Node.js
 - **Prisma**: ORM moderno para acesso ao banco de dados
@@ -32,10 +34,12 @@ O NoteSync é um sistema web moderno para criação e gerenciamento de notas org
 - **Google Drive API**: Integração para sincronização de dados
 
 ### Banco de Dados
+
 - **PostgreSQL**: Banco de dados relacional robusto e confiável
 - **Redis**: Cache em memória para melhorar a performance
 
 ### DevOps
+
 - **Docker**: Containerização para ambiente de desenvolvimento consistente
 - **GitHub Actions**: CI/CD para automação de testes e deploy
 - **Vercel/Netlify**: Hospedagem do frontend
@@ -46,6 +50,7 @@ Para informações detalhadas sobre o fluxo de trabalho de desenvolvimento, cons
 ## Como Iniciar o Desenvolvimento
 
 ### Pré-requisitos
+
 - Node.js (v18 ou superior)
 - Docker e Docker Compose
 - Conta no Google Cloud Platform (para API do Google Drive)
@@ -53,46 +58,54 @@ Para informações detalhadas sobre o fluxo de trabalho de desenvolvimento, cons
 ### Passos Iniciais
 
 1. Clone o repositório:
+
 ```bash
 git clone https://github.com/seu-usuario/notesync.git
 cd notesync
 ```
 
 2. Instale as dependências do backend:
+
 ```bash
 cd backend
 npm install
 ```
 
 3. Instale as dependências do frontend:
+
 ```bash
 cd ../frontend
 npm install
 ```
 
 4. Configure as variáveis de ambiente:
+
 ```bash
 cp backend/.env.example backend/.env
 cp frontend/.env.example frontend/.env
 ```
 
 5. Inicie os serviços com Docker:
+
 ```bash
 docker-compose up -d
 ```
 
 6. Execute as migrações do banco de dados:
+
 ```bash
 cd backend
 npx prisma migrate dev
 ```
 
 7. Inicie o servidor de desenvolvimento do backend:
+
 ```bash
 npm run dev
 ```
 
 8. Inicie o servidor de desenvolvimento do frontend:
+
 ```bash
 cd ../frontend
 npm run dev
@@ -102,7 +115,7 @@ npm run dev
 
 ## Estrutura de Diretórios
 
-```
+```text
 notesync/
 ├── backend/                # Servidor Node.js/Express
 │   ├── prisma/             # Modelos e migrações do Prisma
