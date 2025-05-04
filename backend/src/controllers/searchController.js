@@ -1,9 +1,8 @@
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+const storageService = require("../services/storageService");
 
 /**
  * Controlador para funcionalidade de pesquisa
- * Implementa full-text search no PostgreSQL com filtros avançados
+ * Implementa pesquisa em arquivos JSON com filtros avançados
  */
 
 // Realizar pesquisa avançada
@@ -16,80 +15,52 @@ const search = async (req, res) => {
       return res.status(400).json({ message: "Termo de pesquisa é obrigatório" });
     }
 
-    // Construir filtro base
-    let filter = { userId };
+    // Buscar todas as notas do usuário
+    let notes = await storageService.getAllNotes(userId);
 
-    // Adicionar filtro por caderno se especificado
+    // Aplicar filtro por caderno se especificado
     if (notebookId) {
-      filter.notebookId = parseInt(notebookId);
+      notes = notes.filter((note) => note.notebookId === notebookId);
     }
 
-    // Adicionar filtro por data se especificado
+    // Aplicar filtro por data se especificado
     if (dateFrom || dateTo) {
-      filter.updatedAt = {};
-
-      if (dateFrom) {
-        filter.updatedAt.gte = new Date(dateFrom);
-      }
-
-      if (dateTo) {
-        filter.updatedAt.lte = new Date(dateTo);
-      }
+      notes = notes.filter((note) => {
+        const updatedAt = new Date(note.updatedAt);
+        if (dateFrom && new Date(dateFrom) > updatedAt) {
+          return false;
+        }
+        if (dateTo && new Date(dateTo) < updatedAt) {
+          return false;
+        }
+        return true;
+      });
     }
 
-    // Construir filtro para tags
-    let tagFilter = {};
+    // Aplicar filtro por tags se especificado
     if (tags) {
       const tagArray = Array.isArray(tags) ? tags : [tags];
-      tagFilter = {
-        tags: {
-          some: {
-            name: {
-              in: tagArray,
-            },
-          },
-        },
-      };
+      notes = notes.filter((note) =>
+        note.tags && note.tags.some((tag) => tagArray.includes(tag.name))
+      );
     }
 
-    // Realizar pesquisa full-text
-    const notes = await prisma.note.findMany({
-      where: {
-        ...filter,
-        ...tagFilter,
-        OR: [
-          {
-            title: {
-              contains: query,
-              mode: "insensitive",
-            },
-          },
-          {
-            content: {
-              contains: query,
-              mode: "insensitive",
-            },
-          },
-        ],
-      },
-      include: {
-        tags: true,
-        notebook: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
-      orderBy: {
-        updatedAt: "desc",
-      },
+    // Realizar pesquisa no título e conteúdo
+    const queryLower = query.toLowerCase();
+    notes = notes.filter((note) => {
+      return (
+        (note.title && note.title.toLowerCase().includes(queryLower)) ||
+        (note.content && note.content.toLowerCase().includes(queryLower))
+      );
     });
+
+    // Ordenar por data de atualização (mais recente primeiro)
+    notes.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 
     // Adicionar destaque ao resultado da pesquisa
     const highlightedResults = notes.map((note) => {
       // Extrair um trecho do conteúdo que contém o termo de pesquisa
-      let contentPreview = note.content;
+      let contentPreview = note.content || "";
       const queryLower = query.toLowerCase();
       const contentLower = contentPreview.toLowerCase();
 
@@ -122,7 +93,7 @@ const search = async (req, res) => {
 
       return {
         ...note,
-        contentPreview,
+        contentPreview
       };
     });
 
@@ -143,47 +114,34 @@ const getSuggestions = async (req, res) => {
       return res.json([]);
     }
 
-    // Buscar títulos de notas que correspondam ao termo de pesquisa
-    const noteTitles = await prisma.note.findMany({
-      where: {
-        userId,
-        title: {
-          contains: query,
-          mode: "insensitive",
-        },
-      },
-      select: {
-        title: true,
-      },
-      distinct: ["title"],
-      take: 5,
-    });
+    // Buscar todas as notas e tags do usuário
+    const notes = await storageService.getAllNotes(userId);
+    const tags = await storageService.getAllTags(userId);
 
-    // Buscar nomes de etiquetas que correspondam ao termo de pesquisa
-    const tagNames = await prisma.tag.findMany({
-      where: {
-        userId,
-        name: {
-          contains: query,
-          mode: "insensitive",
-        },
-      },
-      select: {
-        name: true,
-      },
-      take: 5,
-    });
+    const queryLower = query.toLowerCase();
+
+    // Filtrar títulos de notas que correspondam ao termo de pesquisa
+    const noteTitles = notes
+      .filter((note) => note.title && note.title.toLowerCase().includes(queryLower))
+      .map((note) => ({ title: note.title }))
+      .slice(0, 5);
+
+    // Filtrar nomes de etiquetas que correspondam ao termo de pesquisa
+    const tagNames = tags
+      .filter((tag) => tag.name && tag.name.toLowerCase().includes(queryLower))
+      .map((tag) => ({ name: tag.name }))
+      .slice(0, 5);
 
     // Combinar resultados
     const suggestions = [
       ...noteTitles.map((note) => ({ type: "note", text: note.title })),
-      ...tagNames.map((tag) => ({ type: "tag", text: tag.name })),
+      ...tagNames.map((tag) => ({ type: "tag", text: tag.name }))
     ];
 
     // Ordenar por relevância (começando com o termo de pesquisa)
     suggestions.sort((a, b) => {
-      const aStartsWith = a.text.toLowerCase().startsWith(query.toLowerCase()) ? 0 : 1;
-      const bStartsWith = b.text.toLowerCase().startsWith(query.toLowerCase()) ? 0 : 1;
+      const aStartsWith = a.text.toLowerCase().startsWith(queryLower) ? 0 : 1;
+      const bStartsWith = b.text.toLowerCase().startsWith(queryLower) ? 0 : 1;
 
       if (aStartsWith !== bStartsWith) {
         return aStartsWith - bStartsWith;
@@ -201,5 +159,5 @@ const getSuggestions = async (req, res) => {
 
 module.exports = {
   search,
-  getSuggestions,
+  getSuggestions
 };
