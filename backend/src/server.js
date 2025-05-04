@@ -21,15 +21,6 @@ storageService.initStorage().catch((err) => {
   process.exit(1);
 });
 
-// Middleware para tratamento de erros
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({
-    message: "Erro interno do servidor",
-    error: process.env.NODE_ENV === "development" ? err.message : undefined
-  });
-});
-
 // Rotas base
 app.get("/", (req, res) => {
   res.json({ message: "API NoteSync funcionando!" });
@@ -60,6 +51,15 @@ app.use("/api/sync", syncRoutes);
 // Rota para tratamento de 404
 app.use((req, res) => {
   res.status(404).json({ message: "Rota não encontrada" });
+});
+
+// Middleware para tratamento de erros - movido para depois das rotas
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({
+    message: "Erro interno do servidor",
+    error: process.env.NODE_ENV === "development" ? err.message : undefined
+  });
 });
 
 // Inicializa o servidor
