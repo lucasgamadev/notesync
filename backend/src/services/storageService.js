@@ -10,7 +10,7 @@ const path = require("path");
 const { v4: uuidv4 } = require("uuid");
 
 // Diretório onde os arquivos JSON serão armazenados
-const DATA_DIR = path.join(process.cwd(), "data");
+const DATA_DIR = path.join(__dirname, "..", "data");
 const NOTES_FILE = path.join(DATA_DIR, "notes.json");
 const NOTEBOOKS_FILE = path.join(DATA_DIR, "notebooks.json");
 const TAGS_FILE = path.join(DATA_DIR, "tags.json");
@@ -422,5 +422,7 @@ module.exports = {
   deleteUser,
   // Sincronização
   getDataForSync,
-  importDataFromSync
+  importDataFromSync,
+  // Inicialização
+  initStorage
 };
