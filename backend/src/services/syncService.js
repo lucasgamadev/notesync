@@ -1,10 +1,8 @@
-const { PrismaClient } = require("@prisma/client");
+const storageService = require("./storageService");
 const driveService = require("./driveService");
 const fs = require("fs");
 const path = require("path");
 const os = require("os");
-
-const prisma = new PrismaClient();
 
 /**
  * Serviço de sincronização com Google Drive
