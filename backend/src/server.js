@@ -14,6 +14,12 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Inicializa o sistema de armazenamento JSON
+storageService.initStorage().catch((err) => {
+  console.error("Falha ao inicializar o sistema de armazenamento:", err);
+  process.exit(1);
+});
+
 // Middleware para tratamento de erros
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -55,19 +61,10 @@ app.use((req, res) => {
   res.status(404).json({ message: "Rota não encontrada" });
 });
 
-// Inicializa o sistema de armazenamento JSON
-storageService
-  .initStorage()
-  .then(() => {
-    // Inicializa o servidor
-    const PORT = process.env.PORT || 5000;
-    app.listen(PORT, () => {
-      console.log(`Servidor rodando na porta ${PORT} com armazenamento JSON`);
-    });
-  })
-  .catch((err) => {
-    console.error("Falha ao inicializar o sistema de armazenamento:", err);
-    process.exit(1);
-  });
+// Inicializa o servidor
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT} com armazenamento JSON`);
+});
 
 module.exports = app; // Exporta para testes
