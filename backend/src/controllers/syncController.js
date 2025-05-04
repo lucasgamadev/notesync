@@ -1,4 +1,5 @@
 const syncService = require("../services/syncService");
+const storageService = require("../services/storageService");
 
 /**
  * Controlador de sincronização com Google Drive
@@ -79,36 +80,13 @@ exports.getSyncStatus = async (req, res) => {
       return res.status(401).json({ message: "Usuário não autenticado" });
     }
 
-    // Busca informações do usuário
-    const user = await prisma.user.findUnique({
-      where: { id: req.user.id },
-      select: {
-        googleDriveConnected: true,
-        lastGoogleSyncAt: true,
-        notebooks: {
-          select: {
-            id: true,
-            title: true,
-            lastSyncedAt: true,
-            googleDriveFolderId: true,
-            _count: {
-              select: { notes: true },
-            },
-          },
-        },
-      },
-    });
+    // No sistema baseado em JSON, não temos uma tabela de usuários com lastSync
+    // Podemos implementar isso no futuro armazenando metadados de sincronização
 
     res.json({
-      connected: user.googleDriveConnected,
-      lastSync: user.lastGoogleSyncAt,
-      notebooks: user.notebooks.map((notebook) => ({
-        id: notebook.id,
-        title: notebook.title,
-        lastSyncedAt: notebook.lastSyncedAt,
-        hasDriveFolder: !!notebook.googleDriveFolderId,
-        noteCount: notebook._count.notes,
-      })),
+      lastSync: null, // Por enquanto, retornamos null
+      status: "ready",
+      storageType: "json",
     });
   } catch (error) {
     console.error("Erro ao obter status de sincronização:", error);
