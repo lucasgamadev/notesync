@@ -26,7 +26,7 @@
 
 - [x] Inicializar repositório Git
   - Executar `git init` ✓
-  - Configurar `.gitignore` para Node.js, Next.js e PostgreSQL ✓
+  - Configurar `.gitignore` para Node.js, Next.js e arquivos JSON de teste ✓
   - Criar branches `main`, `develop` e estratégia de branching ✓
 - [x] Configurar ambiente frontend
   - Executar `npx create-next-app@latest frontend --typescript --tailwind --eslint` ✓
