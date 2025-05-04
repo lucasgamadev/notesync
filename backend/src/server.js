@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const storageService = require("./services/storageService");
 
 // Carrega variáveis de ambiente
 dotenv.config();
@@ -18,7 +19,7 @@ app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({
     message: "Erro interno do servidor",
-    error: process.env.NODE_ENV === "development" ? err.message : undefined
+    error: process.env.NODE_ENV === "development" ? err.message : undefined,
   });
 });
 
@@ -54,10 +55,19 @@ app.use((req, res) => {
   res.status(404).json({ message: "Rota não encontrada" });
 });
 
-// Inicializa o servidor
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
-});
+// Inicializa o sistema de armazenamento JSON
+storageService
+  .initStorage()
+  .then(() => {
+    // Inicializa o servidor
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => {
+      console.log(`Servidor rodando na porta ${PORT} com armazenamento JSON`);
+    });
+  })
+  .catch((err) => {
+    console.error("Falha ao inicializar o sistema de armazenamento:", err);
+    process.exit(1);
+  });
 
 module.exports = app; // Exporta para testes
