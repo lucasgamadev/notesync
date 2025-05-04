@@ -1,7 +1,5 @@
-const { PrismaClient } = require("@prisma/client");
 const driveService = require("../services/driveService");
-
-const prisma = new PrismaClient();
+const storageService = require("../services/storageService");
 
 /**
  * Controlador para autenticação com Google Drive
@@ -51,15 +49,18 @@ exports.googleCallback = async (req, res) => {
     // Obtém tokens a partir do código
     const tokens = await driveService.getTokensFromCode(code);
 
-    // Armazena tokens no banco de dados
-    await prisma.user.update({
-      where: { id: parseInt(userId) },
-      data: {
-        googleAccessToken: tokens.access_token,
-        googleRefreshToken: tokens.refresh_token,
-        googleTokenExpiry: new Date(Date.now() + tokens.expiry_date),
-        googleDriveConnected: true,
-      },
+    // Busca o usuário no armazenamento JSON
+    const user = await storageService.getUserById(userId);
+    if (!user) {
+      return res.redirect(`${process.env.FRONTEND_URL}/dashboard?google_auth=error`);
+    }
+
+    // Atualiza os tokens no armazenamento JSON
+    await storageService.updateUser(userId, {
+      googleAccessToken: tokens.access_token,
+      googleRefreshToken: tokens.refresh_token,
+      googleTokenExpiry: new Date(Date.now() + tokens.expiry_date).toISOString(),
+      googleDriveConnected: true
     });
 
     // Cria pasta raiz do usuário no Google Drive
@@ -67,11 +68,8 @@ exports.googleCallback = async (req, res) => {
     const rootFolderId = await driveService.createFolderIfNotExists(auth, "NoteSync");
 
     // Armazena ID da pasta raiz
-    await prisma.user.update({
-      where: { id: parseInt(userId) },
-      data: {
-        googleDriveRootFolder: rootFolderId,
-      },
+    await storageService.updateUser(userId, {
+      googleDriveRootFolder: rootFolderId
     });
 
     // Redireciona para o frontend com sucesso
@@ -94,14 +92,12 @@ exports.checkGoogleDriveStatus = async (req, res) => {
       return res.status(401).json({ message: "Usuário não autenticado" });
     }
 
-    // Busca informações do usuário
-    const user = await prisma.user.findUnique({
-      where: { id: req.user.id },
-      select: {
-        googleDriveConnected: true,
-        googleTokenExpiry: true,
-      },
-    });
+    // Busca informações do usuário no armazenamento JSON
+    const user = await storageService.getUserById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ message: "Usuário não encontrado" });
+    }
 
     // Verifica se o usuário tem conexão com Google Drive
     if (!user.googleDriveConnected) {
@@ -109,11 +105,11 @@ exports.checkGoogleDriveStatus = async (req, res) => {
     }
 
     // Verifica se o token expirou
-    const tokenExpired = user.googleTokenExpiry < new Date();
+    const tokenExpired = new Date(user.googleTokenExpiry) < new Date();
 
     res.json({
       connected: true,
-      tokenExpired,
+      tokenExpired
     });
   } catch (error) {
     console.error("Erro ao verificar status do Google Drive:", error);
@@ -133,16 +129,13 @@ exports.disconnectGoogleDrive = async (req, res) => {
       return res.status(401).json({ message: "Usuário não autenticado" });
     }
 
-    // Remove tokens e informações do Google Drive
-    await prisma.user.update({
-      where: { id: req.user.id },
-      data: {
-        googleAccessToken: null,
-        googleRefreshToken: null,
-        googleTokenExpiry: null,
-        googleDriveConnected: false,
-        googleDriveRootFolder: null,
-      },
+    // Remove tokens e informações do Google Drive usando o armazenamento JSON
+    await storageService.updateUser(req.user.id, {
+      googleAccessToken: null,
+      googleRefreshToken: null,
+      googleTokenExpiry: null,
+      googleDriveConnected: false,
+      googleDriveRootFolder: null
     });
 
     res.json({ message: "Desconectado do Google Drive com sucesso" });
