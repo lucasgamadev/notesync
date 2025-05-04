@@ -4,6 +4,7 @@ import FloatingActionButton from "@/src/components/FloatingActionButton";
 import ProtectedRoute from "@/src/components/ProtectedRoute";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import "./notes.css";
 
 // Tipos para as notas
 interface Note {
@@ -232,25 +233,25 @@ function NotesPageContent() {
           <nav className="space-y-2">
             <a
               href="/dashboard"
-              className="block py-2.5 px-4 rounded hover:bg-indigo-700 text-gray-300"
+              className="block py-2.5 px-4 rounded hover:bg-indigo-700 sidebar-link"
             >
               Dashboard
             </a>
             <a
               href="/dashboard/notebooks"
-              className="block py-2.5 px-4 rounded hover:bg-indigo-700 text-gray-300"
+              className="block py-2.5 px-4 rounded hover:bg-indigo-700 sidebar-link"
             >
               Cadernos
             </a>
             <a
               href="/dashboard/notes"
-              className="block py-2.5 px-4 rounded bg-indigo-900 hover:bg-indigo-700 text-gray-300"
+              className="block py-2.5 px-4 rounded bg-indigo-900 hover:bg-indigo-700 sidebar-link"
             >
               Notas
             </a>
             <a
               href="/dashboard/tags"
-              className="block py-2.5 px-4 rounded hover:bg-indigo-700 text-gray-300"
+              className="block py-2.5 px-4 rounded hover:bg-indigo-700 sidebar-link"
             >
               Etiquetas
             </a>
@@ -260,12 +261,12 @@ function NotesPageContent() {
         <div className="absolute bottom-0 left-0 right-0 p-4">
           <a
             href="/dashboard/settings"
-            className="block py-2.5 px-4 rounded hover:bg-indigo-700 text-gray-300"
+            className="block py-2.5 px-4 rounded hover:bg-indigo-700 text-gray-300 contrast-text"
           >
             Configurações
           </a>
           <button
-            className="block w-full text-left py-2.5 px-4 rounded hover:bg-indigo-700 text-gray-300"
+            className="block w-full text-left py-2.5 px-4 rounded hover:bg-indigo-700 sidebar-link contrast-text"
             onClick={() => {
               localStorage.removeItem("accessToken");
               localStorage.removeItem("refreshToken");
@@ -294,7 +295,7 @@ function NotesPageContent() {
             <input
               type="text"
               placeholder="Pesquisar notas..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 search-input"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -302,7 +303,7 @@ function NotesPageContent() {
 
           <button
             onClick={openCreateNoteModal}
-            className="bg-indigo-700 hover:bg-indigo-800 text-white px-4 py-2 rounded-md ml-4 flex items-center shadow-md transition-all duration-200 transform hover:scale-105 font-medium"
+            className="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-md ml-4 flex items-center shadow-md transition-all duration-200 transform hover:scale-105 font-bold"
           >
             <span className="mr-2">📝</span>
             Nova Nota
@@ -317,10 +318,18 @@ function NotesPageContent() {
               <button
                 key={tag.id}
                 onClick={() => toggleTagSelection(tag.id)}
-                className={`px-3 py-1 rounded-full text-sm font-medium ${
+                className={`px-3 py-1 rounded-full text-sm font-bold ${
                   selectedTags.includes(tag.id)
-                    ? "bg-indigo-700 text-white"
-                    : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                    ? tag.name === "Importante" 
+                      ? "bg-red-700 text-white" 
+                      : tag.name === "Trabalho" 
+                      ? "bg-blue-700 text-white" 
+                      : tag.name === "Pessoal" 
+                      ? "bg-green-700 text-white" 
+                      : tag.name === "Estudo" 
+                      ? "bg-purple-700 text-white"
+                      : "bg-gray-700 text-white"
+                    : "bg-gray-800 text-white hover:bg-gray-900"
                 }`}
               >
                 {tag.name}
@@ -354,9 +363,9 @@ function NotesPageContent() {
                   className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300"
                 >
                   <div className="p-4">
-                    <h2 className="text-xl font-semibold mb-2 truncate">{note.title}</h2>
+                    <h2 className="text-xl font-bold mb-2 truncate text-black">{note.title}</h2>
                     <div
-                      className="text-gray-700 mb-4 line-clamp-3"
+                      className="text-black font-medium mb-4 line-clamp-3"
                       dangerouslySetInnerHTML={{ __html: note.content.substring(0, 150) + "..." }}
                     />
 
@@ -364,15 +373,25 @@ function NotesPageContent() {
                       {note.tags.map((tag) => (
                         <span
                           key={tag.id}
-                          className="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded font-medium"
+                          className={`text-xs px-2 py-1 rounded font-bold ${
+                            tag.name === "Importante" 
+                              ? "bg-red-700 text-white" 
+                              : tag.name === "Trabalho" 
+                              ? "bg-blue-700 text-white" 
+                              : tag.name === "Pessoal" 
+                              ? "bg-green-700 text-white" 
+                              : tag.name === "Estudo" 
+                              ? "bg-purple-700 text-white"
+                              : "bg-gray-700 text-white"
+                          }`}
                         >
                           {tag.name}
                         </span>
                       ))}
                     </div>
 
-                    <div className="flex justify-between items-center text-sm text-gray-700 font-medium">
-                      <span>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-semibold text-gray-900">
                         Atualizado: {new Date(note.updatedAt).toLocaleDateString("pt-BR")}
                       </span>
                     </div>
@@ -381,13 +400,13 @@ function NotesPageContent() {
                   <div className="flex border-t border-gray-200">
                     <button
                       onClick={() => handleEditNote(note.id)}
-                      className="flex-1 py-2 text-indigo-600 hover:bg-indigo-50 transition-colors duration-200"
+                      className="flex-1 py-2 text-white bg-blue-700 hover:bg-blue-800 transition-colors duration-200 font-bold"
                     >
                       Editar
                     </button>
                     <button
                       onClick={() => handleDeleteNote(note.id)}
-                      className="flex-1 py-2 text-red-600 hover:bg-red-50 transition-colors duration-200"
+                      className="flex-1 py-2 text-white bg-red-700 hover:bg-red-800 transition-colors duration-200 font-bold"
                     >
                       Excluir
                     </button>
