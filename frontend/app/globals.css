@@ -40,3 +40,61 @@ body {
   color: rgba(55, 65, 81, 0.8) !important;
   opacity: 1;
 }
+
+/* CORREÇÕES DE CONTRASTE PARA TODA A APLICAÇÃO */
+
+/* Barra lateral - links e botões */
+.w-64.bg-indigo-800 a,
+.w-64.bg-indigo-800 button {
+  color: white !important;
+  font-weight: 500;
+}
+
+/* Corrigir todos os textos cinza claro */
+.text-gray-300 {
+  color: white !important;
+}
+
+/* Melhorar contraste de textos nos cards */
+.text-gray-700 {
+  color: #333333 !important;
+}
+
+/* Melhorar contraste de placeholders */
+input::placeholder,
+textarea::placeholder {
+  color: #666666 !important;
+  opacity: 1;
+}
+
+/* Melhorar contraste de tags */
+.bg-gray-200 {
+  background-color: #d1d5db !important;
+}
+
+.bg-indigo-100 {
+  background-color: #c7d2fe !important;
+}
+
+.text-indigo-800 {
+  color: #3730a3 !important;
+}
+
+/* Melhorar contraste do texto de data atualizada */
+.text-sm.text-gray-500,
+.text-sm.text-gray-600,
+.text-sm.text-gray-700 {
+  color: #4b5563 !important;
+  font-weight: 500;
+}
+
+/* Botões de ação com melhor contraste */
+.text-indigo-600 {
+  color: #4338ca !important;
+  font-weight: 600;
+}
+
+.text-red-600 {
+  color: #dc2626 !important;
+  font-weight: 600;
+}
