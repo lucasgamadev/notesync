@@ -1,8 +1,7 @@
-const { PrismaClient } = require("@prisma/client");
 const { OAuth2Client } = require("google-auth-library");
 const jwt = require("jsonwebtoken");
+const storageService = require("../services/storageService");
 
-const prisma = new PrismaClient();
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Configurações de JWT
@@ -36,31 +35,24 @@ exports.verifyGoogleToken = async (req, res) => {
     const { email, name, sub: googleId, picture } = payload;
 
     // Busca usuário pelo email
-    let user = await prisma.user.findUnique({
-      where: { email }
-    });
+    let user = await storageService.getUserByEmail(email);
 
     // Se o usuário não existir, cria um novo
     if (!user) {
-      user = await prisma.user.create({
-        data: {
-          email,
-          name,
-          googleId,
-          profilePicture: picture,
-          isGoogleAccount: true
-        }
+      user = await storageService.createUser({
+        email,
+        name,
+        googleId,
+        profilePicture: picture,
+        isGoogleAccount: true
       });
     }
     // Se o usuário existir mas não tem googleId, atualiza-o
     else if (!user.googleId) {
-      user = await prisma.user.update({
-        where: { id: user.id },
-        data: {
-          googleId,
-          profilePicture: picture || user.profilePicture,
-          isGoogleAccount: true
-        }
+      user = await storageService.updateUser(user.id, {
+        googleId,
+        profilePicture: picture || user.profilePicture,
+        isGoogleAccount: true
       });
     }
 
