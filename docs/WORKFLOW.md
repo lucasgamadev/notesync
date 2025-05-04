@@ -9,10 +9,10 @@
   - Desenhar fluxos de navegação completos ✓
   - Definir sistema de design (cores, tipografia, componentes) ✓
   - Preparar assets para implementação ✓
-- [x] Modelar banco de dados PostgreSQL ✓
-  - Criar diagrama ER com todas as entidades e relacionamentos ✓
-  - Definir esquema SQL com tipos de dados, chaves e índices ✓
-  - Documentar em `docs/database_schema.md` ✓
+- [x] Modelar estrutura de dados em JSON ✓
+  - Definir esquema dos arquivos JSON para todas as entidades ✓
+  - Estabelecer relações entre os diferentes arquivos JSON ✓
+  - Documentar em `docs/data_schema.md` ✓
 - [x] Definir arquitetura técnica ✓
   - Criar diagrama de arquitetura em `docs/architecture.md` ✓
   - Documentar padrões de API e comunicação entre camadas ✓
@@ -34,12 +34,12 @@
   - Instalar dependências: `npm i axios react-query zustand tiptap` ✓
 - [x] Configurar ambiente backend
   - Executar `npm init -y` e criar estrutura de pastas (controllers, routes, services, models) ✓
-  - Instalar dependências: `npm i express prisma @prisma/client jsonwebtoken bcrypt cors dotenv` ✓
+  - Instalar dependências: `npm i express jsonwebtoken bcrypt cors dotenv fs-extra` ✓
   - Configurar ESLint e Prettier ✓
-- [x] Configurar PostgreSQL
-  - Criar Dockerfile e docker-compose.yml para PostgreSQL ✓
-  - Definir scripts de migração e seed ✓
-  - Configurar conexão no backend com variáveis de ambiente ✓
+- [x] Configurar sistema de armazenamento JSON
+  - Criar estrutura de pastas para armazenamento de arquivos JSON ✓
+  - Definir scripts para inicialização de dados ✓
+  - Configurar caminhos e permissões para leitura/escrita de arquivos ✓
 - [x] Configurar Docker
   - Criar Dockerfile para frontend e backend ✓
   - Configurar docker-compose.yml com todos os serviços ✓
@@ -55,11 +55,11 @@
   - Criar `server.js` com configuração Express ✓
   - Implementar middleware de autenticação, CORS e tratamento de erros ✓
   - Configurar rotas base e estrutura de API RESTful ✓
-- [x] Configurar Prisma ORM
-  - Executar `npx prisma init` ✓
-  - Definir modelos em `prisma/schema.prisma` (User, Notebook, Note, Tag) ✓
-  - Criar migrations com `npx prisma migrate dev` ✓
-  - Implementar PrismaClient em `lib/prisma.js` ✓
+- [x] Configurar sistema de persistência em JSON
+  - Criar utilitários para leitura/escrita de arquivos JSON ✓
+  - Definir estruturas em `models` (User, Notebook, Note, Tag) ✓
+  - Implementar funções para manipulação de dados em `lib/jsonStorage.js` ✓
+  - Criar mecanismo para integridade e backup dos dados ✓
 - [x] Implementar autenticação
   - Criar endpoints `/auth/register` e `/auth/login` ✓
   - Implementar geração e validação de JWT ✓
@@ -78,9 +78,9 @@
   - Implementar relações many-to-many com notas ✓
   - Adicionar endpoints para filtrar notas por tags ✓
 - [x] Desenvolver funcionalidade de pesquisa
-  - Implementar full-text search no PostgreSQL ✓
+  - Implementar algoritmos de busca em arquivos JSON ✓
   - Criar endpoint `/api/search` com filtros avançados ✓
-  - Otimizar queries com índices apropriados ✓
+  - Otimizar performance com indexação em memória ✓
 
 ## 4. Integração com Google Drive
 
@@ -158,13 +158,13 @@
   - Implementar manifest.json para instalação como PWA ✓
   - Testar instalação em diferentes dispositivos ✓
 - [x] Desenvolver sincronização offline-online
-  - Implementar fila de operações com IndexedDB ✓
+  - Implementar fila de operações com localStorage ✓
   - Criar sistema de detecção de conectividade ✓
   - Adicionar sincronização automática ao recuperar conexão ✓
   - Implementar resolução de conflitos local-remoto ✓
-- [x] Configurar armazenamento local
-  - Implementar wrapper para IndexedDB com Dexie.js ✓
-  - Criar esquema de banco local espelhando estrutura remota ✓
+- [x] Implementar armazenamento local
+  - Utilizar localStorage/sessionStorage para dados temporários ✓
+  - Criar sistema de cache local em JSON ✓
   - Implementar estratégia de expiração e limpeza de cache ✓
 - [x] Testar funcionalidade offline
   - Criar cenários de teste para diferentes padrões de conectividade ✓
@@ -194,7 +194,7 @@
   - Melhorar métricas de Core Web Vitals ✓
 - [x] Revisar segurança
   - Realizar auditoria de dependências com npm audit ✓
-  - Implementar proteção contra CSRF, XSS e injeção SQL ✓
+  - Implementar proteção contra CSRF, XSS e validação rigorosa de dados ✓
   - Configurar headers de segurança (CSP, HSTS) ✓
   - Revisar permissões e validações de acesso ✓
 
@@ -206,7 +206,7 @@
   - Implementar estratégia de feature flags ✓
 - [x] Realizar deploy do backend ✓
   - Configurar projeto no Railway/Render ✓
-  - Implementar migrations automáticas no deploy ✓
+  - Implementar sistema de inicialização de arquivos JSON ✓
   - Configurar escalabilidade e limites de recursos ✓
 - [x] Realizar deploy do frontend ✓
   - Configurar projeto no Vercel/Netlify ✓
