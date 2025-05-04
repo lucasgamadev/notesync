@@ -1,5 +1,4 @@
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+const storageService = require("../services/storageService");
 
 /**
  * Controlador para gerenciamento de notas
@@ -12,59 +11,21 @@ const getAllNotes = async (req, res) => {
     const userId = req.user.id;
     const { notebookId, tag } = req.query;
 
-    // Construir filtro base
-    let filter = { userId };
+    // Construir filtro para o serviço de armazenamento JSON
+    const filters = {};
 
     // Adicionar filtro por caderno se especificado
     if (notebookId) {
-      filter.notebookId = parseInt(notebookId);
+      filters.notebookId = notebookId;
+    }
+
+    // Adicionar filtro por tag se especificado
+    if (tag) {
+      filters.tag = tag;
     }
 
     // Buscar notas com filtros aplicados
-    let notes;
-
-    if (tag) {
-      // Buscar notas com a tag específica
-      notes = await prisma.note.findMany({
-        where: {
-          ...filter,
-          tags: {
-            some: {
-              name: tag,
-            },
-          },
-        },
-        include: {
-          tags: true,
-          notebook: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
-        },
-        orderBy: {
-          updatedAt: "desc",
-        },
-      });
-    } else {
-      // Buscar todas as notas do usuário com os filtros aplicados
-      notes = await prisma.note.findMany({
-        where: filter,
-        include: {
-          tags: true,
-          notebook: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
-        },
-        orderBy: {
-          updatedAt: "desc",
-        },
-      });
-    }
+    const notes = await storageService.getAllNotes(userId, filters);
 
     res.json(notes);
   } catch (error) {
@@ -79,21 +40,7 @@ const getNoteById = async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id;
 
-    const note = await prisma.note.findUnique({
-      where: {
-        id: parseInt(id),
-        userId,
-      },
-      include: {
-        tags: true,
-        notebook: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
-    });
+    const note = await storageService.getNoteById(id, userId);
 
     if (!note) {
       return res.status(404).json({ message: "Nota não encontrada" });
@@ -140,21 +87,10 @@ const createNote = async (req, res) => {
         title,
         content: content || "",
         notebookId: notebookId || null,
-        tags: noteTags,
+        tags: noteTags
       },
       userId
     );
-
-    // Buscar informações do caderno para incluir na resposta
-    if (newNote.notebookId) {
-      const notebook = await storageService.getNotebookById(newNote.notebookId, userId);
-      if (notebook) {
-        newNote.notebook = {
-          id: notebook.id,
-          name: notebook.name,
-        };
-      }
-    }
 
     res.status(201).json(newNote);
   } catch (error) {
@@ -189,7 +125,7 @@ const updateNote = async (req, res) => {
     const updateData = {
       title: title || existingNote.title,
       content: content !== undefined ? content : existingNote.content,
-      notebookId: notebookId || existingNote.notebookId,
+      notebookId: notebookId || existingNote.notebookId
     };
 
     // Atualizar tags se fornecidas
@@ -204,17 +140,6 @@ const updateNote = async (req, res) => {
 
     if (!updatedNote) {
       return res.status(404).json({ message: "Erro ao atualizar a nota" });
-    }
-
-    // Buscar informações do caderno para incluir na resposta
-    if (updatedNote.notebookId) {
-      const notebook = await storageService.getNotebookById(updatedNote.notebookId, userId);
-      if (notebook) {
-        updatedNote.notebook = {
-          id: notebook.id,
-          name: notebook.name,
-        };
-      }
     }
 
     res.json(updatedNote);
@@ -245,7 +170,6 @@ const deleteNote = async (req, res) => {
 };
 
 // Obter versões anteriores de uma nota
-// Nota: No sistema baseado em JSON, não implementamos versionamento ainda
 const getNoteVersions = async (req, res) => {
   try {
     const { id } = req.params;
@@ -268,7 +192,6 @@ const getNoteVersions = async (req, res) => {
 };
 
 // Restaurar uma versão anterior
-// Nota: No sistema baseado em JSON, não implementamos versionamento ainda
 const restoreNoteVersion = async (req, res) => {
   try {
     const { id, versionId } = req.params;
@@ -284,7 +207,7 @@ const restoreNoteVersion = async (req, res) => {
     // No sistema baseado em JSON, retornamos um erro por enquanto
     // Futuramente, podemos implementar um sistema de versionamento
     return res.status(501).json({
-      message: "Funcionalidade de versionamento não implementada no sistema baseado em JSON",
+      message: "Funcionalidade de versionamento não implementada no sistema baseado em JSON"
     });
   } catch (error) {
     console.error("Erro ao restaurar versão da nota:", error);
@@ -299,5 +222,5 @@ module.exports = {
   updateNote,
   deleteNote,
   getNoteVersions,
-  restoreNoteVersion,
+  restoreNoteVersion
 };
