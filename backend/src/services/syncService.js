@@ -1,5 +1,6 @@
-const storageService = require("./storageService");
+/* eslint-disable prettier/prettier */
 const driveService = require("./driveService");
+const storageService = require("./storageService");
 const fs = require("fs");
 const path = require("path");
 const os = require("os");
@@ -19,22 +20,14 @@ if (!fs.existsSync(TEMP_DIR)) {
 
 /**
  * Obtém tokens de acesso do usuário e configura cliente OAuth
- * @param {number} userId - ID do usuário
+ * @param {string} userId - ID do usuário
  * @returns {Object} Cliente OAuth configurado e tokens
  */
 async function getAuthClientForUser(userId) {
   // Busca tokens do usuário
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: {
-      googleAccessToken: true,
-      googleRefreshToken: true,
-      googleTokenExpiry: true,
-      googleDriveRootFolder: true,
-    },
-  });
+  const user = await storageService.getUserById(userId);
 
-  if (!user.googleAccessToken || !user.googleRefreshToken) {
+  if (!user || !user.googleAccessToken || !user.googleRefreshToken) {
     throw new Error("Usuário não conectado ao Google Drive");
   }
 
@@ -45,246 +38,200 @@ async function getAuthClientForUser(userId) {
   const tokens = {
     access_token: user.googleAccessToken,
     refresh_token: user.googleRefreshToken,
-    expiry_date: new Date(user.googleTokenExpiry).getTime(),
+    expiry_date: new Date(user.googleTokenExpiry).getTime()
   };
 
   // Renova token se necessário
-  const updatedTokens = tokenExpired ? await driveService.refreshTokenIfNeeded(tokens) : tokens;
-
-  // Se o token foi renovado, atualiza no banco
   if (tokenExpired) {
-    await prisma.user.update({
-      where: { id: userId },
-      data: {
-        googleAccessToken: updatedTokens.access_token,
-        googleTokenExpiry: new Date(Date.now() + updatedTokens.expiry_date),
-      },
+    const newTokens = await driveService.refreshTokenIfNeeded(tokens);
+    
+    // Atualiza tokens no banco de dados
+    await storageService.updateUser(userId, {
+      googleAccessToken: newTokens.access_token,
+      googleRefreshToken: newTokens.refresh_token,
+      googleTokenExpiry: new Date(Date.now() + newTokens.expiry_date).toISOString()
     });
+    
+    tokens.access_token = newTokens.access_token;
   }
 
   // Configura cliente OAuth
-  const auth = driveService.setupOAuth2Client(updatedTokens);
-
+  const auth = driveService.setupOAuth2Client(tokens);
+  
   return {
     auth,
-    rootFolderId: user.googleDriveRootFolder,
+    rootFolderId: user.googleDriveRootFolder
   };
 }
 
 /**
- * Sincroniza um caderno com o Google Drive
- * @param {number} userId - ID do usuário
- * @param {number} notebookId - ID do caderno
+ * Sincroniza um caderno específico com o Google Drive
+ * @param {string} userId - ID do usuário
+ * @param {string} notebookId - ID do caderno a sincronizar
  * @returns {Object} Resultado da sincronização
  */
-exports.syncNotebook = async (userId, notebookId) => {
+async function syncNotebook(userId, notebookId) {
   try {
     // Obtém cliente autenticado
     const { auth, rootFolderId } = await getAuthClientForUser(userId);
-
-    if (!rootFolderId) {
-      throw new Error("Pasta raiz no Google Drive não encontrada");
-    }
-
+    
     // Busca informações do caderno
-    const notebook = await prisma.notebook.findUnique({
-      where: { id: notebookId, userId },
-      include: { notes: true },
-    });
-
+    const notebook = await storageService.getNotebookById(notebookId, userId);
+    
     if (!notebook) {
       throw new Error("Caderno não encontrado");
     }
-
+    
     // Cria pasta para o caderno se não existir
-    let notebookFolderId = notebook.googleDriveFolderId;
-
-    if (!notebookFolderId) {
-      notebookFolderId = await driveService.createFolderIfNotExists(
-        auth,
-        notebook.title,
-        rootFolderId
-      );
-
-      // Atualiza ID da pasta no banco
-      await prisma.notebook.update({
-        where: { id: notebookId },
-        data: { googleDriveFolderId: notebookFolderId },
-      });
-    }
-
-    // Sincroniza cada nota do caderno
-    const syncResults = [];
-
-    for (const note of notebook.notes) {
-      try {
-        const result = await syncNote(auth, notebookFolderId, note);
-        syncResults.push({
-          noteId: note.id,
-          title: note.title,
-          status: "success",
-          ...result,
-        });
-      } catch (error) {
-        syncResults.push({
-          noteId: note.id,
-          title: note.title,
-          status: "error",
-          error: error.message,
-        });
-      }
-    }
-
-    // Atualiza timestamp de última sincronização
-    await prisma.notebook.update({
-      where: { id: notebookId },
-      data: { lastSyncedAt: new Date() },
-    });
-
+    const notebookFolderId = await driveService.createFolderIfNotExists(
+      auth,
+      notebook.title,
+      rootFolderId
+    );
+    
+    // Atualiza ID da pasta no caderno
+    await storageService.updateNotebook(notebookId, {
+      driveFolderId: notebookFolderId
+    }, userId);
+    
+    // Busca notas do caderno
+    const notes = await storageService.getAllNotes(userId, { notebookId });
+    
+    // Sincroniza cada nota
+    const syncResults = await Promise.all(
+      notes.map(note => syncNote(auth, note, notebookFolderId, userId))
+    );
+    
     return {
       notebookId,
-      title: notebook.title,
-      syncedNotes: syncResults,
-      timestamp: new Date(),
+      notebookTitle: notebook.title,
+      notesSynced: syncResults.length,
+      notes: syncResults
     };
   } catch (error) {
     console.error("Erro ao sincronizar caderno:", error);
-    throw new Error(`Falha ao sincronizar caderno: ${error.message}`);
-  }
-};
-
-/**
- * Sincroniza uma nota com o Google Drive
- * @param {OAuth2Client} auth - Cliente OAuth2 autenticado
- * @param {string} folderId - ID da pasta no Drive
- * @param {Object} note - Objeto da nota
- * @returns {Object} Resultado da sincronização
- */
-async function syncNote(auth, folderId, note) {
-  // Verifica se a nota já tem arquivo no Drive
-  let fileId = note.googleDriveFileId;
-  let action = "updated";
-
-  // Cria arquivo temporário com conteúdo da nota
-  const tempFilePath = path.join(TEMP_DIR, `${note.id}_${Date.now()}.md`);
-
-  // Prepara conteúdo da nota (título + conteúdo)
-  const noteContent = `# ${note.title}\n\n${note.content}`;
-
-  // Escreve conteúdo no arquivo temporário
-  fs.writeFileSync(tempFilePath, noteContent, "utf8");
-
-  try {
-    if (fileId) {
-      // Atualiza arquivo existente
-      // Implementação da atualização de arquivo no Drive
-      // (Depende da API específica do Google Drive)
-    } else {
-      // Cria novo arquivo
-      fileId = await driveService.uploadFile(auth, tempFilePath, `${note.title}.md`, folderId);
-
-      // Atualiza ID do arquivo no banco
-      await prisma.note.update({
-        where: { id: note.id },
-        data: {
-          googleDriveFileId: fileId,
-          lastSyncedAt: new Date(),
-        },
-      });
-
-      action = "created";
-    }
-
-    return { action, fileId };
-  } finally {
-    // Remove arquivo temporário
-    if (fs.existsSync(tempFilePath)) {
-      fs.unlinkSync(tempFilePath);
-    }
+    throw error;
   }
 }
 
 /**
- * Sincroniza todas as notas de um usuário
- * @param {number} userId - ID do usuário
+ * Sincroniza uma nota específica com o Google Drive
+ * @param {OAuth2Client} auth - Cliente OAuth2 configurado
+ * @param {Object} note - Objeto da nota
+ * @param {string} folderId - ID da pasta no Drive
+ * @param {string} userId - ID do usuário
  * @returns {Object} Resultado da sincronização
  */
-exports.syncAllUserNotes = async (userId) => {
+async function syncNote(auth, note, folderId, userId) {
   try {
-    // Busca todos os cadernos do usuário
-    const notebooks = await prisma.notebook.findMany({
-      where: { userId },
-    });
-
-    const results = [];
-
-    // Sincroniza cada caderno
-    for (const notebook of notebooks) {
-      try {
-        const result = await this.syncNotebook(userId, notebook.id);
-        results.push({
-          notebookId: notebook.id,
-          status: "success",
-          result,
-        });
-      } catch (error) {
-        results.push({
-          notebookId: notebook.id,
-          status: "error",
-          error: error.message,
-        });
-      }
+    // Cria arquivo temporário com o conteúdo da nota
+    const notePath = path.join(TEMP_DIR, `${note.id}.md`);
+    fs.writeFileSync(notePath, note.content);
+    
+    // Verifica se a nota já tem um arquivo no Drive
+    let fileId = note.driveFileId;
+    
+    if (fileId) {
+      // Atualiza arquivo existente
+      await driveService.updateFile(auth, fileId, notePath);
+    } else {
+      // Cria novo arquivo
+      fileId = await driveService.uploadFile(
+        auth,
+        `${note.title}.md`,
+        notePath,
+        folderId
+      );
+      
+      // Atualiza ID do arquivo na nota
+      await storageService.updateNote(note.id, {
+        driveFileId: fileId,
+        lastSynced: new Date().toISOString()
+      }, userId);
     }
-
-    // Atualiza timestamp de última sincronização do usuário
-    await prisma.user.update({
-      where: { id: userId },
-      data: { lastGoogleSyncAt: new Date() },
-    });
-
+    
+    // Remove arquivo temporário
+    fs.unlinkSync(notePath);
+    
     return {
-      userId,
-      syncedNotebooks: results,
-      timestamp: new Date(),
+      noteId: note.id,
+      noteTitle: note.title,
+      driveFileId: fileId,
+      synced: true
     };
   } catch (error) {
-    console.error("Erro ao sincronizar notas do usuário:", error);
-    throw new Error(`Falha ao sincronizar notas: ${error.message}`);
+    console.error("Erro ao sincronizar nota:", error);
+    return {
+      noteId: note.id,
+      noteTitle: note.title,
+      error: error.message,
+      synced: false
+    };
   }
-};
+}
 
 /**
- * Agenda sincronização periódica para todos os usuários
- * @param {number} intervalMinutes - Intervalo em minutos
+ * Sincroniza todas as notas do usuário
+ * @param {string} userId - ID do usuário
+ * @returns {Object} Resultado da sincronização
  */
-exports.scheduleSyncForAllUsers = (intervalMinutes = 60) => {
-  const intervalMs = intervalMinutes * 60 * 1000;
+async function syncAllUserNotes(userId) {
+  try {
+    // Obtém cliente autenticado
+    const { auth, rootFolderId } = await getAuthClientForUser(userId);
+    
+    // Atualiza timestamp de sincronização do usuário
+    await storageService.updateUser(userId, {
+      lastSync: new Date().toISOString()
+    });
+    
+    // Busca todos os cadernos do usuário
+    const notebooks = await storageService.getAllNotebooks(userId);
+    
+    // Sincroniza cada caderno
+    const syncResults = await Promise.all(
+      notebooks.map(notebook => syncNotebook(userId, notebook.id))
+    );
+    
+    return {
+      userId,
+      notebooksSynced: syncResults.length,
+      notebooks: syncResults
+    };
+  } catch (error) {
+    console.error("Erro ao sincronizar todas as notas:", error);
+    throw error;
+  }
+}
 
-  setInterval(async () => {
-    try {
-      console.log(`Iniciando sincronização agendada: ${new Date()}`);
-
-      // Busca usuários com Google Drive conectado
-      const users = await prisma.user.findMany({
-        where: { googleDriveConnected: true },
-        select: { id: true },
-      });
-
-      // Sincroniza para cada usuário
-      for (const user of users) {
-        try {
-          await this.syncAllUserNotes(user.id);
-          console.log(`Sincronização concluída para usuário ${user.id}`);
-        } catch (error) {
-          console.error(`Erro ao sincronizar usuário ${user.id}:`, error);
-        }
-      }
-
-      console.log(`Sincronização agendada concluída: ${new Date()}`);
-    } catch (error) {
-      console.error("Erro na sincronização agendada:", error);
+/**
+ * Verifica status de sincronização do usuário
+ * @param {string} userId - ID do usuário
+ * @returns {Object} Status de sincronização
+ */
+async function getSyncStatus(userId) {
+  try {
+    // Busca informações do usuário
+    const user = await storageService.getUserById(userId);
+    
+    if (!user) {
+      throw new Error("Usuário não encontrado");
     }
-  }, intervalMs);
+    
+    return {
+      lastSync: user.lastSync || null,
+      googleDriveConnected: user.googleDriveConnected || false,
+      googleTokenExpiry: user.googleTokenExpiry || null
+    };
+  } catch (error) {
+    console.error("Erro ao verificar status de sincronização:", error);
+    throw error;
+  }
+}
 
-  console.log(`Sincronização agendada configurada a cada ${intervalMinutes} minutos`);
+// Exporta funções do serviço
+module.exports = {
+  syncNotebook,
+  syncAllUserNotes,
+  getSyncStatus
 };
