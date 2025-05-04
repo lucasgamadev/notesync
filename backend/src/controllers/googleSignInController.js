@@ -27,17 +27,17 @@ exports.verifyGoogleToken = async (req, res) => {
     // Verifica o token com a API do Google
     const ticket = await client.verifyIdToken({
       idToken: token,
-      audience: process.env.GOOGLE_CLIENT_ID,
+      audience: process.env.GOOGLE_CLIENT_ID
     });
 
     const payload = ticket.getPayload();
-    
+
     // Extrai informações do usuário do payload
     const { email, name, sub: googleId, picture } = payload;
 
     // Busca usuário pelo email
     let user = await prisma.user.findUnique({
-      where: { email },
+      where: { email }
     });
 
     // Se o usuário não existir, cria um novo
@@ -48,10 +48,10 @@ exports.verifyGoogleToken = async (req, res) => {
           name,
           googleId,
           profilePicture: picture,
-          isGoogleAccount: true,
-        },
+          isGoogleAccount: true
+        }
       });
-    } 
+    }
     // Se o usuário existir mas não tem googleId, atualiza-o
     else if (!user.googleId) {
       user = await prisma.user.update({
@@ -59,8 +59,8 @@ exports.verifyGoogleToken = async (req, res) => {
         data: {
           googleId,
           profilePicture: picture || user.profilePicture,
-          isGoogleAccount: true,
-        },
+          isGoogleAccount: true
+        }
       });
     }
 
@@ -75,7 +75,7 @@ exports.verifyGoogleToken = async (req, res) => {
       message: "Login com Google realizado com sucesso",
       user: userWithoutPassword,
       accessToken,
-      refreshToken,
+      refreshToken
     });
   } catch (error) {
     console.error("Erro ao verificar token do Google:", error);
