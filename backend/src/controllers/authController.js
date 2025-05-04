@@ -1,8 +1,6 @@
-const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { PrismaClient } = require("@prisma/client");
-
-const prisma = new PrismaClient();
+const bcrypt = require("bcryptjs");
+const storageService = require("../services/storageService");
 
 /**
  * Controlador de autenticação
@@ -30,9 +28,7 @@ exports.register = async (req, res) => {
     }
 
     // Verifica se o usuário já existe
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
+    const existingUser = await storageService.getUserByEmail(email);
 
     if (existingUser) {
       return res.status(409).json({ message: "Usuário já existe" });
@@ -42,12 +38,10 @@ exports.register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Cria o usuário
-    const user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-      },
+    const user = await storageService.createUser({
+      name,
+      email,
+      password: hashedPassword
     });
 
     // Remove a senha do objeto de resposta
@@ -61,7 +55,7 @@ exports.register = async (req, res) => {
       message: "Usuário registrado com sucesso",
       user: userWithoutPassword,
       accessToken,
-      refreshToken,
+      refreshToken
     });
   } catch (error) {
     console.error("Erro ao registrar usuário:", error);
@@ -84,9 +78,7 @@ exports.login = async (req, res) => {
     }
 
     // Busca o usuário
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
+    const user = await storageService.getUserByEmail(email);
 
     if (!user) {
       return res.status(401).json({ message: "Credenciais inválidas" });
@@ -110,7 +102,7 @@ exports.login = async (req, res) => {
       message: "Login realizado com sucesso",
       user: userWithoutPassword,
       accessToken,
-      refreshToken,
+      refreshToken
     });
   } catch (error) {
     console.error("Erro ao fazer login:", error);
@@ -137,20 +129,18 @@ exports.refreshToken = async (req, res) => {
         return res.status(403).json({ message: "Refresh token inválido ou expirado" });
       }
 
-      // Verifica se o usuário existe
-      const user = await prisma.user.findUnique({
-        where: { id: decoded.userId },
-      });
+      // Busca o usuário
+      const user = await storageService.getUserById(decoded.userId);
 
       if (!user) {
         return res.status(403).json({ message: "Usuário não encontrado" });
       }
 
-      // Gera novo access token
+      // Gera novo token de acesso
       const accessToken = generateAccessToken(user.id);
 
       res.json({
-        accessToken,
+        accessToken
       });
     });
   } catch (error) {
