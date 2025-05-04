@@ -1,5 +1,4 @@
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+const storageService = require("../services/storageService");
 
 /**
  * Controlador de cadernos
@@ -15,17 +14,23 @@ exports.getAllNotebooks = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const notebooks = await prisma.notebook.findMany({
-      where: { userId },
-      orderBy: { updatedAt: "desc" },
-      include: {
+    // Buscar cadernos usando o serviço de armazenamento
+    const notebooks = await storageService.getAllNotebooks(userId);
+
+    // Para cada caderno, contar quantas notas estão associadas a ele
+    const notes = await storageService.getAllNotes(userId);
+
+    const notebooksWithCount = notebooks.map((notebook) => {
+      const noteCount = notes.filter((note) => note.notebookId === notebook.id).length;
+      return {
+        ...notebook,
         _count: {
-          select: { notes: true },
+          notes: noteCount,
         },
-      },
+      };
     });
 
-    res.json(notebooks);
+    res.json(notebooksWithCount);
   } catch (error) {
     console.error("Erro ao buscar cadernos:", error);
     res.status(500).json({ message: "Erro ao buscar cadernos" });
@@ -42,30 +47,23 @@ exports.getNotebookById = async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id;
 
-    const notebook = await prisma.notebook.findFirst({
-      where: {
-        id,
-        userId,
-      },
-      include: {
-        notes: {
-          orderBy: { updatedAt: "desc" },
-          select: {
-            id: true,
-            title: true,
-            updatedAt: true,
-            createdAt: true,
-            tags: true,
-          },
-        },
-      },
-    });
+    // Buscar caderno usando o serviço de armazenamento
+    const notebook = await storageService.getNotebookById(id, userId);
 
     if (!notebook) {
       return res.status(404).json({ message: "Caderno não encontrado" });
     }
 
-    res.json(notebook);
+    // Buscar notas associadas a este caderno
+    const notes = await storageService.getAllNotes(userId, { notebookId: id });
+
+    // Adicionar notas ao objeto do caderno
+    const notebookWithNotes = {
+      ...notebook,
+      notes,
+    };
+
+    res.json(notebookWithNotes);
   } catch (error) {
     console.error("Erro ao buscar caderno:", error);
     res.status(500).json({ message: "Erro ao buscar caderno" });
@@ -87,13 +85,14 @@ exports.createNotebook = async (req, res) => {
       return res.status(400).json({ message: "O título é obrigatório" });
     }
 
-    const notebook = await prisma.notebook.create({
-      data: {
+    // Criar o caderno usando o serviço de armazenamento
+    const notebook = await storageService.createNotebook(
+      {
         title,
-        description,
-        userId,
+        description: description || "",
       },
-    });
+      userId
+    );
 
     res.status(201).json(notebook);
   } catch (error) {
@@ -119,25 +118,20 @@ exports.updateNotebook = async (req, res) => {
     }
 
     // Verifica se o caderno existe e pertence ao usuário
-    const existingNotebook = await prisma.notebook.findFirst({
-      where: {
-        id,
-        userId,
-      },
-    });
+    const existingNotebook = await storageService.getNotebookById(id, userId);
 
     if (!existingNotebook) {
       return res.status(404).json({ message: "Caderno não encontrado" });
     }
 
-    // Atualiza o caderno
-    const notebook = await prisma.notebook.update({
-      where: { id },
-      data: {
-        title,
-        description,
-      },
-    });
+    // Preparar dados para atualização
+    const updateData = {
+      title,
+      description,
+    };
+
+    // Atualiza o caderno usando o serviço de armazenamento
+    const notebook = await storageService.updateNotebook(id, updateData, userId);
 
     res.json(notebook);
   } catch (error) {
@@ -157,21 +151,27 @@ exports.deleteNotebook = async (req, res) => {
     const userId = req.user.id;
 
     // Verifica se o caderno existe e pertence ao usuário
-    const existingNotebook = await prisma.notebook.findFirst({
-      where: {
-        id,
-        userId,
-      },
-    });
+    const notebook = await storageService.getNotebookById(id, userId);
 
-    if (!existingNotebook) {
+    if (!notebook) {
       return res.status(404).json({ message: "Caderno não encontrado" });
     }
 
-    // Remove o caderno
-    await prisma.notebook.delete({
-      where: { id },
-    });
+    // Verificar se o caderno tem notas associadas
+    const notes = await storageService.getAllNotes(userId, { notebookId: id });
+
+    if (notes.length > 0) {
+      return res.status(400).json({
+        message: "Não é possível excluir um caderno que contém notas",
+      });
+    }
+
+    // Excluir o caderno usando o serviço de armazenamento
+    const deleted = await storageService.deleteNotebook(id, userId);
+
+    if (!deleted) {
+      return res.status(500).json({ message: "Erro ao excluir o caderno" });
+    }
 
     res.json({ message: "Caderno removido com sucesso" });
   } catch (error) {
