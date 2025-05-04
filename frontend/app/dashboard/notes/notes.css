@@ -1,0 +1,36 @@
+/* Melhorias de contraste para a página de notas */
+
+/* Correção para links no sidebar */
+.sidebar-link {
+  color: #ffffff !important; /* Branco puro para máximo contraste */
+  font-weight: 500;
+}
+
+/* Melhorar contraste do texto nos cards de notas */
+.note-content {
+  color: #333333 !important; /* Cinza escuro para melhor contraste */
+}
+
+/* Melhorar contraste das tags não selecionadas */
+.tag-button {
+  background-color: #e5e7eb !important;
+  color: #1f2937 !important; /* Cinza mais escuro para melhor contraste */
+  font-weight: 500;
+}
+
+/* Melhorar contraste do texto de data atualizada */
+.date-text {
+  color: #4b5563 !important; /* Cinza mais escuro para melhor contraste */
+  font-weight: 500;
+}
+
+/* Melhorar placeholder dos campos de busca */
+.search-input::placeholder {
+  color: #6b7280 !important; /* Cor mais escura para o placeholder */
+  opacity: 1;
+}
+
+/* Melhorar contraste do texto dos botões de ação */
+.action-button {
+  font-weight: 600;
+}
