@@ -10,7 +10,10 @@ const path = require("path");
 const { v4: uuidv4 } = require("uuid");
 
 // Diretório onde os arquivos JSON serão armazenados
-const DATA_DIR = path.join(__dirname, "..", "data");
+// Usa a variável de ambiente DATA_DIR se disponível, caso contrário usa o diretório 'data' padrão
+const DATA_DIR = process.env.DATA_DIR
+  ? path.resolve(process.env.DATA_DIR)
+  : path.join(__dirname, "..", "data");
 const NOTES_FILE = path.join(DATA_DIR, "notes.json");
 const NOTEBOOKS_FILE = path.join(DATA_DIR, "notebooks.json");
 const TAGS_FILE = path.join(DATA_DIR, "tags.json");
