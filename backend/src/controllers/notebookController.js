@@ -25,8 +25,8 @@ exports.getAllNotebooks = async (req, res) => {
       return {
         ...notebook,
         _count: {
-          notes: noteCount,
-        },
+          notes: noteCount
+        }
       };
     });
 
@@ -60,7 +60,7 @@ exports.getNotebookById = async (req, res) => {
     // Adicionar notas ao objeto do caderno
     const notebookWithNotes = {
       ...notebook,
-      notes,
+      notes
     };
 
     res.json(notebookWithNotes);
@@ -89,7 +89,7 @@ exports.createNotebook = async (req, res) => {
     const notebook = await storageService.createNotebook(
       {
         title,
-        description: description || "",
+        description: description || ""
       },
       userId
     );
@@ -127,7 +127,7 @@ exports.updateNotebook = async (req, res) => {
     // Preparar dados para atualização
     const updateData = {
       title,
-      description,
+      description
     };
 
     // Atualiza o caderno usando o serviço de armazenamento
@@ -162,7 +162,7 @@ exports.deleteNotebook = async (req, res) => {
 
     if (notes.length > 0) {
       return res.status(400).json({
-        message: "Não é possível excluir um caderno que contém notas",
+        message: "O caderno contém notas e não pode ser excluído. Exclua ou mova as notas primeiro"
       });
     }
 
