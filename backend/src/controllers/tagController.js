@@ -48,7 +48,7 @@ const getTagById = async (req, res) => {
     // Adicionar notas ao objeto da tag
     const tagWithNotes = {
       ...tag,
-      notes: notesWithTag,
+      notes: notesWithTag
     };
 
     res.json(tagWithNotes);
@@ -173,42 +173,22 @@ const getNotesByTag = async (req, res) => {
     const userId = req.user.id;
 
     // Verificar se a etiqueta existe e pertence ao usuário
-    const tag = await prisma.tag.findUnique({
-      where: {
-        id: parseInt(id),
-        userId,
-      },
-    });
+    const tag = await storageService.getTagById(id, userId);
 
     if (!tag) {
       return res.status(404).json({ message: "Etiqueta não encontrada" });
     }
 
-    // Buscar notas com esta etiqueta
-    const notes = await prisma.note.findMany({
-      where: {
-        userId,
-        tags: {
-          some: {
-            id: parseInt(id),
-          },
-        },
-      },
-      include: {
-        tags: true,
-        notebook: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
-      orderBy: {
-        updatedAt: "desc",
-      },
-    });
+    // Buscar notas com esta etiqueta usando o serviço de armazenamento
+    const allNotes = await storageService.getAllNotes(userId);
+    const notesWithTag = allNotes.filter(
+      (note) => note.tags && note.tags.some((noteTag) => noteTag.id === id)
+    );
 
-    res.json(notes);
+    // Ordenar notas por data de atualização (mais recente primeiro)
+    notesWithTag.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
+    res.json(notesWithTag);
   } catch (error) {
     console.error("Erro ao buscar notas por etiqueta:", error);
     res.status(500).json({ message: "Erro ao buscar notas por etiqueta", error: error.message });
@@ -221,5 +201,5 @@ module.exports = {
   createTag,
   updateTag,
   deleteTag,
-  getNotesByTag,
+  getNotesByTag
 };
