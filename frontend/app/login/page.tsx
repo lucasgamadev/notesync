@@ -131,7 +131,11 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-purple-50 to-blue-50 bg-gradient-login">
+    <div className="relative min-h-screen w-full flex flex-col items-center justify-center p-4" style={{
+      background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 65%, #ec4899 100%)',
+      backgroundSize: 'cover'
+    }}>
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
