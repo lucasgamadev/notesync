@@ -1,5 +1,4 @@
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+const storageService = require("../services/storageService");
 
 /**
  * Controlador para gerenciamento de etiquetas (tags)
@@ -11,25 +10,13 @@ const getAllTags = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const tags = await prisma.tag.findMany({
-      where: { userId },
-      include: {
-        _count: {
-          select: { notes: true },
-        },
-      },
-      orderBy: { name: "asc" },
-    });
+    // Buscar tags usando o serviço de armazenamento
+    const tags = await storageService.getAllTags(userId);
 
-    // Formatar a resposta para incluir a contagem de notas
-    const formattedTags = tags.map((tag) => ({
-      id: tag.id,
-      name: tag.name,
-      color: tag.color,
-      noteCount: tag._count.notes,
-    }));
+    // Ordenar tags por nome
+    tags.sort((a, b) => a.name.localeCompare(b.name));
 
-    res.json(formattedTags);
+    res.json(tags);
   } catch (error) {
     console.error("Erro ao buscar etiquetas:", error);
     res.status(500).json({ message: "Erro ao buscar etiquetas", error: error.message });
@@ -42,36 +29,29 @@ const getTagById = async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id;
 
-    const tag = await prisma.tag.findUnique({
-      where: {
-        id: parseInt(id),
-        userId,
-      },
-      include: {
-        notes: {
-          select: {
-            id: true,
-            title: true,
-            updatedAt: true,
-            notebook: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-          },
-          orderBy: {
-            updatedAt: "desc",
-          },
-        },
-      },
-    });
+    // Buscar tag usando o serviço de armazenamento
+    const tag = await storageService.getTagById(id, userId);
 
     if (!tag) {
       return res.status(404).json({ message: "Etiqueta não encontrada" });
     }
 
-    res.json(tag);
+    // Buscar notas associadas a esta tag
+    const allNotes = await storageService.getAllNotes(userId);
+    const notesWithTag = allNotes.filter(
+      (note) => note.tags && note.tags.some((noteTag) => noteTag.id === id)
+    );
+
+    // Ordenar notas por data de atualização (mais recente primeiro)
+    notesWithTag.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
+    // Adicionar notas ao objeto da tag
+    const tagWithNotes = {
+      ...tag,
+      notes: notesWithTag,
+    };
+
+    res.json(tagWithNotes);
   } catch (error) {
     console.error("Erro ao buscar etiqueta:", error);
     res.status(500).json({ message: "Erro ao buscar etiqueta", error: error.message });
@@ -90,27 +70,15 @@ const createTag = async (req, res) => {
     }
 
     // Verificar se já existe uma etiqueta com o mesmo nome para este usuário
-    const existingTag = await prisma.tag.findFirst({
-      where: {
-        name,
-        userId,
-      },
-    });
+    const existingTags = await storageService.getAllTags(userId);
+    const tagExists = existingTags.some((tag) => tag.name.toLowerCase() === name.toLowerCase());
 
-    if (existingTag) {
+    if (tagExists) {
       return res.status(400).json({ message: "Já existe uma etiqueta com este nome" });
     }
 
-    // Criar a etiqueta
-    const newTag = await prisma.tag.create({
-      data: {
-        name,
-        color,
-        user: {
-          connect: { id: userId },
-        },
-      },
-    });
+    // Criar a etiqueta usando o serviço de armazenamento
+    const newTag = await storageService.createTag({ name, color }, userId);
 
     res.status(201).json(newTag);
   } catch (error) {
@@ -127,12 +95,7 @@ const updateTag = async (req, res) => {
     const { name, color } = req.body;
 
     // Verificar se a etiqueta existe e pertence ao usuário
-    const existingTag = await prisma.tag.findUnique({
-      where: {
-        id: parseInt(id),
-        userId,
-      },
-    });
+    const existingTag = await storageService.getTagById(id, userId);
 
     if (!existingTag) {
       return res.status(404).json({ message: "Etiqueta não encontrada" });
@@ -140,28 +103,22 @@ const updateTag = async (req, res) => {
 
     // Verificar se já existe outra etiqueta com o mesmo nome para este usuário
     if (name && name !== existingTag.name) {
-      const duplicateTag = await prisma.tag.findFirst({
-        where: {
-          name,
-          userId,
-          id: { not: parseInt(id) },
-        },
-      });
+      const allTags = await storageService.getAllTags(userId);
+      const duplicateTag = allTags.find(
+        (tag) => tag.name.toLowerCase() === name.toLowerCase() && tag.id !== id
+      );
 
       if (duplicateTag) {
         return res.status(400).json({ message: "Já existe uma etiqueta com este nome" });
       }
     }
 
-    // Atualizar a etiqueta
+    // Atualizar a etiqueta usando o serviço de armazenamento
     const updateData = {};
     if (name) updateData.name = name;
     if (color) updateData.color = color;
 
-    const updatedTag = await prisma.tag.update({
-      where: { id: parseInt(id) },
-      data: updateData,
-    });
+    const updatedTag = await storageService.updateTag(id, updateData, userId);
 
     res.json(updatedTag);
   } catch (error) {
@@ -177,31 +134,30 @@ const deleteTag = async (req, res) => {
     const userId = req.user.id;
 
     // Verificar se a etiqueta existe e pertence ao usuário
-    const tag = await prisma.tag.findUnique({
-      where: {
-        id: parseInt(id),
-        userId,
-      },
-    });
+    const tag = await storageService.getTagById(id, userId);
 
     if (!tag) {
       return res.status(404).json({ message: "Etiqueta não encontrada" });
     }
 
-    // Desconectar a etiqueta de todas as notas antes de excluí-la
-    await prisma.tag.update({
-      where: { id: parseInt(id) },
-      data: {
-        notes: {
-          set: [],
-        },
-      },
-    });
+    // Buscar todas as notas para remover a etiqueta delas
+    const allNotes = await storageService.getAllNotes(userId);
+    const notesWithTag = allNotes.filter(
+      (note) => note.tags && note.tags.some((noteTag) => noteTag.id === id)
+    );
 
-    // Excluir a etiqueta
-    await prisma.tag.delete({
-      where: { id: parseInt(id) },
-    });
+    // Atualizar cada nota para remover a etiqueta
+    for (const note of notesWithTag) {
+      const updatedTags = note.tags.filter((tag) => tag.id !== id);
+      await storageService.updateNote(note.id, { tags: updatedTags }, userId);
+    }
+
+    // Excluir a etiqueta usando o serviço de armazenamento
+    const deleted = await storageService.deleteTag(id, userId);
+
+    if (!deleted) {
+      return res.status(500).json({ message: "Erro ao excluir a etiqueta" });
+    }
 
     res.json({ message: "Etiqueta excluída com sucesso" });
   } catch (error) {
