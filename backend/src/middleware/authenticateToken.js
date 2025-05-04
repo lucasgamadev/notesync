@@ -3,9 +3,8 @@
  * Verifica se o token é válido e adiciona o usuário à requisição
  */
 const jwt = require("jsonwebtoken");
-const { PrismaClient } = require("@prisma/client");
+const storageService = require("../services/storageService");
 
-const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || "seu_jwt_secret_aqui";
 
 async function authenticateToken(req, res, next) {
@@ -26,18 +25,17 @@ async function authenticateToken(req, res, next) {
       }
 
       try {
-        // Busca o usuário no banco de dados
-        const user = await prisma.user.findUnique({
-          where: { id: decoded.userId },
-          select: { id: true, email: true, name: true }, // Exclui a senha
-        });
+        // Busca o usuário no sistema de armazenamento JSON
+        const user = await storageService.getUserById(decoded.userId);
 
         if (!user) {
           return res.status(403).json({ message: "Usuário não encontrado" });
         }
 
+        // Remove a senha antes de adicionar o usuário à requisição
+        const { password, ...userWithoutPassword } = user;
         // Adiciona o usuário à requisição para uso posterior
-        req.user = user;
+        req.user = userWithoutPassword;
         next();
       } catch (error) {
         console.error("Erro ao buscar usuário:", error);
