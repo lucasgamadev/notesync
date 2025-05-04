@@ -1,6 +1,7 @@
-const { google } = require("googleapis");
 const fs = require("fs");
 const path = require("path");
+const { google } = require("googleapis");
+const readline = require("readline");
 
 /**
  * Serviço para integração com Google Drive
@@ -10,7 +11,7 @@ const path = require("path");
 // Configurações do OAuth
 const SCOPES = [
   "https://www.googleapis.com/auth/drive.file",
-  "https://www.googleapis.com/auth/drive.appdata",
+  "https://www.googleapis.com/auth/drive.appdata"
 ];
 
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
@@ -38,7 +39,7 @@ exports.getAuthUrl = (userId) => {
     access_type: "offline",
     scope: SCOPES,
     state: userId, // Para identificar o usuário no callback
-    prompt: "consent", // Força o prompt de consentimento para obter refresh_token
+    prompt: "consent" // Força o prompt de consentimento para obter refresh_token
   });
 };
 
@@ -64,7 +65,7 @@ exports.getTokensFromCode = async (code) => {
  * @param {Object} tokens - Tokens de acesso e refresh
  * @returns {OAuth2Client} Cliente OAuth2 configurado com tokens
  */
-const setupOAuth2Client = (tokens) => {
+exports.setupOAuth2Client = (tokens) => {
   const oauth2Client = createOAuth2Client();
   oauth2Client.setCredentials(tokens);
   return oauth2Client;
@@ -76,7 +77,7 @@ const setupOAuth2Client = (tokens) => {
  * @returns {Object} Tokens atualizados
  */
 exports.refreshTokenIfNeeded = async (tokens) => {
-  const oauth2Client = setupOAuth2Client(tokens);
+  const oauth2Client = exports.setupOAuth2Client(tokens);
 
   // Verifica se o token está expirado ou próximo de expirar
   const isTokenExpired = oauth2Client.isTokenExpiring();
@@ -113,7 +114,7 @@ exports.createFolderIfNotExists = async (auth, folderName, parentId = null) => {
     const response = await drive.files.list({
       q: query,
       fields: "files(id, name)",
-      spaces: "drive",
+      spaces: "drive"
     });
 
     // Se a pasta já existe, retorna o ID
@@ -125,12 +126,12 @@ exports.createFolderIfNotExists = async (auth, folderName, parentId = null) => {
     const fileMetadata = {
       name: folderName,
       mimeType: "application/vnd.google-apps.folder",
-      ...(parentId && { parents: [parentId] }),
+      ...(parentId && { parents: [parentId] })
     };
 
     const folder = await drive.files.create({
       resource: fileMetadata,
-      fields: "id",
+      fields: "id"
     });
 
     return folder.data.id;
@@ -154,17 +155,17 @@ exports.uploadFile = async (auth, filePath, fileName, folderId) => {
   try {
     const fileMetadata = {
       name: fileName,
-      parents: [folderId],
+      parents: [folderId]
     };
 
     const media = {
-      body: fs.createReadStream(filePath),
+      body: fs.createReadStream(filePath)
     };
 
     const file = await drive.files.create({
       resource: fileMetadata,
       media,
-      fields: "id",
+      fields: "id"
     });
 
     return file.data.id;
@@ -188,7 +189,7 @@ exports.downloadFile = async (auth, fileId, destPath) => {
     // Obtém informações do arquivo
     const fileInfo = await drive.files.get({
       fileId,
-      fields: "name",
+      fields: "name"
     });
 
     const fileName = fileInfo.data.name;
@@ -226,7 +227,7 @@ exports.listFiles = async (auth, folderId) => {
     const response = await drive.files.list({
       q: `'${folderId}' in parents and trashed=false`,
       fields: "files(id, name, mimeType, modifiedTime)",
-      spaces: "drive",
+      spaces: "drive"
     });
 
     return response.data.files;
