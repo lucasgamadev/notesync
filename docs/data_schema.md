@@ -1,42 +1,42 @@
 # Esquema de Dados JSON
 
-## Visu00e3o Geral
+## Visão Geral
 
-O NoteSync utiliza arquivos JSON como principal mu00e9todo de armazenamento de dados, aproveitando a simplicidade, portabilidade e facilidade de uso deste formato. Este documento descreve a estrutura completa dos arquivos JSON, incluindo entidades, relacionamentos e esquemas.
+O NoteSync utiliza arquivos JSON como principal método de armazenamento de dados, aproveitando a simplicidade, portabilidade e facilidade de uso deste formato. Este documento descreve a estrutura completa dos arquivos JSON, incluindo entidades, relacionamentos e esquemas.
 
 ## Estrutura de Arquivos
 
 ```text
 /data
-u251cu2500u2500 users/
-u2502   u251cu2500u2500 users.json         # Informau00e7u00f5es de todos os usuu00e1rios
-u2502   u251cu2500u2500 {user_id}/        # Diretu00f3rio por usuu00e1rio
-u2502       u251cu2500u2500 notebooks.json  # Cadernos do usuu00e1rio
-u2502       u251cu2500u2500 tags.json       # Etiquetas do usuu00e1rio
-u2502       u251cu2500u2500 drivesync.json  # Configurau00e7u00f5es de sincronizau00e7u00e3o
-u2502       u2514u2500u2500 notes/          # Diretu00f3rio para notas
-u2502           u251cu2500u2500 {notebook_id}/ # Organizado por caderno
-u2502           u2502   u251cu2500u2500 notes.json        # Metadados das notas
-u2502           u2502   u251cu2500u2500 {note_id}.json    # Conteu00fado da nota
-u2502           u2502   u2514u2500u2500 versions/         # Histu00f3rico de versu00f5es
-u2502           u2502       u2514u2500u2500 {note_id}_v{timestamp}.json
-u2502           u2514u2500u2500 note_tags.json  # Relau00e7u00f5es entre notas e etiquetas
-u2514u2500u2500 backup/               # Backups automu00e1ticos
-    u2514u2500u2500 {timestamp}/       # Organizado por data
+├── users/
+│   ├── users.json         # Informações de todos os usuários
+│   ├── {user_id}/        # Diretório por usuário
+│       ├── notebooks.json  # Cadernos do usuário
+│       ├── tags.json       # Etiquetas do usuário
+│       ├── drivesync.json  # Configurações de sincronização
+│       └── notes/          # Diretório para notas
+│           ├── {notebook_id}/ # Organizado por caderno
+│           │   ├── notes.json        # Metadados das notas
+│           │   ├── {note_id}.json    # Conteúdo da nota
+│           │   └── versions/         # Histórico de versões
+│           │       └── {note_id}_v{timestamp}.json
+│           └── note_tags.json  # Relações entre notas e etiquetas
+└── backup/               # Backups automáticos
+    └── {timestamp}/       # Organizado por data
 ```
 
-## Definiu00e7u00e3o dos Esquemas
+## Definição dos Esquemas
 
 ### User
 
-Armazena informau00e7u00f5es dos usuu00e1rios do sistema.
+Armazena informações dos usuários do sistema.
 
 ```json
 // users.json
 [
   {
     "id": "550e8400-e29b-41d4-a716-446655440000",
-    "name": "Jou00e3o Silva",
+    "name": "João Silva",
     "email": "joao@exemplo.com",
     "password_hash": "$2b$10$3TBz...",
     "avatar_url": "https://...",
@@ -50,10 +50,10 @@ Armazena informau00e7u00f5es dos usuu00e1rios do sistema.
 
 ### Notebook
 
-Representa os cadernos onde as notas su00e3o organizadas.
+Representa os cadernos onde as notas são organizadas.
 
 ```json
-// notebooks.json (por usuu00e1rio)
+// notebooks.json (por usuário)
 [
   {
     "id": "550e8400-e29b-41d4-a716-446655440001",
@@ -69,10 +69,10 @@ Representa os cadernos onde as notas su00e3o organizadas.
 
 ### Tag
 
-Armazena as etiquetas para categorizau00e7u00e3o de notas e cadernos.
+Armazena as etiquetas para categorização de notas e cadernos.
 
 ```json
-// tags.json (por usuu00e1rio)
+// tags.json (por usuário)
 [
   {
     "id": "550e8400-e29b-41d4-a716-446655440002",
@@ -86,14 +86,14 @@ Armazena as etiquetas para categorizau00e7u00e3o de notas e cadernos.
 
 ### Note (Metadados)
 
-Armazena metadados das notas criadas pelos usuu00e1rios.
+Armazena metadados das notas criadas pelos usuários.
 
 ```json
 // notes.json (por caderno)
 [
   {
     "id": "550e8400-e29b-41d4-a716-446655440003",
-    "title": "Reuniu00e3o de Planejamento",
+    "title": "Reunião de Planejamento",
     "is_pinned": true,
     "is_archived": false,
     "created_at": "2023-05-18T14:30:00.000Z",
@@ -102,9 +102,9 @@ Armazena metadados das notas criadas pelos usuu00e1rios.
 ]
 ```
 
-### Note (Conteu00fado)
+### Note (Conteúdo)
 
-Armazena o conteu00fado completo de uma nota, separado dos metadados para otimizar o carregamento.
+Armazena o conteúdo completo de uma nota, separado dos metadados para otimizar o carregamento.
 
 ```json
 // {note_id}.json
@@ -147,19 +147,19 @@ Armazena o conteu00fado completo de uma nota, separado dos metadados para otimiz
 
 ### NoteVersion
 
-Armazena o histu00f3rico de versu00f5es das notas.
+Armazena o histórico de versões das notas.
 
 ```json
 // {note_id}_v{timestamp}.json
 {
-  "content": { /* Conteu00fado da versu00e3o anterior da nota */ },
+  "content": { /* Conteúdo da versão anterior da nota */ },
   "created_at": "2023-06-10T15:20:10.000Z"
 }
 ```
 
 ### NoteTag
 
-Armazena as relau00e7u00f5es entre notas e etiquetas.
+Armazena as relações entre notas e etiquetas.
 
 ```json
 // note_tags.json
@@ -173,7 +173,7 @@ Armazena as relau00e7u00f5es entre notas e etiquetas.
 
 ### NotebookTag
 
-Armazena as relau00e7u00f5es entre cadernos e etiquetas.
+Armazena as relações entre cadernos e etiquetas.
 
 ```json
 // notebook_tags.json
@@ -187,7 +187,7 @@ Armazena as relau00e7u00f5es entre cadernos e etiquetas.
 
 ### DriveSync
 
-Armazena informau00e7u00f5es de sincronizau00e7u00e3o com Google Drive.
+Armazena informações de sincronização com Google Drive.
 
 ```json
 // drivesync.json
@@ -202,63 +202,63 @@ Armazena informau00e7u00f5es de sincronizau00e7u00e3o com Google Drive.
 }
 ```
 
-## Sistema de u00cdndices em Memu00f3ria
+## Sistema de Índices em Memória
 
-Para otimizar a busca e filtragem de dados, o NoteSync implementa um sistema de indexau00e7u00e3o em memu00f3ria:
+Para otimizar a busca e filtragem de dados, o NoteSync implementa um sistema de indexação em memória:
 
 ```javascript
-// Exemplo simplificado de implementau00e7u00e3o
+// Exemplo simplificado de implementação
 const noteIndex = {
-  // u00cdndice por ID
+  // Índice por ID
   byId: new Map(),
   
-  // u00cdndice por tu00edtulo (para busca textual)
+  // Índice por título (para busca textual)
   byTitle: new Map(),
   
-  // u00cdndice por conteu00fado (para busca full-text)
+  // Índice por conteúdo (para busca full-text)
   byContent: new Map(),
   
-  // u00cdndice por caderno
+  // Índice por caderno
   byNotebook: new Map(),
   
-  // u00cdndice por etiqueta
+  // Índice por etiqueta
   byTag: new Map(),
   
-  // Atualizau00e7u00e3o dos u00edndices
+  // Atualização dos índices
   rebuildIndex() {
-    // Lu00f3gica para carregar dados dos arquivos JSON e construir os u00edndices
+    // Lógica para carregar dados dos arquivos JSON e construir os índices
   },
   
   // Busca por termo
   search(term) {
-    // Lu00f3gica para busca ru00e1pida usando os u00edndices em memu00f3ria
+    // Lógica para busca rápida usando os índices em memória
   }
 };
 ```
 
 ## Sistema de Versionamento
 
-O NoteSync mantu00e9m automaticamente o histu00f3rico de versu00f5es das notas:
+O NoteSync mantém automaticamente o histórico de versões das notas:
 
-1. Quando uma nota u00e9 atualizada, a versu00e3o anterior u00e9 salva no diretu00f3rio `versions/`
-2. Su00e3o mantidas atu00e9 10 versu00f5es por nota, removendo as mais antigas quando o limite u00e9 alcanu00e7ado
-3. O nome do arquivo inclui um timestamp para facilitar a ordenau00e7u00e3o
+1. Quando uma nota é atualizada, a versão anterior é salva no diretório `versions/`
+2. São mantidas até 10 versões por nota, removendo as mais antigas quando o limite é alcançado
+3. O nome do arquivo inclui um timestamp para facilitar a ordenação
 
 ## Sistema de Backup
 
-O NoteSync implementa um sistema de backup automu00e1tico:
+O NoteSync implementa um sistema de backup automático:
 
-1. Backups diu00e1rios incrementais su00e3o criados no diretu00f3rio `backup/`
-2. Backups completos su00e3o criados semanalmente
-3. Backups mais antigos que 30 dias su00e3o automaticamente removidos
-4. Os backups su00e3o compactados para economizar espau00e7o
+1. Backups diários incrementais são criados no diretório `backup/`
+2. Backups completos são criados semanalmente
+3. Backups mais antigos que 30 dias são automaticamente removidos
+4. Os backups são compactados para economizar espaço
 
-## Validau00e7u00e3o de Dados
+## Validação de Dados
 
-Para garantir a integridade dos dados, o NoteSync implementa validau00e7u00e3o rigorosa usando schemas JSON:
+Para garantir a integridade dos dados, o NoteSync implementa validação rigorosa usando schemas JSON:
 
 ```javascript
-// Exemplo de schema para validau00e7u00e3o de uma nota
+// Exemplo de schema para validação de uma nota
 const noteSchema = {
   type: 'object',
   required: ['id', 'title', 'is_pinned', 'is_archived', 'created_at', 'updated_at'],
