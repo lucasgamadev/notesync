@@ -227,9 +227,101 @@ Este documento estabelece um processo sistemático para verificar o código do p
 | [ ] Testar sistema de cache local | | | |
 | [ ] Revisar estratégia de expiração | | | |
 
-### 5. Testes e Otimização
+### 5. Documentação
 
-#### 5.1 Testes Backend
+#### 5.1 Verificação da Documentação
+
+| Item | Status | Observações | Data |
+|------|--------|-------------|------|
+| [ ] Verificar se a documentação está atualizada com as funcionalidades atuais | | | |
+| [ ] Revisar consistência entre documentos | | | |
+| [ ] Verificar se há documentação para todas as funcionalidades principais | | | |
+| [ ] Validar links e referências entre documentos | | | |
+| [ ] Verificar ortografia e formatação | | | |
+| [ ] Avaliar clareza e objetividade | | | |
+| [ ] Verificar se há exemplos práticos quando necessário | | | |
+| [ ] Validar se diagramas e imagens estão atualizados | | | |
+
+#### 5.2 Documentos Específicos
+
+##### 5.2.1 Arquitetura (`architecture.md`)
+
+| Item | Status | Observações | Data |
+|------|--------|-------------|------|
+| [ ] Verificar se o diagrama de arquitetura está atualizado | | | |
+| [ ] Validar se todos os componentes do sistema estão documentados | | | |
+| [ ] Revisar se as interações entre componentes estão corretas | | | |
+| [ ] Verificar se as tecnologias listadas correspondem às utilizadas | | | |
+| [ ] Validar se a documentação de APIs está completa | | | |
+
+##### 5.2.2 Esquema de Dados (`data_schema.md`)
+
+| Item | Status | Observações | Data |
+|------|--------|-------------|------|
+| [ ] Verificar se a estrutura JSON documentada reflete a implementação atual | | | |
+| [ ] Validar se todos os campos estão documentados com tipos e descrições | | | |
+| [ ] Revisar se os relacionamentos entre entidades estão claros | | | |
+| [ ] Verificar se há exemplos de dados para cada entidade | | | |
+
+##### 5.2.3 Requisitos (`requirements.md`)
+
+| Item | Status | Observações | Data |
+|------|--------|-------------|------|
+| [ ] Verificar se os requisitos funcionais estão atualizados | | | |
+| [ ] Validar se os requisitos não-funcionais estão completos | | | |
+| [ ] Revisar se as user stories refletem as funcionalidades implementadas | | | |
+| [ ] Verificar se as métricas de aceitação estão definidas | | | |
+
+##### 5.2.4 Workflow de Desenvolvimento (`WORKFLOW.md`)
+
+| Item | Status | Observações | Data |
+|------|--------|-------------|------|
+| [ ] Verificar se as etapas do processo de desenvolvimento estão atualizadas | | | |
+| [ ] Validar se o progresso marcado corresponde ao estado atual do projeto | | | |
+| [ ] Revisar se há tarefas pendentes que deveriam estar concluídas | | | |
+| [ ] Verificar se novas tarefas necessárias foram adicionadas | | | |
+
+##### 5.2.5 Workflow Frontend (`WORKFLOW-FRONTEND.md`)
+
+| Item | Status | Observações | Data |
+|------|--------|-------------|------|
+| [ ] Verificar se todas as funcionalidades frontend estão listadas | | | |
+| [ ] Validar se o status de implementação está correto | | | |
+| [ ] Revisar se há componentes implementados que não estão documentados | | | |
+| [ ] Verificar se as dependências entre componentes estão claras | | | |
+
+##### 5.2.6 Mock API (`MOCK_API_README.md`)
+
+| Item | Status | Observações | Data |
+|------|--------|-------------|------|
+| [ ] Verificar se as instruções de uso estão claras e atualizadas | | | |
+| [ ] Validar se todas as rotas mockadas estão documentadas | | | |
+| [ ] Revisar se os dados de exemplo correspondem aos utilizados | | | |
+| [ ] Verificar se as alterações nos arquivos estão corretamente documentadas | | | |
+
+##### 5.2.7 Workflow de Verificação de Código (`CODE_REVIEW_WORKFLOW.md`)
+
+| Item | Status | Observações | Data |
+|------|--------|-------------|------|
+| [ ] Verificar se todas as áreas do projeto estão cobertas | | | |
+| [ ] Validar se os checklists são específicos e úteis | | | |
+| [ ] Revisar se o processo de verificação está claro | | | |
+| [ ] Verificar se há instruções para registro e acompanhamento | | | |
+
+#### 5.3 Integração da Documentação
+
+| Item | Status | Observações | Data |
+|------|--------|-------------|------|
+| [ ] Verificar se há contradições entre documentos | | | |
+| [ ] Validar se a terminologia é consistente em toda a documentação | | | |
+| [ ] Revisar se as referências cruzadas entre documentos estão corretas | | | |
+| [ ] Verificar se há documentação para todas as integrações do sistema | | | |
+| [ ] Validar se a documentação técnica está alinhada com os requisitos | | | |
+| [ ] Revisar se há documentação suficiente para novos desenvolvedores | | | |
+
+### 6. Testes e Otimização
+
+#### 6.1 Testes Backend
 
 | Item | Status | Observações | Data |
 |------|--------|-------------|------|
@@ -237,7 +329,7 @@ Este documento estabelece um processo sistemático para verificar o código do p
 | [ ] Revisar testes de serviços e controllers | | | |
 | [ ] Testar cobertura de código | | | |
 
-#### 5.2 Testes Frontend
+#### 6.2 Testes Frontend
 
 | Item | Status | Observações | Data |
 |------|--------|-------------|------|
@@ -245,7 +337,7 @@ Este documento estabelece um processo sistemático para verificar o código do p
 | [ ] Revisar testes de componentes e hooks | | | |
 | [ ] Testar fluxos completos | | | |
 
-#### 5.3 Testes End-to-End
+#### 6.3 Testes End-to-End
 
 | Item | Status | Observações | Data |
 |------|--------|-------------|------|
@@ -253,7 +345,7 @@ Este documento estabelece um processo sistemático para verificar o código do p
 | [ ] Revisar cenários de teste | | | |
 | [ ] Testar em diferentes dispositivos | | | |
 
-#### 5.4 Performance
+#### 6.4 Performance
 
 | Item | Status | Observações | Data |
 |------|--------|-------------|------|
@@ -262,7 +354,7 @@ Este documento estabelece um processo sistemático para verificar o código do p
 | [ ] Testar carregamento de imagens | | | |
 | [ ] Verificar métricas Core Web Vitals | | | |
 
-#### 5.5 Segurança
+#### 6.5 Segurança
 
 | Item | Status | Observações | Data |
 |------|--------|-------------|------|
