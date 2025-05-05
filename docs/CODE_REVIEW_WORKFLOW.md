@@ -43,6 +43,12 @@ Este documento estabelece um processo sistemático para verificar o código do p
 | [ ] Validar middleware de autenticação | | | |
 | [ ] Verificar tratamento de erros e CORS | | | |
 | [ ] Revisar estrutura de rotas e API RESTful | | | |
+| [ ] Verificar implementação de rate limiting | | | |
+| [ ] Validar configuração de compressão (gzip/brotli) | | | |
+| [ ] Revisar configuração de timeout das requisições | | | |
+| [ ] Verificar implementação de logs de requisições | | | |
+| [ ] Validar sanitização de inputs | | | |
+| [ ] Revisar configuração de ambiente (dev/prod) | | | |
 
 #### 1.2 Sistema de Persistência em JSON
 
@@ -103,6 +109,13 @@ Este documento estabelece um processo sistemático para verificar o código do p
 | [ ] Verificar configuração do projeto no Google Cloud | | | |
 | [ ] Testar endpoints de autenticação OAuth | | | |
 | [ ] Revisar armazenamento e renovação de tokens | | | |
+| [ ] Verificar escopo de permissões solicitadas | | | |
+| [ ] Validar processo de revogação de acesso | | | |
+| [ ] Testar fluxo de reautenticação após expiração | | | |
+| [ ] Revisar segurança no armazenamento de credenciais | | | |
+| [ ] Verificar tratamento de erros de autenticação | | | |
+| [ ] Validar feedback ao usuário durante autenticação | | | |
+| [ ] Testar autenticação em diferentes dispositivos | | | |
 
 #### 2.2 Serviço de Sincronização
 
@@ -174,6 +187,14 @@ Este documento estabelece um processo sistemático para verificar o código do p
 | [ ] Testar toolbar com formatação | | | |
 | [ ] Revisar suporte a imagens, links e tabelas | | | |
 | [ ] Verificar sistema de autosave | | | |
+| [ ] Validar histórico de alterações (undo/redo) | | | |
+| [ ] Testar exportação para diferentes formatos (PDF, HTML) | | | |
+| [ ] Revisar suporte a atalhos de teclado | | | |
+| [ ] Verificar comportamento em diferentes tamanhos de tela | | | |
+| [ ] Validar persistência de estado durante navegação | | | |
+| [ ] Testar desempenho com documentos grandes | | | |
+| [ ] Revisar tratamento de colagem de conteúdo externo | | | |
+| [ ] Verificar suporte a menções e referências | | | |
 
 #### 3.7 Sistema de Etiquetas Frontend
 
@@ -226,6 +247,24 @@ Este documento estabelece um processo sistemático para verificar o código do p
 | [ ] Verificar uso de localStorage | | | |
 | [ ] Testar sistema de cache local | | | |
 | [ ] Revisar estratégia de expiração | | | |
+| [ ] Verificar limites de armazenamento e tratamento de overflow | | | |
+| [ ] Testar criptografia de dados sensíveis | | | |
+| [ ] Revisar estratégia de migração de dados entre versões | | | |
+| [ ] Verificar limpeza de dados obsoletos | | | |
+| [ ] Testar persistência após atualizações do aplicativo | | | |
+| [ ] Revisar mecanismos de backup local | | | |
+| [ ] Verificar desempenho com grande volume de dados | | | |
+
+#### 4.4 Experiência do Usuário Offline
+
+| Item | Status | Observações | Data |
+|------|--------|-------------|------|
+| [ ] Verificar indicadores visuais de estado offline | | | |
+| [ ] Testar notificações de alterações pendentes | | | |
+| [ ] Revisar feedback durante sincronização | | | |
+| [ ] Verificar acessibilidade em modo offline | | | |
+| [ ] Testar transições entre estados online/offline | | | |
+| [ ] Revisar documentação para usuário sobre modo offline | | | |
 
 ### 5. Documentação
 
@@ -363,6 +402,28 @@ Este documento estabelece um processo sistemático para verificar o código do p
 | [x] Testar headers de segurança | Concluído | Headers configurados | 17/07/2024 |
 | [x] Verificar permissões e validações | Concluído | Validações implementadas | 17/07/2024 |
 
+#### 6.6 Proteção de Dados
+
+| Item | Status | Observações | Data |
+|------|--------|-------------|------|
+| [ ] Verificar criptografia em trânsito (HTTPS) | | | |
+| [ ] Revisar criptografia em repouso | | | |
+| [ ] Testar mascaramento de dados sensíveis em logs | | | |
+| [ ] Verificar política de retenção de dados | | | |
+| [ ] Revisar mecanismos de backup e recuperação | | | |
+| [ ] Testar funcionalidade de exportação de dados do usuário | | | |
+
+#### 6.7 Conformidade e Privacidade
+
+| Item | Status | Observações | Data |
+|------|--------|-------------|------|
+| [ ] Verificar conformidade com LGPD | | | |
+| [ ] Revisar política de privacidade | | | |
+| [ ] Testar mecanismos de consentimento | | | |
+| [ ] Verificar funcionalidade de exclusão de conta | | | |
+| [ ] Revisar registro de atividades de processamento | | | |
+| [ ] Testar controles de acesso baseados em função | | | |
+
 ## Guia de Preenchimento
 
 ### Status
@@ -382,6 +443,87 @@ Ao documentar problemas, classifique-os por severidade:
 - **Importante**: Afeta funcionalidades principais, mas não impede o uso
 - **Menor**: Problemas de usabilidade ou melhorias sugeridas
 
+### 7. Acessibilidade
+
+#### 7.1 Conformidade com WCAG
+
+| Item | Status | Observações | Data |
+|------|--------|-------------|------|
+| [ ] Verificar conformidade com WCAG 2.1 AA | | | |
+| [ ] Revisar contraste de cores | | | |
+| [ ] Testar navegação por teclado | | | |
+| [ ] Verificar textos alternativos em imagens | | | |
+| [ ] Revisar estrutura de cabeçalhos | | | |
+| [ ] Testar com leitores de tela | | | |
+
+#### 7.2 Testes de Acessibilidade
+
+| Item | Status | Observações | Data |
+|------|--------|-------------|------|
+| [ ] Verificar resultados do Axe DevTools | | | |
+| [ ] Revisar relatórios do Lighthouse Accessibility | | | |
+| [ ] Testar com usuários com necessidades especiais | | | |
+| [ ] Verificar suporte a zoom e texto redimensionável | | | |
+
+### 8. Compatibilidade com Navegadores
+
+#### 8.1 Testes em Navegadores Desktop
+
+| Item | Status | Observações | Data |
+|------|--------|-------------|------|
+| [ ] Verificar funcionalidade em Chrome | | | |
+| [ ] Testar em Firefox | | | |
+| [ ] Revisar em Safari | | | |
+| [ ] Verificar em Edge | | | |
+
+#### 8.2 Testes em Dispositivos Móveis
+
+| Item | Status | Observações | Data |
+|------|--------|-------------|------|
+| [ ] Verificar em iOS Safari | | | |
+| [ ] Testar em Chrome para Android | | | |
+| [ ] Revisar em Samsung Internet | | | |
+| [ ] Verificar comportamento responsivo | | | |
+
+### 9. Internacionalização e Localização
+
+#### 9.1 Suporte a Múltiplos Idiomas
+
+| Item | Status | Observações | Data |
+|------|--------|-------------|------|
+| [ ] Verificar estrutura de arquivos de tradução | | | |
+| [ ] Testar alternância entre idiomas | | | |
+| [ ] Revisar textos traduzidos | | | |
+| [ ] Verificar formatação de datas e números | | | |
+
+#### 9.2 Adaptação Cultural
+
+| Item | Status | Observações | Data |
+|------|--------|-------------|------|
+| [ ] Verificar suporte a RTL (Right-to-Left) | | | |
+| [ ] Testar com diferentes configurações regionais | | | |
+| [ ] Revisar imagens e ícones culturalmente neutros | | | |
+
+### 10. Monitoramento e Tratamento de Erros
+
+#### 10.1 Logging e Monitoramento
+
+| Item | Status | Observações | Data |
+|------|--------|-------------|------|
+| [ ] Verificar implementação de logs estruturados | | | |
+| [ ] Testar captura de erros não tratados | | | |
+| [ ] Revisar integração com ferramentas de monitoramento | | | |
+| [ ] Verificar alertas e notificações | | | |
+
+#### 10.2 Tratamento de Erros
+
+| Item | Status | Observações | Data |
+|------|--------|-------------|------|
+| [ ] Verificar mensagens de erro amigáveis | | | |
+| [ ] Testar recuperação de falhas | | | |
+| [ ] Revisar páginas de erro personalizadas | | | |
+| [ ] Verificar feedback ao usuário | | | |
+
 ## Registro de Verificações Concluídas
 
 | Componente | Data | Responsável | Status Geral |
@@ -400,3 +542,9 @@ Ao documentar problemas, classifique-os por severidade:
 | Pontuação Lighthouse Acessibilidade | 95 | >90 | 17/07/2024 |
 | Pontuação Lighthouse SEO | 94 | >90 | 17/07/2024 |
 | Vulnerabilidades npm audit | 0 | 0 | 17/07/2024 |
+| Conformidade WCAG 2.1 AA | - | 100% | - |
+| Compatibilidade Cross-Browser | - | 100% | - |
+| Tempo de Sincronização Offline-Online | - | <5s | - |
+| Taxa de Sucesso em Resolução de Conflitos | - | >95% | - |
+| Tempo de Resposta da API (p95) | - | <200ms | - |
+| Uso de Memória em Dispositivos Móveis | - | <100MB | - |
