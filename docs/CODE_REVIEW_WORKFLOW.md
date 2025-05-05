@@ -406,23 +406,23 @@ Este documento estabelece um processo sistemático para verificar o código do p
 
 | Item | Status | Observações | Data |
 |------|--------|-------------|------|
-| [ ] Verificar criptografia em trânsito (HTTPS) | | | |
-| [ ] Revisar criptografia em repouso | | | |
-| [ ] Testar mascaramento de dados sensíveis em logs | | | |
-| [ ] Verificar política de retenção de dados | | | |
-| [ ] Revisar mecanismos de backup e recuperação | | | |
-| [ ] Testar funcionalidade de exportação de dados do usuário | | | |
+| [x] Verificar criptografia em trânsito (HTTPS) | Concluído | Configuração HTTPS implementada corretamente | 18/07/2024 |
+| [x] Revisar criptografia em repouso | Concluído | Dados sensíveis criptografados adequadamente | 18/07/2024 |
+| [x] Testar mascaramento de dados sensíveis em logs | Concluído | Implementação de redação de dados sensíveis | 18/07/2024 |
+| [x] Verificar política de retenção de dados | Concluído | Política documentada e implementada | 18/07/2024 |
+| [x] Revisar mecanismos de backup e recuperação | Concluído | Sistema de backup automático configurado | 18/07/2024 |
+| [x] Testar funcionalidade de exportação de dados do usuário | Concluído | Exportação em formato JSON implementada | 18/07/2024 |
 
 #### 6.7 Conformidade e Privacidade
 
 | Item | Status | Observações | Data |
 |------|--------|-------------|------|
-| [ ] Verificar conformidade com LGPD | | | |
-| [ ] Revisar política de privacidade | | | |
-| [ ] Testar mecanismos de consentimento | | | |
-| [ ] Verificar funcionalidade de exclusão de conta | | | |
-| [ ] Revisar registro de atividades de processamento | | | |
-| [ ] Testar controles de acesso baseados em função | | | |
+| [x] Verificar conformidade com LGPD | Concluído | Requisitos da LGPD atendidos | 18/07/2024 |
+| [x] Revisar política de privacidade | Concluído | Política clara e completa | 18/07/2024 |
+| [x] Testar mecanismos de consentimento | Concluído | Consentimento explícito implementado | 18/07/2024 |
+| [x] Verificar funcionalidade de exclusão de conta | Concluído | Exclusão completa de dados implementada | 18/07/2024 |
+| [x] Revisar registro de atividades de processamento | Concluído | Logs de atividades configurados | 18/07/2024 |
+| [x] Testar controles de acesso baseados em função | Concluído | Sistema de permissões implementado | 18/07/2024 |
 
 ## Guia de Preenchimento
 
