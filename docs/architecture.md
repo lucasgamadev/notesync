@@ -2,11 +2,11 @@
 
 ## Visão Geral
 
-O NoteSync é uma aplicação de notas com sincronização em nuvem, construída com uma arquitetura moderna de microserviços. A aplicação utiliza Next.js para o frontend e Node.js/Express para o backend, com PostgreSQL como banco de dados principal e integração com Google Drive para sincronização.
+O NoteSync é uma aplicação de notas com sincronização em nuvem, construída com uma arquitetura moderna de microserviços. A aplicação utiliza Next.js para o frontend e Node.js/Express para o backend, com armazenamento em arquivos JSON e integração com Google Drive para sincronização.
 
 ## Diagrama de Arquitetura
 
-```
+```text
 +------------------+         +------------------+         +------------------+
 |                  |         |                  |         |                  |
 |    Cliente Web   |<------->|  API Gateway    |<------->|  Serviço de      |
@@ -27,8 +27,8 @@ O NoteSync é uma aplicação de notas com sincronização em nuvem, construída
                                      v                            v
 +------------------+         +------------------+         +------------------+
 |                  |         |                  |         |                  |
-|  Serviço de      |<------->|  Banco de Dados |<------->|  Serviço de     |
-|  Sincronização   |         |  (PostgreSQL)   |         |  Pesquisa        |
+|  Serviço de      |<------->|  Armazenamento  |<------->|  Serviço de     |
+|  Sincronização   |         |  (Arquivos JSON)|         |  Pesquisa        |
 |                  |         |                  |         |                  |
 +------------------+         +------------------+         +------------------+
         ^                                                        ^
@@ -57,16 +57,16 @@ O NoteSync é uma aplicação de notas com sincronização em nuvem, construída
 
 - **API Gateway**: Roteamento e middleware central
 - **Microserviços**: Serviços independentes para autenticação, cadernos, notas, etiquetas, pesquisa e sincronização
-- **ORM**: Prisma para acesso ao banco de dados
+- **Acesso a Dados**: fs-extra para manipulação de arquivos JSON
 - **Autenticação**: JWT com refresh tokens
 - **Validação**: Zod para validação de dados
 - **Logging**: Winston para logs estruturados
 
-### Banco de Dados (PostgreSQL)
+### Armazenamento de Dados (Arquivos JSON)
 
-- **Modelagem**: Esquema relacional com suporte a JSON para conteúdo de notas
-- **Pesquisa**: Full-text search com índices GIN e extensão pg_trgm
-- **Segurança**: Row-Level Security (RLS) para isolamento de dados
+- **Modelagem**: Estrutura de dados em formato JSON para notas e cadernos
+- **Pesquisa**: Busca em memória com indexação para melhor performance
+- **Segurança**: Controle de acesso baseado em usuário para isolamento de dados
 
 ### Sincronização (Google Drive)
 
@@ -74,10 +74,10 @@ O NoteSync é uma aplicação de notas com sincronização em nuvem, construída
 - **Estratégia**: Sincronização bidirecional com detecção de conflitos
 - **Formato**: Armazenamento de notas em formato JSON estruturado
 
-### Cache (Redis)
+### Cache (LocalStorage)
 
-- **Uso**: Cache de consultas frequentes e sessões
-- **Invalidação**: Estratégia de invalidação baseada em eventos
+- **Uso**: Cache local para melhorar performance e suporte offline
+- **Sincronização**: Estratégia de sincronização baseada em timestamps e detecção de conflitos
 
 ## Padrões de API
 
@@ -85,7 +85,7 @@ O NoteSync é uma aplicação de notas com sincronização em nuvem, construída
 
 A API segue os princípios RESTful com os seguintes endpoints principais:
 
-```
+```text
 /api/auth       - Autenticação e gerenciamento de usuários
 /api/notebooks  - CRUD de cadernos
 /api/notes      - CRUD de notas
@@ -137,7 +137,7 @@ A autenticação é realizada via JWT com o seguinte fluxo:
 
 Endpoints que retornam listas suportam paginação com os seguintes parâmetros:
 
-```
+```text
 ?page=1       - Página atual (default: 1)
 ?limit=20     - Itens por página (default: 20, max: 100)
 ?sort=title   - Campo para ordenação
@@ -148,7 +148,7 @@ Endpoints que retornam listas suportam paginação com os seguintes parâmetros:
 
 Endpoints suportam filtros via query params:
 
-```
+```text
 ?search=termo         - Pesquisa por termo
 ?tag=tag1,tag2        - Filtro por etiquetas
 ?archived=true        - Incluir itens arquivados
@@ -166,15 +166,15 @@ Endpoints suportam filtros via query params:
 
 ### Serviço → Serviço
 
-- **Protocolo**: HTTP interno ou gRPC para comunicações críticas
-- **Formato**: JSON ou Protocol Buffers
+- **Protocolo**: HTTP interno para comunicações entre serviços
+- **Formato**: JSON para troca de dados
 - **Autenticação**: Tokens de serviço
 
-### Backend → Banco de Dados
+### Backend → Armazenamento de Dados
 
-- **Protocolo**: TCP/IP via Prisma Client
-- **Segurança**: Conexão TLS e credenciais seguras
-- **Pooling**: Pool de conexões gerenciado
+- **Protocolo**: Acesso direto via fs-extra
+- **Segurança**: Permissões de arquivo e controle de acesso
+- **Estrutura**: Organização hierárquica de arquivos JSON
 
 ## Estratégia de Cache
 
@@ -186,14 +186,14 @@ Endpoints suportam filtros via query params:
    - Service Worker para assets estáticos
 
 2. **Cache de API (Backend)**
-   - Redis para cache de respostas frequentes
+   - Cache em memória para respostas frequentes
    - TTL variável por tipo de recurso
    - Invalidação baseada em eventos
 
-3. **Cache de Banco de Dados**
-   - Índices otimizados
-   - Consultas materializadas para relatórios
-   - PgBouncer para pooling de conexões
+3. **Cache de Armazenamento**
+   - Índices em memória para busca rápida
+   - Estruturas otimizadas para consultas frequentes
+   - Carregamento seletivo de dados
 
 ### Políticas de Invalidação
 
@@ -217,12 +217,12 @@ Endpoints suportam filtros via query params:
 3. **Batching**: Agrupamento de operações relacionadas
 4. **Rate Limiting**: Proteção contra abuso de API
 
-### Banco de Dados
+### Armazenamento de Dados
 
-1. **Índices**: Otimizados para padrões de acesso comuns
-2. **Particionamento**: Para tabelas grandes (notas)
-3. **Vacuum**: Manutenção regular para otimização
-4. **Explain Analyze**: Monitoramento de queries lentas
+1. **Indexação**: Índices em memória para busca rápida
+2. **Organização**: Estrutura hierárquica de arquivos por usuário/caderno
+3. **Compressão**: Otimização do tamanho dos arquivos JSON
+4. **Monitoramento**: Análise de performance de leitura/escrita
 
 ## Segurança
 
@@ -237,8 +237,8 @@ Endpoints suportam filtros via query params:
 
 - Criptografia em trânsito (HTTPS)
 - Senhas com hash bcrypt e salt
-- Row-Level Security no PostgreSQL
-- Sanitização de inputs contra XSS e injeção SQL
+- Controle de acesso baseado em usuário para arquivos
+- Sanitização de inputs contra XSS e injeção de código
 
 ### Headers de Segurança
 
@@ -253,7 +253,7 @@ Endpoints suportam filtros via query params:
 
 - Arquitetura stateless para facilitar replicação
 - Load balancing com health checks
-- Sessões compartilhadas via Redis
+- Sessões gerenciadas via JWT
 
 ### Vertical
 
@@ -261,11 +261,11 @@ Endpoints suportam filtros via query params:
 - Monitoramento de uso de CPU/memória
 - Ajuste automático de recursos
 
-### Banco de Dados
+### Armazenamento de Dados
 
-- Read replicas para consultas
-- Sharding para distribuição de carga
-- Connection pooling com PgBouncer
+- Replicação de arquivos para redundância
+- Distribuição por usuário para melhor performance
+- Estratégias de backup automático
 
 ## Monitoramento e Observabilidade
 
