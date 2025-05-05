@@ -77,7 +77,19 @@ echo [INFO] Configurando limpeza para encerramento...
 
 REM Executa o comando npm run dev diretamente (sem cmd /k)
 REM Isso mantém a janela aberta até que o processo seja encerrado
-npm run dev
+echo [DEBUG] Iniciando npm run dev...
+call npm run dev
+if !errorlevel! neq 0 (
+    echo.
+    echo [ERRO] O comando npm run dev falhou com código !errorlevel!
+    echo [DEBUG] Verifique o package.json - possível incompatibilidade de versões
+    echo [DEBUG] Next.js 15.3.1 pode ser incompatível com React 19.0.0
+    cd ..
+    echo.
+    echo Pressione qualquer tecla para fechar esta janela...
+    pause >nul
+    exit /b 1
+)
 
 REM O código abaixo será executado quando o servidor for encerrado
 echo.
