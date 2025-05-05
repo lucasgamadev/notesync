@@ -2,6 +2,8 @@ const express = require("express");
 const expressValidator = require("express-validator");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 const storageService = require("./services/storageService");
 
 // Carrega variáveis de ambiente
@@ -10,10 +12,34 @@ dotenv.config();
 // Inicializa o app Express
 const app = express();
 
+// Configuração do CORS
+const corsOptions = {
+  origin: process.env.FRONTEND_URL || "http://localhost:3000",
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+};
+
+// Configuração do Rate Limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  limit: 100 // limite de 100 requisições por windowMs
+});
+
+// Rate limit específico para autenticação
+const authLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hora
+  limit: 5, // limite de 5 tentativas por hora
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // Middleware
-app.use(cors());
-app.use(express.json());
+app.use(helmet()); // Headers de segurança
+app.use(cors(corsOptions));
+app.use(express.json({ limit: "10kb" })); // Limita o tamanho do payload
 app.use(express.urlencoded({ extended: true }));
+app.use(limiter); // Rate limiting global
 
 // Inicializa o sistema de armazenamento JSON
 storageService.initStorage().catch((err) => {
@@ -38,6 +64,7 @@ const syncRoutes = require("./routes/syncRoutes");
 // const userRoutes = require('./routes/userRoutes');
 
 // Configuração das rotas
+app.use("/api/auth", authLimiter); // Rate limiting específico para auth
 app.use("/api/auth", authRoutes);
 app.use("/api/auth", googleAuthRoutes);
 app.use("/api/auth", googleSignInRoutes);
