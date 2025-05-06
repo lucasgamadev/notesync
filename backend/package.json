@@ -25,12 +25,14 @@
     "express": "^5.1.0",
     "express-rate-limit": "^7.1.5",
     "express-validator": "^7.0.1",
+    "fs-extra": "^11.2.0",
     "google-auth-library": "^9.15.1",
     "googleapis": "^128.0.0",
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "nodemon": "^3.1.10",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "winston": "^3.11.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
