@@ -69,9 +69,19 @@ export const useOfflineSync = () => {
       // Processar operações em ordem
       for (const op of operations) {
         try {
-          // Implementar lógica de envio para o servidor
-          // Exemplo: await api.post(op.endpoint, op.data);
-
+          // Enviar operação para o backend usando apiProxy
+          // op.endpoint deve ser o endpoint da API (ex: '/notes')
+          // op.data deve conter os dados necessários
+          if (op.method === 'POST') {
+            await import('../utils/api').then(({ apiProxy }) => apiProxy.post(op.endpoint, op.data));
+          } else if (op.method === 'PUT') {
+            await import('../utils/api').then(({ apiProxy }) => apiProxy.put(op.endpoint, op.data));
+          } else if (op.method === 'DELETE') {
+            await import('../utils/api').then(({ apiProxy }) => apiProxy.delete(op.endpoint));
+          } else {
+            // Método não suportado
+            throw new Error('Método de operação offline não suportado: ' + op.method);
+          }
           // Se bem-sucedido, adicionar à lista de operações bem-sucedidas
           successfulOps.push(op.id);
         } catch (error) {
