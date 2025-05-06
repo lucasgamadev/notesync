@@ -25,7 +25,7 @@ Este documento rastreia o progresso de implementação dos componentes definidos
 | Editor (TipTap) | 🟢 Completo | Componente TipTapEditor.jsx implementado |
 | Requisições (Axios/React Query) | 🟡 Parcial | Utilitário api.ts implementado |
 | Autenticação (JWT) | 🟡 Parcial | Componente ProtectedRoute.tsx implementado |
-| Suporte Offline | 🟡 Parcial | Hooks useIndexedDB.js e useOfflineSync.js implementados |
+| Suporte Offline | 🟢 Completo | Sincronização automática de operações offline implementada no hook useOfflineSync.js. Notas e alterações feitas offline são enviadas ao backend assim que o usuário volta a ficar online. |
 
 ### Backend (Express)
 
@@ -106,3 +106,4 @@ Para atualizar o status de um componente, modifique a tabela correspondente e ad
 | 01/06/2023 | Logging (Winston) | 🟢 Completo | Implementação do serviço de logging com Winston e middleware de logging |
 | 01/06/2023 | Cache e Otimização | 🟢 Completo | Implementação do serviço de cache em memória e middleware de cache HTTP |
 | 2025-05-06 | Validação (Zod) Backend | 🟢 Completo | Implementação de validação robusta com Zod no endpoint de criação de notas, garantindo integridade dos dados recebidos pela API. |
+| 2025-05-06 | Suporte Offline Frontend | 🟢 Completo | Implementação da sincronização real das operações offline no hook useOfflineSync.js, garantindo envio automático ao backend. |
