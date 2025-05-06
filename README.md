@@ -16,6 +16,11 @@ O NoteSync é um sistema web moderno para criação e gerenciamento de notas org
 
 ## Tecnologias Utilizadas
 
+### Arquitetura
+
+- **Microserviços**: Arquitetura baseada em serviços independentes para autenticação, cadernos, notas, etiquetas, pesquisa e sincronização
+- Para detalhes completos, consulte o [diagrama de arquitetura](./docs/architecture.md)
+
 ### Frontend
 
 - **Next.js 14**: Framework React com renderização híbrida para melhor performance e SEO
@@ -24,6 +29,7 @@ O NoteSync é um sistema web moderno para criação e gerenciamento de notas org
 - **TipTap**: Editor de texto rico baseado em ProseMirror
 - **Zustand**: Gerenciamento de estado global simplificado
 - **React Query**: Gerenciamento de estado do servidor e cache
+- **Axios**: Cliente HTTP para requisições à API
 
 ### Backend
 
@@ -32,11 +38,14 @@ O NoteSync é um sistema web moderno para criação e gerenciamento de notas org
 - **fs-extra**: Extensão do fs para manipulação de arquivos JSON
 - **JWT**: Autenticação baseada em tokens
 - **Google Drive API**: Integração para sincronização de dados
+- **Zod**: Validação de dados e schemas
+- **Winston**: Sistema de logging estruturado
 
 ### Armazenamento de Dados
 
 - **Arquivos JSON**: Armazenamento simples e portátil em formato JSON
-- **LocalStorage**: Cache local para melhorar a performance e suporte offline
+- **Redis**: Cache distribuído para melhorar a performance
+- **LocalStorage**: Cache local para suporte offline no frontend
 
 ### DevOps
 
@@ -45,7 +54,14 @@ O NoteSync é um sistema web moderno para criação e gerenciamento de notas org
 - **Vercel/Netlify**: Hospedagem do frontend
 - **Railway/Render**: Hospedagem do backend
 
-Para informações detalhadas sobre o fluxo de trabalho de desenvolvimento, consulte o arquivo [WORKFLOW.md](./WORKFLOW.md).
+## Documentação Técnica
+
+- [Arquitetura Técnica](./docs/architecture.md): Diagrama e detalhes da arquitetura de microserviços
+- [Esquema de Dados](./docs/data_schema.md): Estrutura dos arquivos JSON e relacionamentos
+- [Workflow de Desenvolvimento](./docs/WORKFLOW.md): Processo de desenvolvimento completo
+- [Workflow Frontend](./docs/WORKFLOW-FRONTEND.md): Detalhes específicos do desenvolvimento frontend
+- [Mock API](./docs/MOCK_API_README.md): Sistema para desenvolvimento frontend independente
+- [Requisitos](./docs/requirements.md): User stories e critérios de aceitação
 
 ## Como Iniciar o Desenvolvimento
 
@@ -54,6 +70,7 @@ Para informações detalhadas sobre o fluxo de trabalho de desenvolvimento, cons
 - Node.js (v18 ou superior)
 - Docker e Docker Compose
 - Conta no Google Cloud Platform (para API do Google Drive)
+- Redis (opcional, para ambiente de desenvolvimento completo)
 
 ### Passos Iniciais
 
@@ -113,6 +130,10 @@ npm run dev
 
 9. Acesse a aplicação em `http://localhost:3000`
 
+### Desenvolvimento Frontend Independente
+
+O NoteSync suporta desenvolvimento frontend sem necessidade do backend, utilizando um sistema de Mock API. Para detalhes, consulte [MOCK_API_README.md](./docs/MOCK_API_README.md).
+
 ## Estrutura de Diretórios
 
 ```text
@@ -120,15 +141,20 @@ notesync/
 ├── backend/                # Servidor Node.js/Express
 │   ├── data/              # Diretório para arquivos JSON
 │   ├── src/
-│   │   ├── controllers/    # Controladores das rotas
-│   │   ├── middlewares/    # Middlewares Express
-│   │   ├── models/         # Modelos de dados
-│   │   ├── routes/         # Definição de rotas
-│   │   ├── services/       # Lógica de negócios
-│   │   ├── utils/          # Utilitários
-│   │   └── app.js          # Configuração do Express
-│   ├── .env                # Variáveis de ambiente
-│   └── package.json        # Dependências do backend
+│   │   ├── api/           # API Gateway
+│   │   ├── services/      # Microserviços
+│   │   │   ├── auth/      # Serviço de autenticação
+│   │   │   ├── notebooks/ # Serviço de cadernos
+│   │   │   ├── notes/     # Serviço de notas
+│   │   │   ├── tags/      # Serviço de etiquetas
+│   │   │   ├── search/    # Serviço de pesquisa
+│   │   │   └── sync/      # Serviço de sincronização
+│   │   ├── middlewares/   # Middlewares Express
+│   │   ├── models/        # Modelos de dados
+│   │   ├── utils/         # Utilitários
+│   │   └── app.js         # Configuração do Express
+│   ├── .env               # Variáveis de ambiente
+│   └── package.json       # Dependências do backend
 │
 ├── frontend/              # Aplicação Next.js
 │   ├── public/            # Arquivos estáticos
@@ -138,11 +164,14 @@ notesync/
 │   │   ├── hooks/          # Hooks personalizados
 │   │   ├── lib/            # Bibliotecas e utilitários
 │   │   ├── services/       # Serviços de API
+│   │   ├── utils/          # Utilitários
+│   │   │   └── mockApi.ts  # Sistema de Mock API
 │   │   ├── store/          # Estado global (Zustand)
 │   │   └── styles/         # Estilos globais
 │   ├── .env                # Variáveis de ambiente
 │   └── package.json        # Dependências do frontend
 │
+├── docs/                  # Documentação técnica
 ├── docker-compose.yml     # Configuração do Docker
 └── README.md              # Documentação do projeto
 ```
