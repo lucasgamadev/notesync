@@ -40,7 +40,7 @@ Este documento rastreia o progresso de implementação dos componentes definidos
 | Microserviço de Sincronização | 🟡 Parcial | Serviços básicos implementados |
 | Acesso a Dados (fs-extra) | 🟢 Completo | Serviço storageService.js implementado |
 | Autenticação (JWT) | 🟢 Completo | Middleware authenticateToken.js implementado |
-| Validação (Zod) | 🟡 Parcial | Implementação básica |
+| Validação (Zod) | 🟢 Completo | Validação robusta implementada com Zod no endpoint de criação de notas. Agora o backend retorna mensagens detalhadas de erro para requisições inválidas. |
 | Logging (Winston) | 🟢 Completo | Serviço loggerService.js e middleware loggingMiddleware.js implementados |
 
 ### Armazenamento de Dados (Arquivos JSON)
@@ -105,3 +105,4 @@ Para atualizar o status de um componente, modifique a tabela correspondente e ad
 |------|------------------------|-------------|---------------------------|
 | 01/06/2023 | Logging (Winston) | 🟢 Completo | Implementação do serviço de logging com Winston e middleware de logging |
 | 01/06/2023 | Cache e Otimização | 🟢 Completo | Implementação do serviço de cache em memória e middleware de cache HTTP |
+| 2025-05-06 | Validação (Zod) Backend | 🟢 Completo | Implementação de validação robusta com Zod no endpoint de criação de notas, garantindo integridade dos dados recebidos pela API. |
