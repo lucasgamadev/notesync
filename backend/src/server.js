@@ -5,6 +5,8 @@ const dotenv = require("dotenv");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const storageService = require("./services/storageService");
+const loggerService = require("./services/loggerService");
+const loggingMiddleware = require("./middleware/loggingMiddleware");
 
 // Carrega variáveis de ambiente
 dotenv.config();
@@ -40,10 +42,11 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: "10kb" })); // Limita o tamanho do payload
 app.use(express.urlencoded({ extended: true }));
 app.use(limiter); // Rate limiting global
+app.use(loggingMiddleware); // Logging de requisições HTTP
 
 // Inicializa o sistema de armazenamento JSON
 storageService.initStorage().catch((err) => {
-  console.error("Falha ao inicializar o sistema de armazenamento:", err);
+  loggerService.error("Falha ao inicializar o sistema de armazenamento", { error: err.message });
   process.exit(1);
 });
 
@@ -82,7 +85,7 @@ app.use((req, res) => {
 
 // Middleware para tratamento de erros - movido para depois das rotas
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  loggerService.error("Erro interno do servidor", { error: err.message, stack: err.stack });
   res.status(500).json({
     message: "Erro interno do servidor",
     error: process.env.NODE_ENV === "development" ? err.message : undefined
@@ -92,6 +95,7 @@ app.use((err, req, res, next) => {
 // Inicializa o servidor
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
+  loggerService.info(`Servidor rodando na porta ${PORT} com armazenamento JSON`);
   console.log(`Servidor rodando na porta ${PORT} com armazenamento JSON`);
 });
 
