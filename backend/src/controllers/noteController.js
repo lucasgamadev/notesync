@@ -1,4 +1,5 @@
 const storageService = require("../services/storageService");
+const { z } = require("zod");
 
 /**
  * Controlador para gerenciamento de notas
@@ -53,16 +54,30 @@ const getNoteById = async (req, res) => {
   }
 };
 
+// Esquema de validação para criação de nota
+const noteCreateSchema = z.object({
+  title: z.string().min(1, "O título da nota é obrigatório"),
+  content: z.string().optional(),
+  notebookId: z.string().optional(),
+  tags: z.array(z.string()).optional()
+});
+
 // Criar uma nova nota
 const createNote = async (req, res) => {
   try {
-    const { title, content, notebookId, tags: tagIds } = req.body;
-    const userId = req.user.id;
-
-    // Validar dados
-    if (!title) {
-      return res.status(400).json({ message: "O título da nota é obrigatório" });
+    // Validação com Zod
+    const parseResult = noteCreateSchema.safeParse(req.body);
+    if (!parseResult.success) {
+      return res.status(400).json({
+        message: "Dados inválidos",
+        errors: parseResult.error.errors.map((e) => ({
+          campo: e.path.join("."),
+          mensagem: e.message
+        }))
+      });
     }
+    const { title, content, notebookId, tags: tagIds } = parseResult.data;
+    const userId = req.user.id;
 
     // Verificar se o caderno existe
     if (notebookId) {
@@ -76,7 +91,6 @@ const createNote = async (req, res) => {
     let noteTags = [];
     if (tagIds && tagIds.length > 0) {
       const allTags = await storageService.getAllTags(userId);
-
       // Filtrar apenas as tags que existem
       noteTags = allTags.filter((tag) => tagIds.includes(tag.id));
     }
