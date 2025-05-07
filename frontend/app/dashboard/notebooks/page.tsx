@@ -88,23 +88,27 @@ const NotebookModal = ({
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-sm font-semibold text-gray-800 mb-1">Título</label>
+            <label htmlFor="notebook-title" className="block text-sm font-semibold text-gray-800 mb-1">Título</label>
             <input
+              id="notebook-title"
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               required
+              placeholder="Digite o título do caderno"
             />
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-semibold text-gray-800 mb-1">Descrição</label>
+            <label htmlFor="notebook-description" className="block text-sm font-semibold text-gray-800 mb-1">Descrição</label>
             <textarea
+              id="notebook-description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               rows={3}
+              placeholder="Digite uma descrição para o caderno"
             />
           </div>
 
@@ -341,12 +345,12 @@ export default function NotebooksPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-gray-100 flex flex-col">
         <Sidebar />
 
         <div className="ml-64 p-8">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-black">Meus Cadernos</h2>
+            <h2 className="text-2xl font-bold text-blue-700">Meus Cadernos</h2>
 
             <div className="flex space-x-4">
               {/* Botões de visualização */}
