@@ -89,13 +89,15 @@ const TagModal = ({
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-sm font-semibold text-black mb-1">Nome</label>
+            <label htmlFor="tag-name" className="block text-sm font-semibold text-black mb-1">Nome</label>
             <input
+              id="tag-name"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               required
+              placeholder="Digite o nome da etiqueta"
             />
           </div>
 
@@ -330,12 +332,12 @@ export default function TagsPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-gray-100 flex flex-col">
         <Sidebar />
 
         <div className="ml-64 p-8">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-black">Minhas Etiquetas</h2>
+            <h2 className="text-2xl font-bold text-blue-700">Minhas Etiquetas</h2>
 
             <div className="flex space-x-4">
               {/* Botões de visualização */}
