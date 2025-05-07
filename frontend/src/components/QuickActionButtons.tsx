@@ -67,20 +67,19 @@ export default function QuickActionButtons() {
   
   return (
     <div className="mb-8">
-      <div className="flex space-x-4">
+      <div className="flex flex-col gap-3 w-full">
         <button
           onClick={() => setIsNoteModalOpen(true)}
-          className="flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+          className="flex items-center justify-center px-2 py-1 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors w-full"
         >
-          <span className="mr-2">📝</span>
+          <span className="mr-1">📝</span>
           Nova Nota
         </button>
-        
         <button
           onClick={() => setIsNotebookModalOpen(true)}
-          className="flex items-center justify-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+          className="flex items-center justify-center px-2 py-1 text-sm bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors w-full"
         >
-          <span className="mr-2">📘</span>
+          <span className="mr-1">📘</span>
           Novo Caderno
         </button>
       </div>
