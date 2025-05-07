@@ -74,21 +74,22 @@ A cada revisão semanal, os seguintes documentos devem ser atualizados:
 ## Template para Atualização Semanal
 
 ```markdown
-## Atualização Semanal - [Data]
+## Atualização Semanal - 07/05/2025
 
 ### Progresso
 
-- [Componente]: [Descrição do progresso]
-- [Componente]: [Descrição do progresso]
+- Frontend (Zustand): Iniciado desenvolvimento de hooks para filtros avançados de notas.
+- Backend (Sincronização): Implementada lógica inicial de resolução de conflitos.
+- Sincronização Google Drive: Adicionado suporte a merge automático.
 
 ### Bloqueios
 
-- [Descrição do bloqueio e plano de ação]
+- Falta de testes automatizados para cenários de conflito de sincronização.
 
 ### Próximos Passos
 
-- [Tarefa] - [Responsável] - [Data prevista]
-- [Tarefa] - [Responsável] - [Data prevista]
+- Finalizar integração do React Query - Lucas - 14/05/2025
+- Testar fluxo offline/online completo - Equipe - 16/05/2025
 
 ### Métricas
 
