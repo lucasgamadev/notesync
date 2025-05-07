@@ -3,50 +3,7 @@
 import ProtectedRoute from "@/src/components/ProtectedRoute";
 import QuickActionButtons from "@/src/components/QuickActionButtons";
 
-// Componente de Sidebar
-const Sidebar = () => {
-  return (
-    <div className="w-64 bg-indigo-800 text-white h-full fixed left-0 top-0 overflow-y-auto">
-      <div className="p-4">
-        <h1 className="text-2xl font-bold text-white mb-8">NoteSync</h1>
-
-        <nav className="space-y-2">
-          <a
-            href="/dashboard"
-            className="block py-2.5 px-4 rounded bg-indigo-900 hover:bg-indigo-700 text-gray-300"
-          >
-            Dashboard
-          </a>
-          <a href="/dashboard/notebooks" className="block py-2.5 px-4 rounded hover:bg-indigo-700 text-gray-300">
-            Cadernos
-          </a>
-          <a href="/dashboard/notes" className="block py-2.5 px-4 rounded hover:bg-indigo-700 text-gray-300">
-            Notas
-          </a>
-          <a href="/dashboard/tags" className="block py-2.5 px-4 rounded hover:bg-indigo-700 text-gray-300">
-            Etiquetas
-          </a>
-        </nav>
-      </div>
-
-      <div className="absolute bottom-0 left-0 right-0 p-4">
-        <a href="/dashboard/settings" className="block py-2.5 px-4 rounded hover:bg-indigo-700 text-gray-300">
-          Configurações
-        </a>
-        <button
-          className="block w-full text-left py-2.5 px-4 rounded hover:bg-indigo-700 text-gray-300"
-          onClick={() => {
-            localStorage.removeItem("accessToken");
-            localStorage.removeItem("refreshToken");
-            window.location.href = "/login";
-          }}
-        >
-          Sair
-        </button>
-      </div>
-    </div>
-  );
-};
+import Sidebar from "@/src/components/Sidebar";
 
 // Componente de Estatísticas
 const StatsWidget = ({
@@ -120,52 +77,49 @@ export default function Dashboard() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-gray-100 flex">
+        {/* Sidebar fixa à esquerda */}
         <Sidebar />
 
-        <div className="ml-64 p-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Dashboard</h2>
-          
-          {/* Botões de Ação Rápida */}
-          <QuickActionButtons />
-
-          {/* Estatísticas */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {stats.map((stat, index) => (
-              <StatsWidget key={index} title={stat.title} value={stat.value} icon={stat.icon} />
-            ))}
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Atividade Recente */}
-            <RecentActivity />
-
-            {/* Notas Recentes */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">Notas Recentes</h3>
-              <div className="space-y-2">
-                <a href="#" className="block p-3 hover:bg-gray-50 rounded">
-                  <p className="font-semibold text-gray-800">Anotações de Reunião</p>
-                  <p className="text-sm text-gray-700 font-medium">Atualizado há 2 horas</p>
-                </a>
-                <a href="#" className="block p-3 hover:bg-gray-50 rounded">
-                  <p className="font-semibold text-gray-800">Lista de Tarefas</p>
-                  <p className="text-sm text-gray-700 font-medium">Atualizado há 1 dia</p>
-                </a>
-                <a href="#" className="block p-3 hover:bg-gray-50 rounded">
-                  <p className="font-semibold text-gray-800">Ideias para Projeto</p>
-                  <p className="text-sm text-gray-700 font-medium">Atualizado há 3 dias</p>
-                </a>
-              </div>
-              <a
-                href="/dashboard/notes"
-                className="text-indigo-700 text-sm font-semibold mt-4 inline-block"
-              >
-                Ver todas as notas
+        {/* Conteúdo principal simplificado, inspirado no Evernote */}
+        <main className="flex-1 ml-64 flex flex-row min-h-screen">
+          {/* Coluna 1: Lista de Cadernos/Notas com botões de ação rápida */}
+          <section className="w-80 bg-white border-r border-gray-200 h-screen pt-8 px-4 pb-4 overflow-y-auto hidden md:flex flex-col">
+            <div className="mb-6">
+              <QuickActionButtons />
+            </div>
+            <h2 className="text-lg font-bold text-blue-700 mb-6">Notas</h2>
+            {/* Lista de notas/cadernos */}
+            <div className="space-y-4 flex-1">
+              <a href="#" className="block p-3 hover:bg-blue-50 rounded">
+                <p className="font-semibold text-gray-800">Anotações de Reunião</p>
+                <p className="text-xs text-gray-500">Atualizado há 2 horas</p>
+              </a>
+              <a href="#" className="block p-3 hover:bg-blue-50 rounded">
+                <p className="font-semibold text-gray-800">Lista de Tarefas</p>
+                <p className="text-xs text-gray-500">Atualizado há 1 dia</p>
+              </a>
+              <a href="#" className="block p-3 hover:bg-blue-50 rounded">
+                <p className="font-semibold text-gray-800">Ideias para Projeto</p>
+                <p className="text-xs text-gray-500">Atualizado há 3 dias</p>
               </a>
             </div>
-          </div>
-        </div>
+            <a
+              href="/dashboard/notes"
+              className="text-blue-700 text-sm font-semibold mt-6 inline-block"
+            >
+              Ver todas as notas
+            </a>
+          </section>
+
+          {/* Coluna 2: Painel do editor */}
+          <section className="flex-1 flex flex-col items-center justify-center bg-gray-50 h-screen p-4 md:p-8 overflow-y-auto min-w-0">
+            {/* Aqui pode entrar o componente de editor de nota, como o TipTapEditor */}
+            <div className="w-full max-w-3xl h-full flex items-center justify-center text-gray-400">
+              <span>Selecione ou crie uma nota para editar</span>
+            </div>
+          </section>
+        </main>
       </div>
     </ProtectedRoute>
   );
