@@ -1,6 +1,7 @@
 "use client";
 
 import ProtectedRoute from "@/src/components/ProtectedRoute";
+import Sidebar from "@/src/components/Sidebar";
 import { useState } from "react";
 
 // Componente de Card para Etiqueta
@@ -286,56 +287,15 @@ export default function TagsPage() {
   };
 
   // Componente de Sidebar (reutilizado do Dashboard)
-  const Sidebar = () => {
-    return (
-      <div className="w-64 bg-indigo-800 text-white h-full fixed left-0 top-0 overflow-y-auto">
-        <div className="p-4">
-          <h1 className="text-2xl font-bold text-white mb-8">NoteSync</h1>
+  // Sidebar removida. Usar componente Sidebar global
 
-          <nav className="space-y-2">
-            <a href="/dashboard" className="block py-2.5 px-4 rounded hover:bg-indigo-700">
-              Dashboard
-            </a>
-            <a href="/dashboard/notebooks" className="block py-2.5 px-4 rounded hover:bg-indigo-700">
-              Cadernos
-            </a>
-            <a href="/dashboard/notes" className="block py-2.5 px-4 rounded hover:bg-indigo-700">
-              Notas
-            </a>
-            <a
-              href="/dashboard/tags"
-              className="block py-2.5 px-4 rounded bg-indigo-900 hover:bg-indigo-700"
-            >
-              Etiquetas
-            </a>
-          </nav>
-        </div>
-
-        <div className="absolute bottom-0 left-0 right-0 p-4">
-          <a href="/dashboard/settings" className="block py-2.5 px-4 rounded hover:bg-indigo-700">
-            Configurações
-          </a>
-          <button
-            className="block w-full text-left py-2.5 px-4 rounded hover:bg-indigo-700"
-            onClick={() => {
-              localStorage.removeItem("accessToken");
-              localStorage.removeItem("refreshToken");
-              window.location.href = "/login";
-            }}
-          >
-            Sair
-          </button>
-        </div>
-      </div>
-    );
-  };
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-gray-100 flex flex-col">
+      <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-gray-100 flex">
         <Sidebar />
 
-        <div className="ml-64 p-8">
+        <div className="ml-64 p-8 w-full">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-blue-700">Minhas Etiquetas</h2>
 
