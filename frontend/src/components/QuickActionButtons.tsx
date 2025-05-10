@@ -22,27 +22,10 @@ export default function QuickActionButtons() {
   // Estados para novo caderno
   const [notebookName, setNotebookName] = useState('');
   
-  // Função para criar uma nova nota rapidamente
-  const handleCreateNote = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post('/api/notes', {
-        title: noteTitle,
-        content: noteContent,
-        notebookId: 'notebook1', // Usa o caderno padrão 'Geral'
-      });
-      
-      // Redireciona para a nota criada
-      router.push(`/dashboard/notes/${response.data.id}`);
-      setIsNoteModalOpen(false);
-      
-      // Limpa os campos
-      setNoteTitle('');
-      setNoteContent('');
-    } catch (error) {
-      console.error('Erro ao criar nota:', error);
-      alert('Não foi possível criar a nota. Tente novamente.');
-    }
+  // Função para redirecionar para a página de criação de nova nota
+  const handleCreateNote = () => {
+    // Redireciona para a página de criação de nova nota
+    router.push('/dashboard/notes/new');
   };
   
   // Função para criar um novo caderno rapidamente
@@ -66,73 +49,25 @@ export default function QuickActionButtons() {
   };
   
   return (
-    <div className="mb-8">
-      <div className="flex flex-col gap-3 w-full">
-        <button
-          onClick={() => setIsNoteModalOpen(true)}
-          className="flex items-center justify-center px-2 py-1 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors w-full"
-        >
-          <span className="mr-1">📝</span>
-          Nova Nota
-        </button>
-        <button
-          onClick={() => setIsNotebookModalOpen(true)}
-          className="flex items-center justify-center px-2 py-1 text-sm bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors w-full"
-        >
-          <span className="mr-1">📘</span>
-          Novo Caderno
-        </button>
-      </div>
-      
-      {/* Modal para criar nota */}
-      {isNoteModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg w-full max-w-md p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Nova Nota</h2>
-            
-            <form onSubmit={handleCreateNote}>
-              <div className="mb-4">
-                <label className="block text-sm font-semibold text-gray-800 mb-1">Título</label>
-                <input
-                  type="text"
-                  value={noteTitle}
-                  onChange={(e) => setNoteTitle(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="Digite o título da nota"
-                  required
-                />
-              </div>
-              
-              <div className="mb-4">
-                <label className="block text-sm font-semibold text-gray-800 mb-1">Conteúdo</label>
-                <textarea
-                  value={noteContent}
-                  onChange={(e) => setNoteContent(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 h-32"
-                  placeholder="Digite o conteúdo da nota"
-                  required
-                />
-              </div>
-              
-              <div className="flex justify-end space-x-3">
-                <button
-                  type="button"
-                  onClick={() => setIsNoteModalOpen(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-800 font-medium hover:bg-gray-50"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-                >
-                  Criar Nota
-                </button>
-              </div>
-            </form>
-          </div>
+    <>
+      <div className="mb-8">
+        <div className="flex flex-col gap-3 w-full">
+          <button
+            onClick={handleCreateNote}
+            className="flex items-center justify-center px-2 py-1 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors w-full"
+          >
+            <span className="mr-1">📝</span>
+            Nova Nota
+          </button>
+          <button
+            onClick={() => setIsNotebookModalOpen(true)}
+            className="flex items-center justify-center px-2 py-1 text-sm bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors w-full"
+          >
+            <span className="mr-1">📘</span>
+            Novo Caderno
+          </button>
         </div>
-      )}
+      </div>
       
       {/* Modal para criar caderno */}
       {isNotebookModalOpen && (
@@ -172,6 +107,6 @@ export default function QuickActionButtons() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
