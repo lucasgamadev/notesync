@@ -77,12 +77,8 @@ export default function Dashboard() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-gray-100 flex">
-        {/* Sidebar fixa à esquerda */}
-        <Sidebar />
-
-        {/* Conteúdo principal simplificado, inspirado no Evernote */}
-        <main className="flex-1 ml-64 flex flex-row min-h-screen">
+      {/* Conteúdo principal simplificado, inspirado no Evernote */}
+      <main className="flex flex-row min-h-screen">
           {/* Coluna 1: Lista de Cadernos/Notas com botões de ação rápida */}
           <section className="w-80 bg-white border-r border-gray-200 h-screen pt-8 px-4 pb-4 overflow-y-auto hidden md:flex flex-col">
             <div className="mb-6">
@@ -114,13 +110,15 @@ export default function Dashboard() {
 
           {/* Coluna 2: Painel do editor */}
           <section className="flex-1 flex flex-col items-center justify-center bg-gray-50 h-screen p-4 md:p-8 overflow-y-auto min-w-0">
-            {/* Aqui pode entrar o componente de editor de nota, como o TipTapEditor */}
-            <div className="w-full max-w-3xl h-full flex items-center justify-center text-gray-400">
-              <span>Selecione ou crie uma nota para editar</span>
+            {/* Área de edição de nota */}
+            <div className="w-full max-w-3xl h-full">
+              {/* Componente de edição de nota será renderizado aqui quando uma nota for selecionada */}
+              <div className="flex items-center justify-center h-full text-gray-400">
+                <span>Selecione ou crie uma nota para editar</span>
+              </div>
             </div>
           </section>
         </main>
-      </div>
     </ProtectedRoute>
   );
 }
