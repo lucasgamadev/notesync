@@ -1,7 +1,7 @@
 "use client";
 
 import ProtectedRoute from "@/src/components/ProtectedRoute";
-import Sidebar from "@/src/components/Sidebar";
+
 import { useState } from "react";
 
 // Componente de Card para Etiqueta
@@ -292,10 +292,7 @@ export default function TagsPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-gray-100 flex">
-        <Sidebar />
-
-        <div className="ml-64 p-8 w-full">
+      <div className="p-8 w-full">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-blue-700">Minhas Etiquetas</h2>
 
@@ -405,7 +402,6 @@ export default function TagsPage() {
             onConfirm={handleConfirmDelete}
           />
         </div>
-      </div>
     </ProtectedRoute>
   );
 }
