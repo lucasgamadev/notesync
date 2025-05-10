@@ -2,6 +2,8 @@
 
 import ProtectedRoute from "@/src/components/ProtectedRoute";
 import QuickActionButtons from "@/src/components/QuickActionButtons";
+import SideNoteEditor from "@/src/components/SideNoteEditor";
+import { useState } from "react";
 
 import Sidebar from "@/src/components/Sidebar";
 
@@ -74,6 +76,15 @@ export default function Dashboard() {
     { title: "Etiquetas", value: 12, icon: "🏷️" },
     { title: "Armazenamento", value: "45%", icon: "☁️" }
   ];
+  
+  // Estado para controlar a exibição do editor de notas
+  const [showNoteEditor, setShowNoteEditor] = useState(false);
+  
+  // Função para abrir o editor de notas
+  const openNoteEditor = () => setShowNoteEditor(true);
+  
+  // Função para fechar o editor de notas
+  const closeNoteEditor = () => setShowNoteEditor(false);
 
   return (
     <ProtectedRoute>
@@ -112,10 +123,21 @@ export default function Dashboard() {
           <section className="flex-1 flex flex-col items-center justify-center bg-gray-50 h-screen p-4 md:p-8 overflow-y-auto min-w-0">
             {/* Área de edição de nota */}
             <div className="w-full max-w-3xl h-full">
-              {/* Componente de edição de nota será renderizado aqui quando uma nota for selecionada */}
-              <div className="flex items-center justify-center h-full text-gray-400">
-                <span>Selecione ou crie uma nota para editar</span>
-              </div>
+              {/* Componente de edição de nota */}
+              {showNoteEditor ? (
+                <SideNoteEditor onClose={closeNoteEditor} />
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full text-gray-500">
+                  <span className="mb-4">Selecione ou crie uma nota para editar</span>
+                  <button
+                    onClick={openNoteEditor}
+                    className="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-md flex items-center shadow-md font-bold"
+                  >
+                    <span className="mr-2">📝</span>
+                    Nova Nota
+                  </button>
+                </div>
+              )}
             </div>
           </section>
         </main>
