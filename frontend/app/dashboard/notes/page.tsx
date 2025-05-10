@@ -1,8 +1,6 @@
 "use client";
 
-import FloatingActionButton from "@/src/components/FloatingActionButton";
 import ProtectedRoute from "@/src/components/ProtectedRoute";
-import Sidebar from "@/src/components/Sidebar";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import "./notes.css";
@@ -213,11 +211,7 @@ export default function NotesPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-gray-100 flex">
-        <Sidebar />
-        <FloatingActionButton />
-
-        <div className="ml-64 p-8 w-full">
+      <div className="p-8 w-full">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-blue-700">Minhas Notas</h2>
             <div className="flex space-x-4">
@@ -338,8 +332,7 @@ export default function NotesPage() {
             </div>
           )}
         </div>
-      </div>
     </ProtectedRoute>
   );
-};
+}
 
