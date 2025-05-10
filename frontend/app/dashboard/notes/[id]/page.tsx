@@ -33,6 +33,8 @@ interface Tag {
  *
  * Permite visualizar, editar ou criar uma nova nota com editor rich text.
  * Suporta formatação avançada, imagens, links e tabelas.
+ * 
+ * Modificado para ser exibido diretamente no painel lateral direito, sem modal.
  */
 export default function NotePage({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -275,68 +277,10 @@ export default function NotePage({ params }: { params: { id: string } }) {
     );
   };
 
-  // Componente de Sidebar (reutilizado do Dashboard)
-  const Sidebar = () => {
-    return (
-      <div className="w-64 bg-indigo-800 text-white h-full fixed left-0 top-0 overflow-y-auto">
-        <div className="p-4">
-          <h1 className="text-2xl font-bold mb-8">NoteSync</h1>
-
-          <nav className="space-y-2">
-            <a
-              href="/dashboard"
-              className="block py-2.5 px-4 rounded hover:bg-indigo-700 text-gray-300"
-            >
-              Dashboard
-            </a>
-            <a
-              href="/dashboard/notebooks"
-              className="block py-2.5 px-4 rounded hover:bg-indigo-700 text-gray-300"
-            >
-              Cadernos
-            </a>
-            <a
-              href="/dashboard/notes"
-              className="block py-2.5 px-4 rounded bg-indigo-900 hover:bg-indigo-700 text-gray-300"
-            >
-              Notas
-            </a>
-            <a
-              href="/dashboard/tags"
-              className="block py-2.5 px-4 rounded hover:bg-indigo-700 text-gray-300"
-            >
-              Etiquetas
-            </a>
-          </nav>
-        </div>
-
-        <div className="absolute bottom-0 left-0 right-0 p-4">
-          <a
-            href="/dashboard/settings"
-            className="block py-2.5 px-4 rounded hover:bg-indigo-700 text-gray-300"
-          >
-            Configurações
-          </a>
-          <button
-            className="block w-full text-left py-2.5 px-4 rounded hover:bg-indigo-700 text-gray-300"
-            onClick={() => {
-              localStorage.removeItem("accessToken");
-              localStorage.removeItem("refreshToken");
-              window.location.href = "/login";
-            }}
-          >
-            Sair
-          </button>
-        </div>
-      </div>
-    );
-  };
+  // Sidebar removida, agora usando o componente global do layout raiz
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Sidebar />
-
-      <div className="ml-64 p-8">
+    <div className="p-8">
         <h1 className="text-2xl font-bold text-gray-900 mb-6 pb-2 border-b border-gray-200">
           {isNewNote ? "Nova Nota" : "Editar Nota"}
         </h1>
@@ -446,7 +390,6 @@ export default function NotePage({ params }: { params: { id: string } }) {
           </div>
         )}
       </div>
-    </div>
   );
 }
 
