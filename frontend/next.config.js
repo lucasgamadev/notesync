@@ -1,5 +1,12 @@
 /** @type {import('next').NextConfig} */
-const withPWA = require("./next-pwa.config");
+import withPWA from 'next-pwa';
+
+const pwaConfig = withPWA({
+  dest: "public",
+  disable: process.env.NODE_ENV === "development",
+  register: true,
+  skipWaiting: true
+});
 
 const nextConfig = {
   eslint: {
@@ -21,4 +28,4 @@ const nextConfig = {
   }
 };
 
-module.exports = withPWA(nextConfig);
+export default pwaConfig(nextConfig);
