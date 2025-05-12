@@ -34,7 +34,7 @@ export default function QuickActionButtons() {
   const handleCreateNotebook = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/api/notebooks', {
+      await axios.post('/api/notebooks', {
         name: notebookName,
       });
       
@@ -71,9 +71,13 @@ export default function QuickActionButtons() {
         </div>
       </div>
       
-      {/* Editor lateral para criar nova nota */}
+      {/* Editor para criar nova nota */}
       {isNoteEditorOpen && (
-        <SideNoteEditor onClose={handleCloseNoteEditor} />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="w-full max-w-4xl h-[80vh] m-4">
+            <SideNoteEditor onClose={handleCloseNoteEditor} />
+          </div>
+        </div>
       )}
       
       {/* Modal para criar caderno */}
