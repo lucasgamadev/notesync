@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import TipTapEditor from './TipTapEditor'; // Importar o TipTapEditor
 
 /**
  * Componente Modal de Criação de Nota
@@ -11,7 +12,7 @@ import { useState, useEffect } from 'react';
 export default function CreateNoteModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [noteTitle, setNoteTitle] = useState('');
-  const [noteContent, setNoteContent] = useState('');
+  const [noteContent, setNoteContent] = useState(''); // Este estado agora receberá HTML do TipTap
 
   // Escuta o evento personalizado para abrir o modal
   useEffect(() => {
@@ -86,12 +87,10 @@ export default function CreateNoteModal() {
 
           <div className="mb-4">
             <label className="block text-sm font-semibold text-gray-800 mb-1">Conteúdo</label>
-            <textarea
-              value={noteContent}
-              onChange={(e) => setNoteContent(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 h-32 transition-colors"
-              placeholder="Digite o conteúdo da nota"
-              required
+            <TipTapEditor
+              initialContent={noteContent}
+              onUpdate={setNoteContent} // Passa a função para atualizar o conteúdo da nota
+              noteId="new-note-modal" // Um ID único para o editor no modal
             />
           </div>
 
