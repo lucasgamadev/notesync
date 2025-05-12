@@ -3,7 +3,6 @@
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import SideNoteEditor from './SideNoteEditor';
 
 /**
  * Componente de Botões de Ação Rápida
@@ -13,22 +12,18 @@ import SideNoteEditor from './SideNoteEditor';
  */
 export default function QuickActionButtons() {
   const router = useRouter();
-  const [isNoteEditorOpen, setIsNoteEditorOpen] = useState(false);
   const [isNotebookModalOpen, setIsNotebookModalOpen] = useState(false);
   
   // Estados para novo caderno
   const [notebookName, setNotebookName] = useState('');
   
-  // Função para abrir o editor lateral de notas
+  // Função para abrir o editor de notas na área principal
   const handleCreateNote = () => {
-    // Abre o editor lateral em vez de redirecionar
-    setIsNoteEditorOpen(true);
+    // Navega para o dashboard com estado para abrir o editor
+    router.push('/dashboard?openEditor=true');
   };
   
-  // Função para fechar o editor lateral
-  const handleCloseNoteEditor = () => {
-    setIsNoteEditorOpen(false);
-  };
+  // Não precisamos mais da função de fechar o editor lateral, pois agora ele é exibido na área principal
   
   // Função para criar um novo caderno rapidamente
   const handleCreateNotebook = async (e: React.FormEvent) => {
@@ -71,14 +66,7 @@ export default function QuickActionButtons() {
         </div>
       </div>
       
-      {/* Editor para criar nova nota */}
-      {isNoteEditorOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="w-full max-w-4xl h-[80vh] m-4">
-            <SideNoteEditor onClose={handleCloseNoteEditor} />
-          </div>
-        </div>
-      )}
+      {/* O editor de notas agora é exibido diretamente na área principal do dashboard */}
       
       {/* Modal para criar caderno */}
       {isNotebookModalOpen && (
