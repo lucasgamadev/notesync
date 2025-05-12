@@ -3,7 +3,7 @@
 import ProtectedRoute from "@/src/components/ProtectedRoute";
 import QuickActionButtons from "@/src/components/QuickActionButtons";
 import SideNoteEditor from "@/src/components/SideNoteEditor";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import Sidebar from "@/src/components/Sidebar";
 
@@ -85,6 +85,17 @@ export default function Dashboard() {
   
   // Função para fechar o editor de notas
   const closeNoteEditor = () => setShowNoteEditor(false);
+  
+  // Verificar se há parâmetro de consulta para abrir o editor
+  useEffect(() => {
+    // Verificar se estamos no navegador
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('openEditor') === 'true') {
+        setShowNoteEditor(true);
+      }
+    }
+  }, []);
 
   return (
     <ProtectedRoute>
