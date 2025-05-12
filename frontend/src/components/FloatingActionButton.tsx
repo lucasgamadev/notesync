@@ -26,9 +26,9 @@ export default function FloatingActionButton() {
   // Estados para novo caderno
   const [notebookName, setNotebookName] = useState('');
   
-  // Função para redirecionar para a página de criação de nova nota
+  // Função para abrir o modal de criação de nota
   const handleCreateNote = () => {
-    // Redireciona para a página de criação de nova nota
+    // Redireciona para a página de criação de nota
     router.push('/dashboard/notes/new');
     setIsNoteModalOpen(false);
     setIsExpanded(false);
