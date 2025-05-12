@@ -39,7 +39,7 @@ export default function NotesPage() {
   const [newNoteTitle, setNewNoteTitle] = useState("");
   const [newNoteContent, setNewNoteContent] = useState("");
 
-  // Buscar notas do backend
+  // Buscar notas do backend e configurar listener para evento personalizado
   useEffect(() => {
     const fetchNotes = async () => {
       try {
@@ -68,8 +68,21 @@ export default function NotesPage() {
       }
     };
 
+    // Adiciona listener para o evento personalizado que abre o modal de criação de nota
+    const handleOpenCreateNoteModal = () => {
+      setIsCreateModalOpen(true);
+    };
+
+    // Registra o listener para o evento personalizado
+    window.addEventListener('openCreateNoteModal', handleOpenCreateNoteModal);
+
     fetchNotes();
     fetchTags();
+
+    // Limpa o listener quando o componente for desmontado
+    return () => {
+      window.removeEventListener('openCreateNoteModal', handleOpenCreateNoteModal);
+    };
   }, []);
 
   // Filtrar notas com base na pesquisa e tags selecionadas
@@ -132,9 +145,10 @@ export default function NotesPage() {
     router.push(`/dashboard/notes/${noteId}`);
   };
 
-  // Função para abrir o modal de criação de nota
+  // Função para redirecionar para a página de criação de notas
   const openCreateNoteModal = () => {
-    setIsCreateModalOpen(true);
+    // Redireciona para a página de criação de nota
+    router.push('/dashboard/notes/new');
   };
 
   // Modal de criação rápida de nota
