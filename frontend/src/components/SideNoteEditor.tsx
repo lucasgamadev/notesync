@@ -10,7 +10,6 @@ import TableCell from '@tiptap/extension-table-cell';
 import TableHeader from '@tiptap/extension-table-header';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 
 // Tipos para as notas e tags
 interface Note {
@@ -33,13 +32,12 @@ interface SideNoteEditorProps {
 }
 
 /**
- * Componente de Editor de Notas Lateral
+ * Componente de Editor de Notas Integrado
  *
- * Permite criar uma nova nota diretamente no painel lateral,
+ * Permite criar uma nova nota diretamente na área principal,
  * sem redirecionar para uma nova página.
  */
 export default function SideNoteEditor({ onClose }: SideNoteEditorProps) {
-  const router = useRouter();
   const [note, setNote] = useState<Partial<Note>>({
     title: "",
     content: "",
@@ -156,18 +154,20 @@ export default function SideNoteEditor({ onClose }: SideNoteEditorProps) {
   };
 
   return (
-    <div className="w-full h-full bg-white rounded-lg shadow-md overflow-y-auto">
-      <div className="p-4 h-full flex flex-col">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-gray-900">Nova Nota</h2>
-          <button 
-            onClick={onClose}
-            className="p-2 rounded-full hover:bg-gray-100"
-            aria-label="Fechar"
-          >
-            ✕
-          </button>
-        </div>
+    <>
+      {/* Editor integrado */}
+      <div className="w-full h-full bg-white rounded-lg shadow-lg overflow-y-auto">
+        <div className="p-6 h-full flex flex-col">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-indigo-700">Criar Nova Nota</h2>
+            <button 
+              onClick={onClose}
+              className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
+              aria-label="Cancelar"
+            >
+              Cancelar
+            </button>
+          </div>
 
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -230,25 +230,20 @@ export default function SideNoteEditor({ onClose }: SideNoteEditorProps) {
             {saveStatus === "saved" && <span className="text-green-600">Salvo</span>}
             {saveStatus === "error" && <span className="text-red-600">Erro ao salvar</span>}
           </div>
-          <div className="flex gap-2">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 border border-gray-300 rounded-md text-gray-800 font-medium hover:bg-gray-50"
-            >
-              Cancelar
-            </button>
+          <div className="flex justify-end">
             <button
               onClick={handleSave}
               disabled={saving || !note.title}
-              className={`px-4 py-2 rounded-md text-white font-medium ${
-                saving || !note.title ? "bg-indigo-400" : "bg-indigo-600 hover:bg-indigo-700"
+              className={`px-5 py-2 rounded-md text-white font-medium shadow-sm transition-colors ${
+                saving || !note.title ? "bg-indigo-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700"
               }`}
             >
-              Salvar
+              Salvar Nota
             </button>
           </div>
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
