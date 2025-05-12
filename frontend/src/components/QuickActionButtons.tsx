@@ -17,10 +17,10 @@ export default function QuickActionButtons() {
   // Estados para novo caderno
   const [notebookName, setNotebookName] = useState('');
   
-  // Função para abrir o editor de notas na área principal
+  // Função para abrir o modal de criação de nota
   const handleCreateNote = () => {
-    // Navega para o dashboard com estado para abrir o editor
-    router.push('/dashboard?openEditor=true');
+    // Redireciona para a página de criação de nota
+    router.push('/dashboard/notes/new');
   };
   
   // Não precisamos mais da função de fechar o editor lateral, pois agora ele é exibido na área principal
