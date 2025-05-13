@@ -346,11 +346,11 @@ export default function NotePage({ params }: { params: { id: string } }) {
             <div>
               <label className="block text-sm font-semibold text-gray-800 mb-1">Caderno</label>
               <select
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900"
                 value={note.notebookId || ""}
                 onChange={(e) => setNote({ ...note, notebookId: e.target.value })}
               >
-                <option value="">Selecione um caderno</option>
+                <option value="" className="text-gray-900 font-bold" style={{color: "#111827"}}>Selecione um caderno</option>
                 {notebooks.map((notebook) => (
                   <option key={notebook.id} value={notebook.id}>
                     {notebook.name}
