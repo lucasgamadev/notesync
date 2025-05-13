@@ -2,8 +2,8 @@
 
 import ProtectedRoute from "@/src/components/ProtectedRoute";
 import QuickActionButtons from "@/src/components/QuickActionButtons";
-import SideNoteEditor from "@/src/components/SideNoteEditor";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 import Sidebar from "@/src/components/Sidebar";
 
@@ -77,25 +77,12 @@ export default function Dashboard() {
     { title: "Armazenamento", value: "45%", icon: "☁️" }
   ];
   
-  // Estado para controlar a exibição do editor de notas
-  const [showNoteEditor, setShowNoteEditor] = useState(false);
+  const router = useRouter();
   
-  // Função para abrir o editor de notas
-  const openNoteEditor = () => setShowNoteEditor(true);
-  
-  // Função para fechar o editor de notas
-  const closeNoteEditor = () => setShowNoteEditor(false);
-  
-  // Verificar se há parâmetro de consulta para abrir o editor
-  useEffect(() => {
-    // Verificar se estamos no navegador
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('openEditor') === 'true') {
-        setShowNoteEditor(true);
-      }
-    }
-  }, []);
+  // Função para redirecionar para a página de criação de notas
+  const openNoteEditor = () => {
+    router.push('/dashboard/notes/new');
+  };
 
   return (
     <ProtectedRoute>
@@ -134,21 +121,17 @@ export default function Dashboard() {
           <section className="flex-1 flex flex-col items-center justify-center bg-gray-50 h-screen p-4 md:p-8 overflow-y-auto min-w-0">
             {/* Área de edição de nota */}
             <div className="w-full max-w-3xl h-full">
-              {/* Componente de edição de nota */}
-              {showNoteEditor ? (
-                <SideNoteEditor onClose={closeNoteEditor} />
-              ) : (
-                <div className="flex flex-col items-center justify-center h-full text-gray-500">
-                  <span className="mb-4">Selecione ou crie uma nota para editar</span>
-                  <button
-                    onClick={openNoteEditor}
-                    className="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-md flex items-center shadow-md font-bold"
-                  >
-                    <span className="mr-2">📝</span>
-                    Nova Nota
-                  </button>
-                </div>
-              )}
+              {/* Área para criar nova nota */}
+              <div className="flex flex-col items-center justify-center h-full text-gray-500">
+                <span className="mb-4">Selecione ou crie uma nota para editar</span>
+                <button
+                  onClick={openNoteEditor}
+                  className="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-md flex items-center shadow-md font-bold"
+                >
+                  <span className="mr-2">📝</span>
+                  Nova Nota
+                </button>
+              </div>
             </div>
           </section>
         </main>
