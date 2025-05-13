@@ -337,7 +337,7 @@ export default function NotePage({ params }: { params: { id: string } }) {
             <input
               type="text"
               placeholder="Título da nota"
-              className="w-full px-4 py-2 text-xl font-bold border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-gray-600"
+              className="w-full px-4 py-2 text-xl font-bold border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-gray-600 text-gray-900"
               value={note.title}
               onChange={(e) => setNote({ ...note, title: e.target.value })}
             />
