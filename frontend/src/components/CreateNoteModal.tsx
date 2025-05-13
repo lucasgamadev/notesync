@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import TipTapEditor from './TipTapEditor'; // Importar o TipTapEditor
+import { useRouter } from 'next/navigation';
 
 /**
  * Componente Modal de Criação de Nota
@@ -11,8 +11,7 @@ import TipTapEditor from './TipTapEditor'; // Importar o TipTapEditor
  */
 export default function CreateNoteModal() {
   const [isOpen, setIsOpen] = useState(false);
-  const [noteTitle, setNoteTitle] = useState('');
-  const [noteContent, setNoteContent] = useState(''); // Este estado agora receberá HTML do TipTap
+  const router = useRouter();
 
   // Escuta o evento personalizado para abrir o modal
   useEffect(() => {
@@ -29,31 +28,11 @@ export default function CreateNoteModal() {
     };
   }, []);
 
-  // Função para criar uma nova nota rapidamente
-  const handleCreateNote = async (e: React.FormEvent) => {
+  // Função para redirecionar para a página de criação de notas
+  const handleCreateNote = (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      // Importar o utilitário api para usar o mock API quando necessário
-      const { default: api } = await import("@/src/utils/api");
-      const response = await api.post("/notes", {
-        title: noteTitle,
-        content: noteContent,
-        notebookId: "notebook1" // Usa o caderno padrão 'Geral'
-      });
-
-      // Limpa os campos e fecha o modal
-      setNoteTitle('');
-      setNoteContent('');
-      setIsOpen(false);
-
-      // Recarrega a página se estiver na página de notas para mostrar a nova nota
-      if (window.location.pathname.includes('/dashboard/notes')) {
-        window.location.reload();
-      }
-    } catch (err) {
-      console.error("Erro ao criar nota:", err);
-      alert("Não foi possível criar a nota. Tente novamente.");
-    }
+    setIsOpen(false);
+    router.push('/dashboard/notes/new');
   };
 
   if (!isOpen) return null;
@@ -72,26 +51,8 @@ export default function CreateNoteModal() {
         </div>
 
         <form onSubmit={handleCreateNote}>
-          <div className="mb-4">
-            <label className="block text-sm font-semibold text-gray-800 mb-1">Título</label>
-            <input
-              type="text"
-              value={noteTitle}
-              onChange={(e) => setNoteTitle(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-              placeholder="Digite o título da nota"
-              autoFocus
-              required
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-semibold text-gray-800 mb-1">Conteúdo</label>
-            <TipTapEditor
-              initialContent={noteContent}
-              onUpdate={setNoteContent} // Passa a função para atualizar o conteúdo da nota
-              noteId="new-note-modal" // Um ID único para o editor no modal
-            />
+          <div className="mb-6 text-center">
+            <p className="text-gray-700 mb-4">Você será redirecionado para o editor completo de notas.</p>
           </div>
 
           <div className="flex justify-end space-x-3">
