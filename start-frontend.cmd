@@ -82,8 +82,7 @@ call npm run dev
 if !errorlevel! neq 0 (
     echo.
     echo [ERRO] O comando npm run dev falhou com código !errorlevel!
-    echo [DEBUG] Verifique o package.json - possível incompatibilidade de versões
-    echo [DEBUG] Next.js 15.3.1 pode ser incompatível com React 19.0.0
+    echo [DEBUG] Verifique o package.json e as dependências do projeto
     cd ..
     echo.
     echo Pressione qualquer tecla para fechar esta janela...
