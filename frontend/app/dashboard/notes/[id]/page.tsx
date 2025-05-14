@@ -1,13 +1,6 @@
 "use client";
 
-import Image from "@tiptap/extension-image";
-import Link from "@tiptap/extension-link";
-import Table from "@tiptap/extension-table";
-import TableCell from "@tiptap/extension-table-cell";
-import TableHeader from "@tiptap/extension-table-header";
-import TableRow from "@tiptap/extension-table-row";
-import { EditorContent, useEditor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
+import TipTapEditorMelhorado from "../../../../src/components/TipTapEditorMelhorado";
 import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -53,29 +46,17 @@ export default function NotePage({ params }: { params: { id: string } }) {
   const [error, setError] = useState<string | null>(null);
   const [saveStatus, setSaveStatus] = useState<"saved" | "saving" | "error">("saved");
 
-  // Configuração do editor TipTap
-  const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Image,
-      Link.configure({
-        openOnClick: false
-      }),
-      Table.configure({
-        resizable: true
-      }),
-      TableRow,
-      TableCell,
-      TableHeader
-    ],
-    content: note.content,
-    onUpdate: ({ editor }) => {
-      setNote((prev) => ({ ...prev, content: editor.getHTML() }));
-      // Ativar autosave
-      setSaveStatus("saving");
-      debouncedSave();
-    }
-  });
+  // Usando o componente TipTapEditorMelhorado
+  const [editorContent, setEditorContent] = useState(note.content);
+
+  // Função para atualizar o conteúdo do editor
+  const handleEditorUpdate = (content: string) => {
+    setEditorContent(content);
+    setNote((prev) => ({ ...prev, content }));
+    // Ativar autosave
+    setSaveStatus("saving");
+    debouncedSave();
+  };
 
   // Função para salvar com debounce
   const debouncedSave = () => {
@@ -94,9 +75,7 @@ export default function NotePage({ params }: { params: { id: string } }) {
           const response = await axios.get(`/api/notes/${params.id}`);
           setNote(response.data);
           setSelectedTags(response.data.tags.map((tag: Tag) => tag.id));
-          if (editor) {
-            editor.commands.setContent(response.data.content);
-          }
+          setEditorContent(response.data.content);
         } catch (err) {
           console.error("Erro ao buscar nota:", err);
           setError("Não foi possível carregar a nota. Por favor, tente novamente.");
@@ -128,11 +107,11 @@ export default function NotePage({ params }: { params: { id: string } }) {
     return () => {
       clearTimeout(window.saveTimeout);
     };
-  }, [isNewNote, params.id, editor !== undefined]);
+  }, [isNewNote, params.id]);
 
   // Função para salvar a nota
   const handleSave = async () => {
-    if (!note.title || !editor) return;
+    if (!note.title) return;
 
     try {
       setSaving(true);
@@ -140,7 +119,7 @@ export default function NotePage({ params }: { params: { id: string } }) {
 
       const noteData = {
         ...note,
-        content: editor.getHTML(),
+        content: editorContent,
         tags: selectedTags
       };
 
@@ -201,81 +180,8 @@ export default function NotePage({ params }: { params: { id: string } }) {
     router.push("/dashboard/notes");
   };
 
-  // Renderizar barra de ferramentas do editor
-  const renderToolbar = () => {
-    if (!editor) return null;
-
-    return (
-      <div className="border border-gray-300 rounded-t-md p-2 flex flex-wrap gap-2 bg-indigo-50">
-        <button
-          onClick={() => editor.chain().focus().toggleBold().run()}
-          className={`p-1 rounded ${editor.isActive("bold") ? "bg-indigo-300 text-indigo-800" : "bg-white text-indigo-700 hover:bg-indigo-100"}`}
-          title="Negrito"
-        >
-          <strong>B</strong>
-        </button>
-        <button
-          onClick={() => editor.chain().focus().toggleItalic().run()}
-          className={`p-1 rounded ${editor.isActive("italic") ? "bg-indigo-300 text-indigo-800" : "bg-white text-indigo-700 hover:bg-indigo-100"}`}
-          title="Itálico"
-        >
-          <em>I</em>
-        </button>
-        <button
-          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-          className={`p-1 rounded ${editor.isActive("heading", { level: 1 }) ? "bg-indigo-300 text-indigo-800" : "bg-white text-indigo-700 hover:bg-indigo-100"}`}
-          title="Título 1"
-        >
-          H1
-        </button>
-        <button
-          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-          className={`p-1 rounded ${editor.isActive("heading", { level: 2 }) ? "bg-indigo-300 text-indigo-800" : "bg-white text-indigo-700 hover:bg-indigo-100"}`}
-          title="Título 2"
-        >
-          H2
-        </button>
-        <button
-          onClick={() => editor.chain().focus().toggleBulletList().run()}
-          className={`p-1 rounded ${editor.isActive("bulletList") ? "bg-indigo-300 text-indigo-800" : "bg-white text-indigo-700 hover:bg-indigo-100"}`}
-          title="Lista com marcadores"
-        >
-          • Lista
-        </button>
-        <button
-          onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          className={`p-1 rounded ${editor.isActive("orderedList") ? "bg-indigo-300 text-indigo-800" : "bg-white text-indigo-700 hover:bg-indigo-100"}`}
-          title="Lista numerada"
-        >
-          1. Lista
-        </button>
-        <button
-          onClick={() => {
-            const url = window.prompt("URL:");
-            if (url) {
-              editor.chain().focus().setLink({ href: url }).run();
-            }
-          }}
-          className={`p-1 rounded ${editor.isActive("link") ? "bg-indigo-300 text-indigo-800" : "bg-white text-indigo-700 hover:bg-indigo-100"}`}
-          title="Inserir link"
-        >
-          Link
-        </button>
-        <button
-          onClick={() => {
-            const url = window.prompt("URL da imagem:");
-            if (url) {
-              editor.chain().focus().setImage({ src: url }).run();
-            }
-          }}
-          className="p-1 rounded bg-white text-indigo-700 hover:bg-indigo-100"
-          title="Inserir imagem"
-        >
-          Imagem
-        </button>
-      </div>
-    );
-  };
+  // Não precisamos mais renderizar a barra de ferramentas manualmente
+  // O componente TipTapEditorMelhorado já inclui sua própria barra de ferramentas
 
   // Sidebar removida, agora usando o componente global do layout raiz
 
@@ -380,11 +286,11 @@ export default function NotePage({ params }: { params: { id: string } }) {
             </div>
 
             {/* Editor de conteúdo */}
-            <div className="border border-gray-300 rounded-md overflow-hidden shadow-sm">
-              {renderToolbar()}
-              <EditorContent
-                editor={editor}
-                className="prose max-w-none p-4 min-h-[300px] focus:outline-none bg-white placeholder:text-gray-600"
+            <div className="rounded-md overflow-hidden shadow-sm">
+              <TipTapEditorMelhorado
+                initialContent={editorContent}
+                onUpdate={handleEditorUpdate}
+                noteId={params.id}
               />
             </div>
           </div>
