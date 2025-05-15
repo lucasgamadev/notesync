@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Backend para o sistema NoteSync de notas com sincronização Google Drive",
   "main": "src/server.js",
+  "engines": {
+    "node": ">=20.11.1"
+  },
   "scripts": {
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
