@@ -19,6 +19,7 @@ import React, { useEffect, useState } from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { FaBold, FaItalic, FaUnderline, FaStrikethrough, FaCode, FaLink, FaUnlink, FaListUl, FaListOl, FaQuoteRight, FaImage, FaTable, FaRulerHorizontal, FaUndo, FaRedo, FaAlignLeft, FaAlignCenter, FaAlignRight, FaAlignJustify, FaHighlighter, FaSuperscript, FaSubscript } from 'react-icons/fa';
 import { MdFormatColorText } from 'react-icons/md';
+import "./editor-contrast-fix.css"; // Importação do CSS de correção de contraste
 
 // Componentes da barra de ferramentas
 const MenuBar = ({ editor }) => {
