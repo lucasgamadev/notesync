@@ -117,3 +117,25 @@
   color: #2563eb !important;
   text-decoration: underline !important;
 }
+
+/* Melhorar contraste do texto principal no editor */
+.ProseMirror {
+  color: #111827 !important; /* Cor escura para o texto principal */
+  font-weight: 400 !important;
+}
+
+/* Melhorar contraste dos parágrafos no editor */
+.ProseMirror p {
+  color: #111827 !important;
+}
+
+/* Melhorar contraste dos cabeçalhos no editor */
+.ProseMirror h1, 
+.ProseMirror h2, 
+.ProseMirror h3, 
+.ProseMirror h4, 
+.ProseMirror h5, 
+.ProseMirror h6 {
+  color: #111827 !important;
+  font-weight: 600 !important;
+}
