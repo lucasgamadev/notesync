@@ -1,6 +1,6 @@
 "use client";
 
-import TipTapEditorMelhorado from "../../../../src/components/TipTapEditorMelhorado";
+import TipTapEditor from "../../../../src/components/TipTapEditor";
 import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -46,7 +46,7 @@ export default function NotePage({ params }: { params: { id: string } }) {
   const [error, setError] = useState<string | null>(null);
   const [saveStatus, setSaveStatus] = useState<"saved" | "saving" | "error">("saved");
 
-  // Usando o componente TipTapEditorMelhorado
+  // Usando o componente TipTapEditor
   const [editorContent, setEditorContent] = useState(note.content);
 
   // Função para atualizar o conteúdo do editor
@@ -181,7 +181,7 @@ export default function NotePage({ params }: { params: { id: string } }) {
   };
 
   // Não precisamos mais renderizar a barra de ferramentas manualmente
-  // O componente TipTapEditorMelhorado já inclui sua própria barra de ferramentas
+  // O componente TipTapEditor já inclui sua própria barra de ferramentas
 
   // Sidebar removida, agora usando o componente global do layout raiz
 
@@ -287,7 +287,7 @@ export default function NotePage({ params }: { params: { id: string } }) {
 
             {/* Editor de conteúdo */}
             <div className="rounded-md overflow-hidden shadow-sm">
-              <TipTapEditorMelhorado
+              <TipTapEditor
                 initialContent={editorContent}
                 onUpdate={handleEditorUpdate}
                 noteId={params.id}
