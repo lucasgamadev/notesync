@@ -1,0 +1,119 @@
+/* Correções de contraste para o editor TipTap */
+
+/* Melhorar contraste dos botões do editor */
+.menu-bar button {
+  color: #333333 !important; /* Cor mais escura para os botões */
+  font-weight: 500;
+}
+
+/* Melhorar contraste dos botões ativos */
+.menu-bar button.is-active {
+  background-color: #d1d4f9 !important;
+  color: #3730a3 !important;
+  font-weight: 600;
+}
+
+/* Melhorar contraste dos ícones e textos em cinza */
+.menu-bar .icon-align, 
+.menu-bar .icon-list, 
+.menu-bar .icon-quote, 
+.menu-bar .icon-code, 
+.menu-bar .icon-link,
+.menu-bar .icon-unlink, 
+.menu-bar .icon-image, 
+.menu-bar .icon-table, 
+.menu-bar .icon-hr, 
+.menu-bar .icon-undo, 
+.menu-bar .icon-redo,
+.menu-bar svg {
+  color: #333333 !important;
+}
+
+/* Melhorar contraste dos ícones do React */
+.menu-bar button svg {
+  fill: #333333 !important;
+  stroke: #333333 !important;
+  font-size: 1.1em !important;
+}
+
+/* Melhorar contraste dos ícones do React quando ativos */
+.menu-bar button.is-active svg {
+  fill: #3730a3 !important;
+  stroke: #3730a3 !important;
+}
+
+/* Melhorar contraste dos tooltips */
+.menu-group[data-tooltip]:hover::before {
+  background-color: #000000 !important;
+  color: white !important;
+  font-weight: 500;
+  opacity: 1;
+}
+
+/* Melhorar contraste dos elementos do editor */
+.ProseMirror p.is-editor-empty:first-child::before {
+  color: #666666 !important;
+  font-weight: 500;
+}
+
+/* Melhorar contraste dos botões de exportação */
+.export-button {
+  color: #333333 !important;
+  font-weight: 500;
+}
+
+/* Melhorar contraste do texto de último salvamento */
+.autosave-status span {
+  color: #333333 !important;
+  font-weight: 500;
+}
+
+/* Melhorar contraste dos botões de formatação */
+.menu-bar button:hover {
+  background-color: #e0e7ff !important;
+  color: #000000 !important;
+}
+
+/* Melhorar contraste dos seletores de cor */
+.color-reset {
+  color: #333333 !important;
+  font-weight: 500;
+}
+
+/* Melhorar contraste das tags no editor */
+.tag {
+  background-color: #d1d5db !important;
+  color: #111827 !important;
+  font-weight: 600 !important;
+}
+
+/* Melhorar contraste dos menus suspensos */
+.dropdown-menu {
+  border: 1px solid #d1d5db !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Melhorar contraste dos itens de menu */
+.dropdown-item {
+  color: #333333 !important;
+  font-weight: 500 !important;
+}
+
+/* Melhorar contraste dos placeholders no editor */
+.ProseMirror *::placeholder {
+  color: #666666 !important;
+  opacity: 1 !important;
+}
+
+/* Melhorar contraste dos elementos de código */
+.ProseMirror code {
+  background-color: #f3f4f6 !important;
+  color: #111827 !important;
+  border: 1px solid #d1d5db !important;
+}
+
+/* Melhorar contraste dos links no editor */
+.ProseMirror a {
+  color: #2563eb !important;
+  text-decoration: underline !important;
+}
