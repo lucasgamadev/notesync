@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "engines": {
-    "node": ">=18.17.0"
+    "node": ">=20.11.1"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.0.16",
