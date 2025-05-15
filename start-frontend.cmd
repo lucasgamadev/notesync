@@ -52,6 +52,33 @@ if not exist frontend (
 REM Entra no diretório frontend
 cd frontend
 
+REM Verifica a versão do Node.js
+echo [INFO] Verificando versão do Node.js...
+for /f "tokens=*" %%a in ('node -v') do set node_version=%%a
+echo [INFO] Versão do Node.js encontrada: !node_version!
+
+REM Extrai o número da versão principal (v20.x.x -> 20)
+set "node_major=!node_version:~1,2!"
+
+REM Verifica se a versão é pelo menos 20
+if !node_major! LSS 20 (
+    echo [AVISO] A versão do Node.js é inferior à recomendada (v20+).
+    echo Recomendamos atualizar o Node.js para a versão mais recente LTS (v20+).
+    echo Você pode continuar, mas podem ocorrer problemas de compatibilidade.
+    echo.
+    choice /C SN /M "Deseja continuar mesmo assim? (S=Sim, N=Não)"
+    if !errorlevel! equ 2 (
+        echo.
+        echo [INFO] Operação cancelada pelo usuário.
+        cd ..
+        echo.
+        echo Pressione qualquer tecla para fechar esta janela...
+        pause >nul
+        exit /b 1
+    )
+    echo.
+)
+
 echo [INFO] Verificando dependências...
 call npm install
 if !errorlevel! neq 0 (
