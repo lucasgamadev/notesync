@@ -17,6 +17,7 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import React, { useEffect, useState } from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
+import "./editor-contrast-fix.css"; // Importação do CSS de correção de contraste
 
 
 // Componentes da barra de ferramentas
