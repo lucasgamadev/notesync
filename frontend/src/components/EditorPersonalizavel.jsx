@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import TipTapEditorAvancado from "./TipTapEditorAvancado";
 import pluginSystem from "./editor/EditorPluginSystem";
-import { FaPlus, FaCode, FaWrench, FaMagic, FaPuzzlePiece, FaKeyboard } from "react-icons/fa";
-import { MdExtension, MdSettings } from "react-icons/md";
+import { registerAllPlugins } from "./editor/plugins";
+import { FaPlus, FaCode, FaWrench, FaMagic, FaPuzzlePiece, FaKeyboard, FaHistory, FaFileExport } from "react-icons/fa";
+import { MdExtension, MdSettings, MdOutlineAutoAwesome } from "react-icons/md";
+import "./editor-personalizavel.css";
 
 /**
  * Componente de configuração de plugins
@@ -43,17 +45,19 @@ const PluginConfigPanel = ({ plugins, onTogglePlugin, onClose }) => {
           right: 20px;
           width: 350px;
           background-color: white;
-          border-radius: 8px;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          border-radius: 12px;
+          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
           z-index: 100;
           overflow: hidden;
+          transition: all 0.3s ease;
+          border: 1px solid rgba(0, 0, 0, 0.08);
         }
         
         .panel-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 12px 16px;
+          padding: 14px 18px;
           background-color: #f0f4f8;
           border-bottom: 1px solid #e0e4e8;
         }
@@ -70,20 +74,52 @@ const PluginConfigPanel = ({ plugins, onTogglePlugin, onClose }) => {
           font-size: 20px;
           cursor: pointer;
           color: #666;
+          width: 28px;
+          height: 28px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          transition: all 0.2s ease;
+        }
+        
+        .close-button:hover {
+          background-color: rgba(0, 0, 0, 0.05);
+          color: #333;
         }
         
         .plugin-list {
           max-height: 400px;
           overflow-y: auto;
-          padding: 8px 0;
+          padding: 10px 0;
+          scrollbar-width: thin;
+          scrollbar-color: #ccc transparent;
+        }
+        
+        .plugin-list::-webkit-scrollbar {
+          width: 6px;
+        }
+        
+        .plugin-list::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        
+        .plugin-list::-webkit-scrollbar-thumb {
+          background-color: #ccc;
+          border-radius: 6px;
         }
         
         .plugin-item {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 12px 16px;
+          padding: 14px 18px;
           border-bottom: 1px solid #f0f0f0;
+          transition: background-color 0.2s ease;
+        }
+        
+        .plugin-item:hover {
+          background-color: #f9f9f9;
         }
         
         .plugin-info {
@@ -104,8 +140,9 @@ const PluginConfigPanel = ({ plugins, onTogglePlugin, onClose }) => {
         .toggle-switch {
           position: relative;
           display: inline-block;
-          width: 40px;
-          height: 22px;
+          width: 44px;
+          height: 24px;
+          margin-left: 8px;
         }
         
         .toggle-switch input {
@@ -122,20 +159,22 @@ const PluginConfigPanel = ({ plugins, onTogglePlugin, onClose }) => {
           right: 0;
           bottom: 0;
           background-color: #ccc;
-          transition: .4s;
+          transition: .3s ease-in-out;
           border-radius: 34px;
+          box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
         }
         
         .toggle-slider:before {
           position: absolute;
           content: "";
-          height: 16px;
-          width: 16px;
+          height: 18px;
+          width: 18px;
           left: 3px;
           bottom: 3px;
           background-color: white;
-          transition: .4s;
+          transition: .3s ease-in-out;
           border-radius: 50%;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
         }
         
         input:checked + .toggle-slider {
@@ -143,7 +182,11 @@ const PluginConfigPanel = ({ plugins, onTogglePlugin, onClose }) => {
         }
         
         input:checked + .toggle-slider:before {
-          transform: translateX(18px);
+          transform: translateX(20px);
+        }
+        
+        .toggle-switch:hover .toggle-slider:before {
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
       `}</style>
     </div>
@@ -250,19 +293,21 @@ const MacroPanel = ({ macros, onExecuteMacro, onCreateMacro, onDeleteMacro, onCl
           right: 20px;
           width: 350px;
           background-color: white;
-          border-radius: 8px;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          border-radius: 12px;
+          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
           z-index: 100;
           overflow: hidden;
           display: flex;
           flex-direction: column;
+          transition: all 0.3s ease;
+          border: 1px solid rgba(0, 0, 0, 0.08);
         }
         
         .panel-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 12px 16px;
+          padding: 14px 18px;
           background-color: #f0f4f8;
           border-bottom: 1px solid #e0e4e8;
         }
@@ -279,13 +324,40 @@ const MacroPanel = ({ macros, onExecuteMacro, onCreateMacro, onDeleteMacro, onCl
           font-size: 20px;
           cursor: pointer;
           color: #666;
+          width: 28px;
+          height: 28px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          transition: all 0.2s ease;
+        }
+        
+        .close-button:hover {
+          background-color: rgba(0, 0, 0, 0.05);
+          color: #333;
         }
         
         .macro-list {
           max-height: 300px;
           overflow-y: auto;
-          padding: 8px 0;
+          padding: 10px 0;
           flex: 1;
+          scrollbar-width: thin;
+          scrollbar-color: #ccc transparent;
+        }
+        
+        .macro-list::-webkit-scrollbar {
+          width: 6px;
+        }
+        
+        .macro-list::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        
+        .macro-list::-webkit-scrollbar-thumb {
+          background-color: #ccc;
+          border-radius: 6px;
         }
         
         .empty-state {
@@ -301,8 +373,13 @@ const MacroPanel = ({ macros, onExecuteMacro, onCreateMacro, onDeleteMacro, onCl
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 12px 16px;
+          padding: 14px 18px;
           border-bottom: 1px solid #f0f0f0;
+          transition: background-color 0.2s ease;
+        }
+        
+        .macro-item:hover {
+          background-color: #f9f9f9;
         }
         
         .macro-info {
@@ -342,9 +419,10 @@ const MacroPanel = ({ macros, onExecuteMacro, onCreateMacro, onDeleteMacro, onCl
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 28px;
-          height: 28px;
-          border-radius: 4px;
+          width: 32px;
+          height: 32px;
+          border-radius: 6px;
+          transition: all 0.2s ease;
         }
         
         .execute-button {
@@ -352,7 +430,9 @@ const MacroPanel = ({ macros, onExecuteMacro, onCreateMacro, onDeleteMacro, onCl
         }
         
         .execute-button:hover {
-          background-color: #f0f4f8;
+          background-color: #eef4ff;
+          transform: translateY(-1px);
+          box-shadow: 0 2px 4px rgba(74, 134, 232, 0.15);
         }
         
         .delete-button {
@@ -362,6 +442,8 @@ const MacroPanel = ({ macros, onExecuteMacro, onCreateMacro, onDeleteMacro, onCl
         
         .delete-button:hover {
           background-color: #fff5f5;
+          transform: translateY(-1px);
+          box-shadow: 0 2px 4px rgba(229, 62, 62, 0.15);
         }
         
         .create-form {
@@ -371,11 +453,19 @@ const MacroPanel = ({ macros, onExecuteMacro, onCreateMacro, onDeleteMacro, onCl
         
         .create-form input {
           width: 100%;
-          padding: 8px 12px;
-          margin-bottom: 8px;
+          padding: 10px 14px;
+          margin-bottom: 10px;
           border: 1px solid #ddd;
-          border-radius: 4px;
+          border-radius: 6px;
           font-size: 14px;
+          transition: all 0.2s ease;
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .create-form input:focus {
+          border-color: #4a86e8;
+          box-shadow: 0 0 0 2px rgba(74, 134, 232, 0.2);
+          outline: none;
         }
         
         .form-actions {
@@ -386,16 +476,25 @@ const MacroPanel = ({ macros, onExecuteMacro, onCreateMacro, onDeleteMacro, onCl
         }
         
         .save-button, .cancel-button {
-          padding: 6px 12px;
-          border-radius: 4px;
+          padding: 8px 16px;
+          border-radius: 6px;
           font-size: 14px;
           cursor: pointer;
+          transition: all 0.2s ease;
+          font-weight: 500;
         }
         
         .save-button {
           background-color: #4a86e8;
           color: white;
           border: none;
+          box-shadow: 0 2px 4px rgba(74, 134, 232, 0.2);
+        }
+        
+        .save-button:hover {
+          background-color: #3b78e7;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 6px rgba(74, 134, 232, 0.25);
         }
         
         .cancel-button {
@@ -404,24 +503,35 @@ const MacroPanel = ({ macros, onExecuteMacro, onCreateMacro, onDeleteMacro, onCl
           color: #666;
         }
         
+        .cancel-button:hover {
+          background-color: #f5f5f5;
+          border-color: #ccc;
+          color: #333;
+        }
+        
         .create-button {
           display: flex;
           align-items: center;
           justify-content: center;
           gap: 8px;
-          width: calc(100% - 32px);
-          margin: 16px;
-          padding: 8px 0;
+          width: calc(100% - 36px);
+          margin: 18px;
+          padding: 10px 0;
           background-color: #f0f4f8;
           border: 1px dashed #ccc;
-          border-radius: 4px;
+          border-radius: 8px;
           color: #4a86e8;
           cursor: pointer;
           font-size: 14px;
+          transition: all 0.25s ease;
+          font-weight: 500;
         }
         
         .create-button:hover {
           background-color: #e6f0ff;
+          border-color: #4a86e8;
+          transform: translateY(-1px);
+          box-shadow: 0 3px 8px rgba(74, 134, 232, 0.15);
         }
       `}</style>
     </div>
@@ -454,7 +564,10 @@ const EditorPersonalizavel = ({
 
   // Inicializa plugins e macros
   useEffect(() => {
-    // Registra plugins iniciais
+    // Registra todos os plugins disponíveis
+    registerAllPlugins(pluginSystem);
+    
+    // Registra plugins iniciais adicionais
     initialPlugins.forEach(plugin => {
       pluginSystem.registerPlugin(plugin.id, plugin);
     });
@@ -526,6 +639,48 @@ const EditorPersonalizavel = ({
           setShowMacroPanel(prev => !prev);
           setShowPluginPanel(false);
         }
+      },
+      {
+        name: 'history',
+        title: 'Histórico de Alterações',
+        icon: <FaHistory />,
+        onClick: (editor) => {
+          if (editor && editor.commands.navigateHistory) {
+            // Abre o painel de histórico se disponível
+            if (pluginSystem.plugins.historyEnhanced && pluginSystem.plugins.historyEnhanced.enabled) {
+              alert('Histórico de alterações disponível através do plugin de Histórico Avançado');
+            } else {
+              alert('Ative o plugin de Histórico Avançado para usar esta funcionalidade');
+            }
+          }
+        }
+      },
+      {
+        name: 'export',
+        title: 'Exportar Conteúdo',
+        icon: <FaFileExport />,
+        onClick: (editor) => {
+          if (editor) {
+            const content = editor.getHTML();
+            const blob = new Blob([content], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'nota-exportada.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          }
+        }
+      },
+      {
+        name: 'aiAssistant',
+        title: 'Assistente de IA',
+        icon: <MdOutlineAutoAwesome />,
+        onClick: () => {
+          alert('Assistente de IA em desenvolvimento. Em breve você poderá usar IA para melhorar seus textos!');
+        }
       }
     ];
 
@@ -540,7 +695,7 @@ const EditorPersonalizavel = ({
   }, []);
 
   return (
-    <div className="editor-personalizavel">
+    <div className="editor-personalizavel" style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: '600px' }}>
       {/* Painéis flutuantes */}
       {showPluginPanel && (
         <PluginConfigPanel
@@ -560,7 +715,6 @@ const EditorPersonalizavel = ({
         />
       )}
 
-      {/* Editor TipTap Avançado */}
       <TipTapEditorAvancado
         initialContent={initialContent}
         onUpdate={onUpdate}
@@ -572,13 +726,6 @@ const EditorPersonalizavel = ({
           onReady: handleEditorReady
         }}
       />
-
-      <style jsx>{`
-        .editor-personalizavel {
-          position: relative;
-          width: 100%;
-        }
-      `}</style>
     </div>
   );
 };
