@@ -20,6 +20,7 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 import { FaBold, FaItalic, FaUnderline, FaStrikethrough, FaCode, FaLink, FaUnlink, FaListUl, FaListOl, FaQuoteRight, FaImage, FaTable, FaRulerHorizontal, FaUndo, FaRedo, FaAlignLeft, FaAlignCenter, FaAlignRight, FaAlignJustify, FaHighlighter, FaSuperscript, FaSubscript } from 'react-icons/fa';
 import { MdFormatColorText } from 'react-icons/md';
 import "./editor-contrast-fix.css"; // Importação do CSS de correção de contraste
+import "./toolbar-horizontal.css"; // Importação do CSS da barra de ferramentas horizontal
 
 // Componentes da barra de ferramentas
 const MenuBar = ({ editor }) => {
@@ -459,11 +460,23 @@ const TipTapEditorMelhorado = ({ initialContent = "", onUpdate, noteId }) => {
 
         .menu-bar {
           display: flex;
-          flex-wrap: wrap;
+          flex-wrap: nowrap;
           padding: 8px;
           border-bottom: 1px solid #ccc;
           background-color: #f5f5f5;
           gap: 8px;
+          overflow-x: auto;
+          white-space: nowrap;
+          scrollbar-width: thin;
+        }
+
+        .menu-bar::-webkit-scrollbar {
+          height: 4px;
+        }
+
+        .menu-bar::-webkit-scrollbar-thumb {
+          background-color: rgba(0,0,0,0.2);
+          border-radius: 4px;
         }
 
         .menu-group {
@@ -472,6 +485,7 @@ const TipTapEditorMelhorado = ({ initialContent = "", onUpdate, noteId }) => {
           border-radius: 4px;
           overflow: hidden;
           background-color: white;
+          flex-shrink: 0;
         }
 
         .menu-bar button {
