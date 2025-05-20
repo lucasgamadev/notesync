@@ -658,17 +658,23 @@ const TipTapEditorAvancado = ({
           border-radius: 8px;
           overflow: hidden;
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          height: 100%;
+          flex-grow: 1;
+          min-height: 700px;
         }
 
         .editor-content {
-          padding: 16px;
-          min-height: 300px;
+          padding: 24px;
+          min-height: 650px;
+          height: auto;
+          flex-grow: 1;
           overflow-y: auto;
           background-color: white;
         }
 
         .editor-content p {
           margin-bottom: 0.75em;
+          line-height: 1.5;
         }
 
         .editor-footer {
@@ -745,8 +751,8 @@ const TipTapEditorAvancado = ({
 
         @media (max-width: 768px) {
           .editor-content {
-            padding: 12px;
-            min-height: 200px;
+            padding: 16px;
+            min-height: 400px;
           }
 
           .export-options {
