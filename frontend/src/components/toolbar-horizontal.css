@@ -6,7 +6,7 @@
   padding: 8px 10px;
   border-bottom: 1px solid #ccc;
   background-color: #f8f9fa;
-  gap: 5px;
+  gap: 15px;
   position: sticky;
   top: 0;
   z-index: 10;
@@ -36,11 +36,19 @@
   flex-shrink: 0;
 }
 
+.menu-group button {
+  padding: 6px 10px;
+  margin: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
 /* Ajustes para dispositivos móveis */
 @media (max-width: 768px) {
   .menu-bar {
     padding: 6px;
-    gap: 4px;
+    gap: 10px;
   }
   
   .menu-bar button {
