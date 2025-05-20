@@ -18,7 +18,7 @@ import StarterKit from "@tiptap/starter-kit";
 import React, { useEffect, useState } from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import "./editor-contrast-fix.css"; // Importação do CSS de correção de contraste
-
+import "./toolbar-horizontal.css"; // Importação do CSS da barra de ferramentas horizontal
 
 // Componentes da barra de ferramentas
 const MenuBar = ({ editor }) => {
@@ -468,15 +468,27 @@ const TipTapEditor = ({ initialContent = "", onUpdate, noteId }) => {
 
         .menu-bar {
           display: flex;
-          flex-wrap: wrap;
+          flex-wrap: nowrap;
           padding: 10px;
           border-bottom: 1px solid #ccc;
           background-color: #f8f9fa;
-          gap: 10px;
+          gap: 5px;
           position: sticky;
           top: 0;
           z-index: 10;
           box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+          overflow-x: auto;
+          white-space: nowrap;
+          scrollbar-width: thin;
+        }
+        
+        .menu-bar::-webkit-scrollbar {
+          height: 4px;
+        }
+        
+        .menu-bar::-webkit-scrollbar-thumb {
+          background-color: rgba(0,0,0,0.2);
+          border-radius: 4px;
         }
 
         .menu-group {
@@ -487,6 +499,7 @@ const TipTapEditor = ({ initialContent = "", onUpdate, noteId }) => {
           background-color: white;
           box-shadow: 0 1px 2px rgba(0,0,0,0.05);
           position: relative;
+          flex-shrink: 0;
         }
         
         .menu-group[data-tooltip]:hover::before {
