@@ -4,12 +4,28 @@
 .ProseMirror {
   cursor: text !important;
   caret-color: black !important; /* Garante que o cursor de texto seja visível */
+  -webkit-caret-color: black !important; /* Suporte para Safari/WebKit */
+  -moz-caret-color: black !important; /* Suporte para Firefox */
+  z-index: 999 !important; /* Garante que o cursor esteja em uma camada visível */
+  position: relative !important; /* Estabelece um contexto de empilhamento */
 }
 
 /* Classe específica adicionada ao editor para garantir visibilidade do cursor */
 .editor-with-visible-cursor {
   cursor: text !important;
   caret-color: black !important;
+  -webkit-caret-color: black !important; /* Suporte para Safari/WebKit */
+  -moz-caret-color: black !important; /* Suporte para Firefox */
+  outline: none !important; /* Evita que o outline padrão interfira com o cursor */
+  z-index: 999 !important; /* Garante que o cursor esteja em uma camada visível */
+  position: relative !important; /* Estabelece um contexto de empilhamento */
+}
+
+/* Força a visibilidade do cursor em todos os elementos dentro do editor */
+.editor-with-visible-cursor * {
+  caret-color: black !important;
+  -webkit-caret-color: black !important;
+  -moz-caret-color: black !important;
 }
 
 /* Garante que o cursor seja visível em elementos interativos dentro do editor */
@@ -52,16 +68,58 @@
 /* Correção para o problema de cursor invisível em navegadores específicos */
 .editor-personalizavel {
   cursor: auto;
+  position: relative;
+  z-index: 1;
+  /* Força o cursor a ser visível em todos os elementos filhos */
+  & * {
+    caret-color: black !important;
+    -webkit-caret-color: black !important;
+    -moz-caret-color: black !important;
+  }
+}
+
+/* Garante visibilidade do cursor durante a digitação */
+.ProseMirror-focused {
+  caret-color: black !important;
+  -webkit-caret-color: black !important;
+  -moz-caret-color: black !important;
+  cursor: text !important;
+  z-index: 1000 !important;
 }
 
 .editor-content {
-  cursor: text;
+  cursor: text !important;
+  caret-color: black !important;
+  -webkit-caret-color: black !important;
+  -moz-caret-color: black !important;
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+.editor-content .ProseMirror {
+  cursor: text !important;
+  caret-color: black !important;
+  -webkit-caret-color: black !important;
+  -moz-caret-color: black !important;
+  z-index: 999 !important;
 }
 
 /* Correção para o Firefox */
 @-moz-document url-prefix() {
   .ProseMirror {
     cursor: text !important;
+    caret-color: black !important;
+    appearance: textfield !important;
+    -moz-appearance: textfield !important;
+    user-select: text !important;
+    -moz-user-select: text !important;
+  }
+  
+  .editor-content .ProseMirror {
+    caret-color: black !important;
+  }
+  
+  .editor-with-visible-cursor {
     caret-color: black !important;
   }
 }
@@ -72,6 +130,33 @@
     .ProseMirror {
       cursor: text !important;
       caret-color: black !important;
+      -webkit-caret-color: black !important;
+      user-select: text !important;
+      -webkit-user-select: text !important;
     }
+    
+    .editor-content .ProseMirror {
+      caret-color: black !important;
+      -webkit-caret-color: black !important;
+    }
+    
+    .editor-with-visible-cursor {
+      caret-color: black !important;
+      -webkit-caret-color: black !important;
+    }
+  }
+}
+
+/* Correção para o Chrome */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  .ProseMirror {
+    cursor: text !important;
+    caret-color: black !important;
+    -webkit-caret-color: black !important;
+  }
+  
+  .editor-content {
+    caret-color: black !important;
+    -webkit-caret-color: black !important;
   }
 }
