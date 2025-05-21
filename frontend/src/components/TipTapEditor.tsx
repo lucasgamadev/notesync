@@ -45,6 +45,18 @@ const TipTapEditor = ({ content, initialContent, onChange, onUpdate, readOnly = 
     editorProps: {
       attributes: {
         class: 'editor-with-visible-cursor',
+        style: 'caret-color: black; -webkit-caret-color: black; -moz-caret-color: black;',
+      },
+      handleDOMEvents: {
+        focus: (view, event) => {
+          // Força a visibilidade do cursor quando o editor recebe foco
+          const element = view.dom;
+          element.style.caretColor = 'black';
+          // Usa notação de índice para propriedades específicas de navegador
+          (element.style as any)['-webkit-caret-color'] = 'black';
+          (element.style as any)['-moz-caret-color'] = 'black';
+          return false; // Permite que o evento continue sua propagação normal
+        },
       },
     },
   });
