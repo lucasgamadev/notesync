@@ -5,8 +5,8 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 150px); /* Ajuste para considerar outros elementos da página */
-  min-height: 600px;
+  height: calc(100vh - 80px); /* Reduzido para 80px para maximizar o espaço */
+  min-height: 650px; /* Ajustado para equilibrar com a altura reduzida */
 }
 
 /* Estilos para o conteúdo do editor */
@@ -15,12 +15,13 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  margin-top: 5px; /* Reduz o espaço entre os elementos */
 }
 
 /* Estilos para melhorar a aparência do editor */
 .ProseMirror {
-  min-height: 500px;
-  padding: 1.5rem;
+  min-height: 580px; /* Ajustado para equilibrar com a altura reduzida */
+  padding: 0.8rem; /* Reduzido para dar mais espaço ao conteúdo */
   border-radius: 0 0 8px 8px;
   border: 1px solid #e1e4e8;
   border-top: none;
@@ -31,6 +32,7 @@
   line-height: 1.6;
   flex-grow: 1;
   height: auto;
+  overflow-y: auto; /* Garantir que o conteúdo tenha scroll quando necessário */
 }
 
 .ProseMirror:focus {
@@ -39,34 +41,34 @@
 }
 
 .ProseMirror p {
-  margin: 0.8em 0;
-  line-height: 1.6;
+  margin: 0.6em 0;
+  line-height: 1.5;
 }
 
 .ProseMirror h1 {
-  font-size: 1.8em;
-  margin: 1.2em 0 0.6em;
+  font-size: 1.7em;
+  margin: 0.9em 0 0.5em;
   line-height: 1.3;
   color: #2c3e50;
 }
 
 .ProseMirror h2 {
-  font-size: 1.5em;
-  margin: 1.1em 0 0.5em;
+  font-size: 1.4em;
+  margin: 0.8em 0 0.4em;
   line-height: 1.35;
   color: #2c3e50;
 }
 
 .ProseMirror h3 {
-  font-size: 1.3em;
-  margin: 1em 0 0.5em;
+  font-size: 1.2em;
+  margin: 0.7em 0 0.4em;
   line-height: 1.4;
   color: #2c3e50;
 }
 
 .ProseMirror ul, .ProseMirror ol {
-  padding-left: 1.5em;
-  margin: 0.8em 0;
+  padding-left: 1.3em;
+  margin: 0.6em 0;
 }
 
 .ProseMirror li {
@@ -75,8 +77,8 @@
 
 .ProseMirror blockquote {
   border-left: 3px solid #4a86e8;
-  margin: 1em 0;
-  padding-left: 1em;
+  margin: 0.7em 0;
+  padding-left: 0.8em;
   color: #666;
   font-style: italic;
 }
@@ -125,17 +127,17 @@
   border: 1px solid #e1e4e8;
   border-bottom: none;
   background-color: #f6f8fa;
-  padding: 6px 8px;
+  padding: 4px 6px; /* Reduzido para ocupar menos espaço vertical */
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 4px; /* Reduzido para compactar os botões */
 }
 
 .menu-group {
   display: flex;
-  gap: 4px;
-  margin-right: 6px;
-  padding-right: 6px;
+  gap: 3px; /* Reduzido para compactar os botões */
+  margin-right: 4px; /* Reduzido para ocupar menos espaço horizontal */
+  padding-right: 4px; /* Reduzido para ocupar menos espaço horizontal */
   border-right: 1px solid #e0e4e8;
 }
 
@@ -145,11 +147,12 @@
 
 .menu-group button {
   transition: all 0.2s ease;
-  padding: 6px 10px;
+  padding: 4px 8px; /* Reduzido para botões mais compactos */
   border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 0.9em; /* Reduzido para texto mais compacto */
 }
 
 .menu-group button:hover {
@@ -166,11 +169,12 @@
 /* Estilos responsivos */
 @media (max-width: 768px) {
   .editor-personalizavel {
-    min-height: 400px;
+    min-height: 480px; /* Ajustado para equilibrar com a altura reduzida */
+    height: calc(100vh - 60px); /* Reduzido para maximizar o espaço em dispositivos móveis */
   }
   
   .ProseMirror {
-    min-height: 350px;
-    padding: 1rem;
+    min-height: 430px; /* Ajustado para equilibrar com a altura reduzida */
+    padding: 0.6rem; /* Reduzido para dar mais espaço ao conteúdo */
   }
 }
