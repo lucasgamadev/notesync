@@ -1,0 +1,77 @@
+/* Correção para o cursor invisível no editor TipTap */
+
+/* Garante que o cursor do mouse seja sempre visível dentro do editor */
+.ProseMirror {
+  cursor: text !important;
+  caret-color: black !important; /* Garante que o cursor de texto seja visível */
+}
+
+/* Classe específica adicionada ao editor para garantir visibilidade do cursor */
+.editor-with-visible-cursor {
+  cursor: text !important;
+  caret-color: black !important;
+}
+
+/* Garante que o cursor seja visível em elementos interativos dentro do editor */
+.ProseMirror a,
+.ProseMirror button,
+.ProseMirror [role="button"] {
+  cursor: pointer !important;
+}
+
+/* Garante que o cursor seja visível ao passar sobre elementos selecionáveis */
+.ProseMirror *::selection {
+  background-color: rgba(74, 134, 232, 0.3);
+}
+
+/* Garante que o cursor seja visível em elementos de código */
+.ProseMirror pre,
+.ProseMirror code {
+  cursor: text !important;
+}
+
+/* Garante que o cursor seja visível em elementos de lista */
+.ProseMirror ul,
+.ProseMirror ol,
+.ProseMirror li {
+  cursor: text !important;
+}
+
+/* Garante que o cursor seja visível em elementos de tabela */
+.ProseMirror table,
+.ProseMirror th,
+.ProseMirror td {
+  cursor: text !important;
+}
+
+/* Garante que o cursor seja visível em elementos de imagem */
+.ProseMirror img {
+  cursor: pointer !important;
+}
+
+/* Correção para o problema de cursor invisível em navegadores específicos */
+.editor-personalizavel {
+  cursor: auto;
+}
+
+.editor-content {
+  cursor: text;
+}
+
+/* Correção para o Firefox */
+@-moz-document url-prefix() {
+  .ProseMirror {
+    cursor: text !important;
+    caret-color: black !important;
+  }
+}
+
+/* Correção para o Safari */
+@media not all and (min-resolution:.001dpcm) {
+  @supports (-webkit-appearance:none) {
+    .ProseMirror {
+      cursor: text !important;
+      caret-color: black !important;
+    }
+  }
+}
