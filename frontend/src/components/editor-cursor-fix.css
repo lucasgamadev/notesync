@@ -28,12 +28,12 @@
 }
 
 /* Herança do cursor para elementos filhos (exceto elementos interativos) */
-.ProseMirror *:not(a):not(button):not([role="button"]):not([contenteditable="false"]),
-.editor-with-visible-cursor *:not(a):not(button):not([role="button"]):not([contenteditable="false"]) {
-  cursor: inherit !important;
-  caret-color: inherit !important;
-  -webkit-caret-color: inherit !important;
-  -moz-caret-color: inherit !important;
+.ProseMirror *:not(a):not(button):not([role="button"]):not([contenteditable="false"]):not(input):not(select):not(textarea),
+.editor-with-visible-cursor *:not(a):not(button):not([role="button"]):not([contenteditable="false"]):not(input):not(select):not(textarea) {
+  cursor: text !important;
+  caret-color: #000000 !important;
+  -webkit-caret-color: #000000 !important;
+  -moz-caret-color: #000000 !important;
 }
 
 /* Configurações específicas para o container do editor */
@@ -46,8 +46,11 @@
 }
 
 /* Configurações específicas para elementos que precisam de cursor diferente */
-.ProseMirror a {
+.ProseMirror a,
+.ProseMirror button,
+.ProseMirror [role="button"] {
   cursor: pointer !important;
+  caret-color: transparent !important;
 }
 
 .ProseMirror img,
