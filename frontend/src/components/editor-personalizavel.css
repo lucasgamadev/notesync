@@ -193,6 +193,26 @@
 }
 
 /* Estilos responsivos */
+/* Estilos para o placeholder */
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #adb5bd;
+  pointer-events: none;
+  height: 0;
+  font-style: italic;
+}
+
+/* Placeholder alternativo usando a extensão Placeholder */
+.ProseMirror .is-empty::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #adb5bd;
+  pointer-events: none;
+  height: 0;
+  font-style: italic;
+}
+
 @media (max-width: 768px) {
   .editor-personalizavel {
     min-height: 480px; /* Ajustado para equilibrar com a altura reduzida */
