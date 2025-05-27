@@ -1,0 +1,53 @@
+/* Estilos para o indicador de carregamento do editor */
+.editor-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  padding: 2rem;
+  background-color: #f8f9fa;
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
+  color: #6c757d;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #e1e4e8;
+  border-top: 3px solid #4a86e8;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.editor-loading span {
+  font-size: 14px;
+  font-weight: 500;
+  color: #495057;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .editor-loading {
+    min-height: 150px;
+    padding: 1.5rem;
+  }
+  
+  .loading-spinner {
+    width: 24px;
+    height: 24px;
+    border-width: 2px;
+  }
+  
+  .editor-loading span {
+    font-size: 13px;
+  }
+}
