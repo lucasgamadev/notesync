@@ -1,162 +1,80 @@
 /* Correção para o cursor invisível no editor TipTap */
 
-/* Garante que o cursor do mouse seja sempre visível dentro do editor */
-.ProseMirror {
-  cursor: text !important;
-  caret-color: black !important; /* Garante que o cursor de texto seja visível */
-  -webkit-caret-color: black !important; /* Suporte para Safari/WebKit */
-  -moz-caret-color: black !important; /* Suporte para Firefox */
-  z-index: 999 !important; /* Garante que o cursor esteja em uma camada visível */
-  position: relative !important; /* Estabelece um contexto de empilhamento */
-}
-
-/* Classe específica adicionada ao editor para garantir visibilidade do cursor */
+/* Configuração principal para visibilidade do cursor no editor */
+.ProseMirror,
 .editor-with-visible-cursor {
   cursor: text !important;
-  caret-color: black !important;
-  -webkit-caret-color: black !important; /* Suporte para Safari/WebKit */
-  -moz-caret-color: black !important; /* Suporte para Firefox */
-  outline: none !important; /* Evita que o outline padrão interfira com o cursor */
-  z-index: 999 !important; /* Garante que o cursor esteja em uma camada visível */
-  position: relative !important; /* Estabelece um contexto de empilhamento */
+  caret-color: #000000 !important;
+  -webkit-caret-color: #000000 !important;
+  -moz-caret-color: #000000 !important;
+  position: relative !important;
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  outline: none !important;
 }
 
-/* Força a visibilidade do cursor em todos os elementos dentro do editor */
-.editor-with-visible-cursor * {
-  caret-color: black !important;
-  -webkit-caret-color: black !important;
-  -moz-caret-color: black !important;
+/* Estados de interação do editor */
+.ProseMirror:hover,
+.ProseMirror:focus,
+.ProseMirror:active,
+.editor-with-visible-cursor:hover,
+.editor-with-visible-cursor:focus {
+  cursor: text !important;
+  caret-color: #000000 !important;
+  -webkit-caret-color: #000000 !important;
+  -moz-caret-color: #000000 !important;
 }
 
-/* Garante que o cursor seja visível em elementos interativos dentro do editor */
-.ProseMirror a,
-.ProseMirror button,
-.ProseMirror [role="button"] {
+/* Herança do cursor para elementos filhos (exceto elementos interativos) */
+.ProseMirror *:not(a):not(button):not([role="button"]):not([contenteditable="false"]),
+.editor-with-visible-cursor *:not(a):not(button):not([role="button"]):not([contenteditable="false"]) {
+  cursor: inherit !important;
+  caret-color: inherit !important;
+  -webkit-caret-color: inherit !important;
+  -moz-caret-color: inherit !important;
+}
+
+/* Configurações específicas para o container do editor */
+.editor-personalizavel .ProseMirror,
+.editor-personalizavel .editor-content {
+  cursor: text !important;
+  caret-color: #000000 !important;
+  -webkit-caret-color: #000000 !important;
+  -moz-caret-color: #000000 !important;
+}
+
+/* Configurações específicas para elementos que precisam de cursor diferente */
+.ProseMirror a {
   cursor: pointer !important;
 }
 
-/* Garante que o cursor seja visível ao passar sobre elementos selecionáveis */
+.ProseMirror img,
+.ProseMirror button,
+.ProseMirror input,
+.ProseMirror select,
+.ProseMirror textarea {
+  cursor: default !important;
+}
+
+/* Configuração para modo de foco */
+.editor-personalizavel:focus-within .ProseMirror {
+  cursor: text !important;
+  caret-color: #000000 !important;
+  -webkit-caret-color: #000000 !important;
+  -moz-caret-color: #000000 !important;
+}
+
+/* Configuração para seleção de texto */
 .ProseMirror *::selection {
   background-color: rgba(74, 134, 232, 0.3);
 }
 
-/* Garante que o cursor seja visível em elementos de código */
-.ProseMirror pre,
-.ProseMirror code {
-  cursor: text !important;
-}
-
-/* Garante que o cursor seja visível em elementos de lista */
-.ProseMirror ul,
-.ProseMirror ol,
-.ProseMirror li {
-  cursor: text !important;
-}
-
-/* Garante que o cursor seja visível em elementos de tabela */
-.ProseMirror table,
-.ProseMirror th,
-.ProseMirror td {
-  cursor: text !important;
-}
-
-/* Garante que o cursor seja visível em elementos de imagem */
-.ProseMirror img {
-  cursor: pointer !important;
-}
-
-/* Correção para o problema de cursor invisível em navegadores específicos */
-.editor-personalizavel {
-  cursor: auto;
-  position: relative;
-  z-index: 1;
-  /* Força o cursor a ser visível em todos os elementos filhos */
-  & * {
-    caret-color: black !important;
-    -webkit-caret-color: black !important;
-    -moz-caret-color: black !important;
-  }
-}
-
-/* Garante visibilidade do cursor durante a digitação */
+/* Configuração específica para elementos focados */
 .ProseMirror-focused {
-  caret-color: black !important;
-  -webkit-caret-color: black !important;
-  -moz-caret-color: black !important;
+  caret-color: #000000 !important;
+  -webkit-caret-color: #000000 !important;
+  -moz-caret-color: #000000 !important;
   cursor: text !important;
-  z-index: 1000 !important;
-}
-
-.editor-content {
-  cursor: text !important;
-  caret-color: black !important;
-  -webkit-caret-color: black !important;
-  -moz-caret-color: black !important;
-  position: relative !important;
-  z-index: 10 !important;
-}
-
-.editor-content .ProseMirror {
-  cursor: text !important;
-  caret-color: black !important;
-  -webkit-caret-color: black !important;
-  -moz-caret-color: black !important;
-  z-index: 999 !important;
-}
-
-/* Correção para o Firefox */
-@-moz-document url-prefix() {
-  .ProseMirror {
-    cursor: text !important;
-    caret-color: black !important;
-    appearance: textfield !important;
-    -moz-appearance: textfield !important;
-    user-select: text !important;
-    -moz-user-select: text !important;
-  }
-  
-  .editor-content .ProseMirror {
-    caret-color: black !important;
-  }
-  
-  .editor-with-visible-cursor {
-    caret-color: black !important;
-  }
-}
-
-/* Correção para o Safari */
-@media not all and (min-resolution:.001dpcm) {
-  @supports (-webkit-appearance:none) {
-    .ProseMirror {
-      cursor: text !important;
-      caret-color: black !important;
-      -webkit-caret-color: black !important;
-      user-select: text !important;
-      -webkit-user-select: text !important;
-    }
-    
-    .editor-content .ProseMirror {
-      caret-color: black !important;
-      -webkit-caret-color: black !important;
-    }
-    
-    .editor-with-visible-cursor {
-      caret-color: black !important;
-      -webkit-caret-color: black !important;
-    }
-  }
-}
-
-/* Correção para o Chrome */
-@media screen and (-webkit-min-device-pixel-ratio:0) {
-  .ProseMirror {
-    cursor: text !important;
-    caret-color: black !important;
-    -webkit-caret-color: black !important;
-  }
-  
-  .editor-content {
-    caret-color: black !important;
-    -webkit-caret-color: black !important;
-  }
 }
