@@ -70,10 +70,12 @@ const TipTapEditor = ({ content, initialContent, onChange, onUpdate, readOnly = 
       editorElement.addEventListener(eventType, handler, { passive: true });
     });
     
-    // Força cursor visível periodicamente
+    // Força cursor visível periodicamente (com intervalo maior para melhor performance)
     const intervalId = setInterval(() => {
-      forceCursorVisibility(editorElement);
-    }, 100);
+      if (document.contains(editorElement)) {
+        forceCursorVisibility(editorElement);
+      }
+    }, 500);
     
     // Cleanup function
     return () => {
@@ -104,12 +106,18 @@ const TipTapEditor = ({ content, initialContent, onChange, onUpdate, readOnly = 
     editable: !readOnly,
     immediatelyRender: false, // Corrige problemas de hidratação SSR
     onUpdate: ({ editor }) => {
+      if (editor.isDestroyed) return;
+      
       const html = editor.getHTML();
       // Chama o callback onUpdate se existir, caso contrário tenta usar onChange
-      if (typeof onUpdate === 'function') {
-        onUpdate(html);
-      } else if (typeof onChange === 'function') {
-        onChange(html);
+      try {
+        if (typeof onUpdate === 'function') {
+          onUpdate(html);
+        } else if (typeof onChange === 'function') {
+          onChange(html);
+        }
+      } catch (error) {
+        console.error('Erro ao executar callback de atualização:', error);
       }
     },
     // Configurações adicionais para garantir visibilidade do cursor
@@ -141,29 +149,39 @@ const TipTapEditor = ({ content, initialContent, onChange, onUpdate, readOnly = 
 
   // Atualiza o conteúdo do editor quando a prop content muda
   useEffect(() => {
-    if (editor) {
-      const currentContent = initialContent || content;
-      if (currentContent !== undefined && currentContent !== editor.getHTML()) {
-        editor.commands.setContent(currentContent);
+    if (editor && !editor.isDestroyed) {
+      const currentContent = initialContent || content || '';
+      const editorContent = editor.getHTML();
+      
+      // Só atualiza se o conteúdo realmente mudou para evitar loops
+      if (currentContent !== editorContent) {
+        editor.commands.setContent(currentContent, false);
       }
     }
   }, [content, initialContent, editor]);
 
   // Configura a correção do cursor quando o editor estiver pronto
   useEffect(() => {
-    if (!editor || !editorRef.current) return;
+    if (!editor || !editorRef.current || editor.isDestroyed) return;
     
-    const proseMirrorElement = editorRef.current.querySelector('.ProseMirror') as HTMLElement;
-    if (proseMirrorElement) {
-      const cleanup = setupCursorObserver(proseMirrorElement);
-      return cleanup;
-    }
+    // Aguarda um pouco para garantir que o DOM foi renderizado
+    const timeoutId = setTimeout(() => {
+      const proseMirrorElement = editorRef.current?.querySelector('.ProseMirror') as HTMLElement;
+      if (proseMirrorElement) {
+        const cleanup = setupCursorObserver(proseMirrorElement);
+        return cleanup;
+      }
+    }, 100);
+    
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [editor, setupCursorObserver]);
 
   // Cleanup do editor quando o componente for desmontado
   useEffect(() => {
     return () => {
-      if (editor) {
+      if (editor && !editor.isDestroyed) {
         editor.destroy();
       }
     };
