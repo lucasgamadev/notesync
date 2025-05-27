@@ -2,12 +2,16 @@
 
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import Placeholder from '@tiptap/extension-placeholder';
+import TextAlign from '@tiptap/extension-text-align';
+import Underline from '@tiptap/extension-underline';
+import Typography from '@tiptap/extension-typography';
 import { useEffect, useRef, useCallback } from 'react';
 import './editor-personalizavel.css';
 import './editor-contrast-fix.css';
-import './editor-cursor-fix.css'; // Correção para o cursor invisível
-import './editor-cursor-visibility.css'; // Configuração adicional para visibilidade do cursor
-import './editor-loading.css'; // Estilos para o indicador de carregamento
+import './editor-cursor-fix.css';
+import './editor-cursor-visibility.css';
+import './editor-loading.css';
 
 // Tipos para as propriedades do editor
 interface TipTapEditorProps {
@@ -83,10 +87,18 @@ const TipTapEditor = ({ content, initialContent, onChange, onUpdate, readOnly = 
       eventHandlers.clear();
     };
   }, [forceCursorVisibility]);
-  // Inicializa o editor com as extensões básicas
+  // Inicializa o editor com as extensões disponíveis
   const editor = useEditor({
     extensions: [
       StarterKit,
+      Placeholder.configure({
+        placeholder,
+      }),
+      TextAlign.configure({
+        types: ['heading', 'paragraph'],
+      }),
+      Underline,
+      Typography,
     ],
     content: editorContent,
     editable: !readOnly,
@@ -103,8 +115,7 @@ const TipTapEditor = ({ content, initialContent, onChange, onUpdate, readOnly = 
     // Configurações adicionais para garantir visibilidade do cursor
     editorProps: {
       attributes: {
-        class: 'editor-with-visible-cursor',
-        'data-placeholder': placeholder,
+        class: 'editor-with-visible-cursor prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none',
       },
       handleDOMEvents: {
         focus: (view) => {
@@ -250,6 +261,37 @@ const TipTapEditor = ({ content, initialContent, onChange, onUpdate, readOnly = 
             type="button"
           >
             &lt;/&gt; Código
+          </button>
+        </div>
+        
+        <div className="menu-group">
+          <button
+            onClick={() => editor.chain().focus().toggleUnderline().run()}
+            className={editor.isActive('underline') ? 'is-active' : ''}
+            type="button"
+          >
+            <u>U</u>
+          </button>
+          <button
+            onClick={() => editor.chain().focus().setTextAlign('left').run()}
+            className={editor.isActive({ textAlign: 'left' }) ? 'is-active' : ''}
+            type="button"
+          >
+            ⬅ Esquerda
+          </button>
+          <button
+            onClick={() => editor.chain().focus().setTextAlign('center').run()}
+            className={editor.isActive({ textAlign: 'center' }) ? 'is-active' : ''}
+            type="button"
+          >
+            ↔ Centro
+          </button>
+          <button
+            onClick={() => editor.chain().focus().setTextAlign('right').run()}
+            className={editor.isActive({ textAlign: 'right' }) ? 'is-active' : ''}
+            type="button"
+          >
+            ➡ Direita
           </button>
         </div>
       </div>
