@@ -1,0 +1,16 @@
+/* Arquivo CSS focado especificamente na visibilidade do cursor no editor TipTap */
+
+/* Configuração de alta especificidade para garantir cursor visível */
+.editor-personalizavel .editor-content .ProseMirror {
+  cursor: text !important;
+  caret-color: #000000 !important;
+  -webkit-caret-color: #000000 !important;
+  -moz-caret-color: #000000 !important;
+}
+
+/* Configuração para elementos interativos específicos */
+.editor-personalizavel .editor-content .ProseMirror a,
+.editor-personalizavel .editor-content .ProseMirror button,
+.editor-personalizavel .editor-content .ProseMirror [role="button"] {
+  cursor: pointer !important;
+}
