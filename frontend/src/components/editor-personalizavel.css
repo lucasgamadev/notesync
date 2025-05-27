@@ -16,6 +16,11 @@
   flex-direction: column;
   height: 100%;
   margin-top: 5px; /* Reduz o espaço entre os elementos */
+  cursor: text !important;
+}
+
+.editor-content:hover {
+  cursor: text !important;
 }
 
 /* Estilos para melhorar a aparência do editor */
@@ -33,11 +38,32 @@
   flex-grow: 1;
   height: auto;
   overflow-y: auto; /* Garantir que o conteúdo tenha scroll quando necessário */
+  /* Configurações essenciais para visibilidade do cursor */
+  cursor: text !important;
+  caret-color: #000000 !important;
+  -webkit-caret-color: #000000 !important;
+  -moz-caret-color: #000000 !important;
 }
 
 .ProseMirror:focus {
   border-color: #4a86e8;
   box-shadow: 0 0 0 2px rgba(74, 134, 232, 0.2);
+  cursor: text !important;
+  caret-color: #000000 !important;
+  -webkit-caret-color: #000000 !important;
+  -moz-caret-color: #000000 !important;
+}
+
+.ProseMirror:hover {
+  cursor: text !important;
+  caret-color: #000000 !important;
+  -webkit-caret-color: #000000 !important;
+  -moz-caret-color: #000000 !important;
+}
+
+/* Garante cursor visível em todos os elementos de texto */
+.ProseMirror *:not(a):not(button):not([role="button"]) {
+  cursor: text !important;
 }
 
 .ProseMirror p {
