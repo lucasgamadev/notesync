@@ -21,14 +21,13 @@ interface TipTapEditorProps {
   onUpdate?: (content: string) => void;
   readOnly?: boolean;
   placeholder?: string;
-  noteId?: string;
 }
 
 /**
  * Componente de editor de texto rico baseado no TipTap
  * Permite edição formatada de notas com uma barra de ferramentas
  */
-const TipTapEditor = ({ content, initialContent, onChange, onUpdate, readOnly = false, placeholder = 'Comece a escrever sua nota...', noteId }: TipTapEditorProps) => {
+const TipTapEditor = ({ content, initialContent, onChange, onUpdate, readOnly = false, placeholder = 'Comece a escrever sua nota...' }: TipTapEditorProps) => {
   // Usa initialContent se fornecido, caso contrário usa content ou string vazia
   const editorContent = initialContent || content || '';
   const editorRef = useRef<HTMLDivElement>(null);
@@ -72,10 +71,10 @@ const TipTapEditor = ({ content, initialContent, onChange, onUpdate, readOnly = 
     
     // Força cursor visível periodicamente (com intervalo maior para melhor performance)
     const intervalId = setInterval(() => {
-      if (document.contains(editorElement)) {
+      if (document.contains(editorElement) && document.activeElement === editorElement) {
         forceCursorVisibility(editorElement);
       }
-    }, 500);
+    }, 1000); // Aumentado para 1 segundo para melhor performance
     
     // Cleanup function
     return () => {
@@ -271,7 +270,7 @@ const TipTapEditor = ({ content, initialContent, onChange, onUpdate, readOnly = 
             className={editor.isActive('blockquote') ? 'is-active' : ''}
             type="button"
           >
-            " Citação
+            &quot; Citação
           </button>
           <button
             onClick={() => editor.chain().focus().toggleCodeBlock().run()}
