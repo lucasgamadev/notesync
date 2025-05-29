@@ -324,9 +324,34 @@ const TipTapEditor = ({
       Superscript,
       Subscript,
       // Extensão para estilos de texto personalizados
-      TextStyle.configure({
-        HTMLAttributes: {
-          class: 'text-style',
+      TextStyle.extend({
+        addAttributes() {
+          return {
+            ...this.parent?.(),
+            style: {
+              default: null,
+              parseHTML: element => element.getAttribute('style'),
+              renderHTML: attributes => {
+                if (!attributes.style) {
+                  return {};
+                }
+                return { style: attributes.style };
+              },
+            },
+            fontSize: {
+              default: null,
+              parseHTML: element => {
+                const size = element.style.fontSize;
+                return size || null;
+              },
+              renderHTML: attributes => {
+                if (!attributes.fontSize) {
+                  return {};
+                }
+                return { style: `font-size: ${attributes.fontSize}` };
+              },
+            },
+          };
         },
       }),
     ],
@@ -481,27 +506,40 @@ const TipTapEditor = ({
               items={[
                 {
                   label: 'Pequeno',
-                  onClick: () => editor.chain().focus().setMark('textStyle', { fontSize: '0.875em' }).run(),
+                  onClick: () => {
+                    editor.chain().focus().setMark('textStyle', { fontSize: '0.875em' }).run();
+                  },
                   isActive: editor.isActive('textStyle', { fontSize: '0.875em' })
                 },
                 {
                   label: 'Normal',
-                  onClick: () => editor.chain().focus().setMark('textStyle', { fontSize: '1em' }).run(),
-                  isActive: editor.isActive('textStyle', { fontSize: '1em' })
+                  onClick: () => {
+                    editor.chain().focus().setMark('textStyle', { fontSize: '1em' }).run();
+                  },
+                  isActive: !editor.isActive('textStyle', { fontSize: '0.875em' }) && 
+                           !editor.isActive('textStyle', { fontSize: '1.25em' }) &&
+                           !editor.isActive('textStyle', { fontSize: '1.5em' }) &&
+                           !editor.isActive('textStyle', { fontSize: '2em' })
                 },
                 {
                   label: 'Grande',
-                  onClick: () => editor.chain().focus().setMark('textStyle', { fontSize: '1.25em' }).run(),
+                  onClick: () => {
+                    editor.chain().focus().setMark('textStyle', { fontSize: '1.25em' }).run();
+                  },
                   isActive: editor.isActive('textStyle', { fontSize: '1.25em' })
                 },
                 {
                   label: 'Muito Grande',
-                  onClick: () => editor.chain().focus().setMark('textStyle', { fontSize: '1.5em' }).run(),
+                  onClick: () => {
+                    editor.chain().focus().setMark('textStyle', { fontSize: '1.5em' }).run();
+                  },
                   isActive: editor.isActive('textStyle', { fontSize: '1.5em' })
                 },
                 {
                   label: 'Enorme',
-                  onClick: () => editor.chain().focus().setMark('textStyle', { fontSize: '2em' }).run(),
+                  onClick: () => {
+                    editor.chain().focus().setMark('textStyle', { fontSize: '2em' }).run();
+                  },
                   isActive: editor.isActive('textStyle', { fontSize: '2em' })
                 },
               ]}
