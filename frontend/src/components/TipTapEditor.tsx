@@ -25,6 +25,11 @@ import { BiHeading, BiCodeBlock } from 'react-icons/bi';
 import { BubbleMenu } from '@tiptap/react';
 import { createLowlight } from 'lowlight';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
+import Color from '@tiptap/extension-color';
+import Highlight from '@tiptap/extension-highlight';
+import TextStyle from '@tiptap/extension-text-style';
+import Superscript from '@tiptap/extension-superscript';
+import Subscript from '@tiptap/extension-subscript';
 
 // Tipos para as propriedades do editor
 interface TipTapEditorProps {
@@ -311,6 +316,12 @@ const TipTapEditor = ({
       TaskItem.configure({
         nested: true,
       }),
+      // Extensões adicionais recomendadas
+      Color,
+      Highlight,
+      TextStyle,
+      Superscript,
+      Subscript,
     ],
     content: editorContent,
     editable: !readOnly,
