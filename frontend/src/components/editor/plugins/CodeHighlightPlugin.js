@@ -1,45 +1,86 @@
 /**
  * Plugin para adicionar suporte a blocos de código com syntax highlighting
  * Permite criar e editar blocos de código com destaque de sintaxe para várias linguagens
+ * 
+ * Carrega linguagens dinamicamente para melhor desempenho
  */
 
 import { Extension } from '@tiptap/core';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import { lowlight } from 'lowlight/lib/core';
 import { FaCode } from 'react-icons/fa';
+import './styles/code-highlight.css';
 
-// Importações para linguagens comuns
-// Nota: Na implementação real, você pode importar mais linguagens conforme necessário
-import javascript from 'highlight.js/lib/languages/javascript';
-import typescript from 'highlight.js/lib/languages/typescript';
-import html from 'highlight.js/lib/languages/xml';
-import css from 'highlight.js/lib/languages/css';
-import python from 'highlight.js/lib/languages/python';
-import java from 'highlight.js/lib/languages/java';
-import csharp from 'highlight.js/lib/languages/csharp';
-import php from 'highlight.js/lib/languages/php';
-import ruby from 'highlight.js/lib/languages/ruby';
-import go from 'highlight.js/lib/languages/go';
-import json from 'highlight.js/lib/languages/json';
-import markdown from 'highlight.js/lib/languages/markdown';
-import sql from 'highlight.js/lib/languages/sql';
-import bash from 'highlight.js/lib/languages/bash';
+// Linguagens suportadas e seus aliases
+const SUPPORTED_LANGUAGES = {
+  javascript: ['js', 'jsx'],
+  typescript: ['ts', 'tsx'],
+  xml: ['html', 'xhtml', 'rss', 'atom', 'xjb', 'xsd', 'xsl', 'plist'],
+  css: ['css', 'scss', 'sass', 'less'],
+  python: ['py', 'py3', 'python3'],
+  java: ['java'],
+  csharp: ['csharp', 'cs', 'c#'],
+  php: ['php', 'php3', 'php4', 'php5', 'php6', 'php7'],
+  ruby: ['rb', 'gemspec', 'podspec', 'thor', 'irb'],
+  go: ['go'],
+  json: ['json', 'json5', 'jsonc'],
+  markdown: ['md', 'markdown', 'mkd'],
+  sql: ['sql', 'mysql', 'pgsql', 'postgres', 'postgresql'],
+  bash: ['bash', 'sh', 'shell', 'zsh'],
+  // Adicione mais linguagens conforme necessário
+};
 
-// Registra as linguagens no lowlight
-lowlight.registerLanguage('javascript', javascript);
-lowlight.registerLanguage('typescript', typescript);
-lowlight.registerLanguage('html', html);
-lowlight.registerLanguage('css', css);
-lowlight.registerLanguage('python', python);
-lowlight.registerLanguage('java', java);
-lowlight.registerLanguage('csharp', csharp);
-lowlight.registerLanguage('php', php);
-lowlight.registerLanguage('ruby', ruby);
-lowlight.registerLanguage('go', go);
-lowlight.registerLanguage('json', json);
-lowlight.registerLanguage('markdown', markdown);
-lowlight.registerLanguage('sql', sql);
-lowlight.registerLanguage('bash', bash);
+// Cache para linguagens já carregadas
+const loadedLanguages = new Set();
+
+/**
+ * Carrega dinamicamente uma linguagem de destaque de sintaxe
+ * @param {string} language - Nome da linguagem a ser carregada
+ * @returns {Promise<boolean>} - True se o carregamento for bem-sucedido
+ */
+const loadLanguage = async (language) => {
+  // Verifica se a linguagem já foi carregada
+  if (loadedLanguages.has(language)) return true;
+
+  try {
+    // Tenta carregar o módulo da linguagem
+    const langModule = await import(`highlight.js/lib/languages/${language}`);
+    lowlight.registerLanguage(language, langModule.default);
+    loadedLanguages.add(language);
+    return true;
+  } catch (error) {
+    console.warn(`Falha ao carregar suporte para ${language}:`, error);
+    return false;
+  }
+};
+
+/**
+ * Obtém o nome canônico da linguagem a partir de um alias
+ * @param {string} alias - Alias da linguagem
+ * @returns {string} - Nome canônico da linguagem ou o próprio alias se não encontrado
+ */
+const getCanonicalLanguage = (alias) => {
+  const lowerAlias = alias.toLowerCase();
+  
+  // Verifica se é um nome direto
+  if (SUPPORTED_LANGUAGES[lowerAlias]) {
+    return lowerAlias;
+  }
+  
+  // Procura por aliases
+  for (const [lang, aliases] of Object.entries(SUPPORTED_LANGUAGES)) {
+    if (aliases.includes(lowerAlias)) {
+      return lang;
+    }
+  }
+  
+  // Se não encontrar, retorna o próprio alias (será tratado como texto simples)
+  return lowerAlias;
+};
+
+// Carrega as linguagens mais comuns por padrão
+const DEFAULT_LANGUAGES = ['javascript', 'html', 'css', 'json', 'bash'];
+DEFAULT_LANGUAGES.forEach(lang => loadLanguage(lang));
 
 // Extensão para blocos de código com syntax highlighting
 const CodeBlockExtension = CodeBlockLowlight.configure({
@@ -66,6 +107,38 @@ const CodeEditorPlugin = Extension.create({
 
 // Configuração do plugin para o sistema de plugins
 const codeHighlightPlugin = {
+  // Função para validar e normalizar a linguagem
+  validateLanguage: (language) => {
+    if (!language) return 'javascript'; // Valor padrão
+    
+    const normalizedLang = getCanonicalLanguage(language);
+    
+    // Se a linguagem não estiver carregada, tenta carregar
+    if (!loadedLanguages.has(normalizedLang) && SUPPORTED_LANGUAGES[normalizedLang]) {
+      loadLanguage(normalizedLang).catch(console.error);
+    }
+    
+    return normalizedLang;
+  },
+  
+  // Função para obter a lista de linguagens suportadas
+  getSupportedLanguages: () => Object.keys(SUPPORTED_LANGUAGES).sort(),
+  
+  // Verifica se uma linguagem é suportada
+  isLanguageSupported: (language) => {
+    if (!language) return false;
+    const normalizedLang = getCanonicalLanguage(language);
+    return normalizedLang in SUPPORTED_LANGUAGES;
+  },
+  
+  // Carrega uma linguagem se necessário
+  ensureLanguageLoaded: async (language) => {
+    const normalizedLang = getCanonicalLanguage(language);
+    if (!loadedLanguages.has(normalizedLang) && SUPPORTED_LANGUAGES[normalizedLang]) {
+      return loadLanguage(normalizedLang);
+    }
+    return Promise.resolve();
+  },
   id: 'codeHighlight',
   name: 'Destaque de Código',
   description: 'Adiciona suporte para blocos de código com destaque de sintaxe para várias linguagens',
@@ -82,14 +155,42 @@ const codeHighlightPlugin = {
       name: 'codeBlock',
       title: 'Bloco de Código',
       icon: <FaCode />,
-      onClick: (editor) => {
-        if (editor) {
-          if (editor.isActive('codeBlock')) {
-            editor.chain().focus().toggleCodeBlock().run();
-          } else {
-            const language = prompt('Linguagem (javascript, python, html, etc):', 'javascript');
-            editor.chain().focus().toggleCodeBlock({ language: language || 'javascript' }).run();
-          }
+      onClick: async (editor) => {
+        if (!editor) return;
+        
+        if (editor.isActive('codeBlock')) {
+          editor.chain().focus().toggleCodeBlock().run();
+          return;
+        }
+        
+        // Obtém a linguagem atual do bloco de código, se existir
+        const currentLanguage = editor.getAttributes('codeBlock').language || 'javascript';
+        
+        // Cria um diálogo personalizado para melhor UX
+        const language = window.prompt(
+          'Digite o nome da linguagem de programação (ex: javascript, python, html):',
+          currentLanguage
+        );
+        
+        if (language === null) return; // Usuário cancelou
+        
+        // Valida e normaliza a linguagem
+        const validLanguage = codeHighlightPlugin.validateLanguage(language);
+        
+        // Atualiza ou insere o bloco de código
+        editor.chain()
+          .focus()
+          .toggleCodeBlock({ language: validLanguage })
+          .run();
+        
+        // Se a linguagem não estiver carregada, carrega em segundo plano
+        if (SUPPORTED_LANGUAGES[validLanguage] && !loadedLanguages.has(validLanguage)) {
+          await loadLanguage(validLanguage);
+          // Força a atualização do editor para aplicar o destaque
+          const { from } = editor.state.selection;
+          editor.view.dispatch(editor.view.state.tr.setSelection(
+            editor.state.selection.constructor.near(editor.state.doc.resolve(from))
+          ));
         }
       },
       isActive: (editor) => editor && editor.isActive('codeBlock'),
@@ -99,121 +200,55 @@ const codeHighlightPlugin = {
   // Comandos fornecidos pelo plugin
   commands: {
     insertCodeBlock: (editor, attrs) => {
-      editor.chain().focus().toggleCodeBlock(attrs).run();
+      const language = attrs?.language || 'javascript';
+      const validLanguage = codeHighlightPlugin.validateLanguage(language);
+      return editor.chain().focus().toggleCodeBlock({ language: validLanguage }).run();
     },
     setCodeBlockLanguage: (editor, language) => {
       if (editor.isActive('codeBlock')) {
-        editor.chain().focus().updateAttributes('codeBlock', { language }).run();
+        const validLanguage = codeHighlightPlugin.validateLanguage(language);
+        return editor.chain().focus().updateAttributes('codeBlock', { language: validLanguage }).run();
       }
+      return false;
+    },
+    // Adiciona um comando para validar e definir a linguagem
+    setValidLanguage: (editor, language) => {
+      if (!editor) return false;
+      
+      const validLanguage = codeHighlightPlugin.validateLanguage(language);
+      if (editor.isActive('codeBlock')) {
+        return editor.chain().focus().updateAttributes('codeBlock', { 
+          language: validLanguage 
+        }).run();
+      }
+      return false;
+    },
+    // Verifica se uma linguagem é suportada
+    isLanguageSupported: (_, language) => {
+      return codeHighlightPlugin.isLanguageSupported(language);
     },
   },
   
   // Função de inicialização do plugin
   setup: (editor) => {
-    // Adiciona estilos CSS para os blocos de código
-    const style = document.createElement('style');
-    style.textContent = `
-      pre {
-        background-color: #282c34;
-        color: #abb2bf;
-        padding: 0.75em 1em;
-        border-radius: 5px;
-        font-family: 'Fira Code', 'Consolas', 'Monaco', 'Andale Mono', 'Ubuntu Mono', monospace;
-        font-size: 0.9em;
-        overflow-x: auto;
-        position: relative;
-      }
+    // Adiciona manipulador para atualizar a linguagem quando o bloco de código for criado
+    editor.on('update', () => {
+      const codeBlocks = document.querySelectorAll('pre[data-language]');
       
-      pre::before {
-        content: attr(data-language);
-        position: absolute;
-        top: 0;
-        right: 0;
-        padding: 0.25em 0.5em;
-        font-size: 0.75em;
-        background-color: rgba(0, 0, 0, 0.3);
-        color: #e6e6e6;
-        border-bottom-left-radius: 4px;
-      }
-      
-      code {
-        font-family: 'Fira Code', 'Consolas', 'Monaco', 'Andale Mono', 'Ubuntu Mono', monospace;
-      }
-      
-      .hljs-comment,
-      .hljs-quote {
-        color: #5c6370;
-        font-style: italic;
-      }
-
-      .hljs-doctag,
-      .hljs-keyword,
-      .hljs-formula {
-        color: #c678dd;
-      }
-
-      .hljs-section,
-      .hljs-name,
-      .hljs-selector-tag,
-      .hljs-deletion,
-      .hljs-subst {
-        color: #e06c75;
-      }
-
-      .hljs-literal {
-        color: #56b6c2;
-      }
-
-      .hljs-string,
-      .hljs-regexp,
-      .hljs-addition,
-      .hljs-attribute,
-      .hljs-meta-string {
-        color: #98c379;
-      }
-
-      .hljs-built_in,
-      .hljs-class .hljs-title {
-        color: #e6c07b;
-      }
-
-      .hljs-variable,
-      .hljs-template-variable,
-      .hljs-type,
-      .hljs-selector-class,
-      .hljs-selector-attr,
-      .hljs-selector-pseudo,
-      .hljs-number {
-        color: #d19a66;
-      }
-
-      .hljs-symbol,
-      .hljs-bullet,
-      .hljs-link,
-      .hljs-meta,
-      .hljs-selector-id,
-      .hljs-title {
-        color: #61aeee;
-      }
-
-      .hljs-emphasis {
-        font-style: italic;
-      }
-
-      .hljs-strong {
-        font-weight: bold;
-      }
-
-      .hljs-link {
-        text-decoration: underline;
-      }
-    `;
-    document.head.appendChild(style);
+      codeBlocks.forEach(block => {
+        const language = block.getAttribute('data-language');
+        if (language && SUPPORTED_LANGUAGES[language] && !loadedLanguages.has(language)) {
+          loadLanguage(language).then(() => {
+            // Força a atualização do destaque de sintaxe
+            const content = block.textContent;
+            block.textContent = content;
+          });
+        }
+      });
+    });
     
-    return () => {
-      // Limpeza ao desativar o plugin
-      style.remove();
-    };
+    // Retorna uma função vazia para limpeza (os estilos são gerenciados pelo CSS importado)
+    return () => {};
   },
 };
 
