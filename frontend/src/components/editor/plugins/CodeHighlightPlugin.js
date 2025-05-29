@@ -58,8 +58,15 @@ const SUPPORTED_LANGUAGES = Object.freeze({
   wasm: ['wat', 'wast']
 });
 
-// Cache para linguagens já carregadas
-const loadedLanguages = new Set();
+// Cache para linguagens já carregadas e em processo de carregamento
+const languageState = {
+  loaded: new Set(),
+  loading: new Set(),
+  failed: new Set()
+};
+
+// Mapa para armazenar os callbacks de linguagens em carregamento
+const languageLoadingCallbacks = new Map();
 
 /**
  * Carrega dinamicamente uma linguagem de destaque de sintaxe
@@ -120,8 +127,14 @@ const loadLanguage = async (language) => {
     // Registra a linguagem no lowlight
     lowlight.registerLanguage(normalizedLang, langModule.default);
     
-    // Adiciona ao cache
-    loadedLanguages.add(normalizedLang);
+    // Atualiza o estado
+    languageState.loaded.add(normalizedLang);
+    languageState.loading.delete(normalizedLang);
+    
+    // Executa todos os callbacks pendentes
+    const callbacks = languageLoadingCallbacks.get(normalizedLang) || [];
+    callbacks.forEach(cb => cb(true));
+    languageLoadingCallbacks.delete(normalizedLang);
     
     if (process.env.NODE_ENV === 'development') {
       console.log(`Linguagem carregada: ${normalizedLang}`);
@@ -131,8 +144,16 @@ const loadLanguage = async (language) => {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     console.warn(`Falha ao carregar suporte para ${normalizedLang}:`, errorMessage);
-    // Remove do cache em caso de falha para permitir novas tentativas
-    loadedLanguages.delete(normalizedLang);
+    
+    // Atualiza o estado
+    languageState.loading.delete(normalizedLang);
+    languageState.failed.set(normalizedLang, Date.now());
+    
+    // Rejeita todos os callbacks pendentes
+    const callbacks = languageLoadingCallbacks.get(normalizedLang) || [];
+    callbacks.forEach(cb => cb(false));
+    languageLoadingCallbacks.delete(normalizedLang);
+    
     return false;
   }
 };
@@ -206,9 +227,12 @@ const codeHighlightPlugin = {
     
     const normalizedLang = getCanonicalLanguage(language);
     
-    // Se a linguagem não estiver carregada, tenta carregar
-    if (!loadedLanguages.has(normalizedLang) && SUPPORTED_LANGUAGES[normalizedLang]) {
-      loadLanguage(normalizedLang).catch(console.error);
+    // Se a linguagem não estiver carregada e for suportada, tenta carregar
+    if (SUPPORTED_LANGUAGES[normalizedLang] && !languageState.loaded.has(normalizedLang)) {
+      // Carrega em segundo plano sem bloquear
+      loadLanguage(normalizedLang).catch(error => {
+        console.error(`Erro ao carregar linguagem ${normalizedLang}:`, error);
+      });
     }
     
     return normalizedLang;
@@ -227,10 +251,30 @@ const codeHighlightPlugin = {
   // Carrega uma linguagem se necessário
   ensureLanguageLoaded: async (language) => {
     const normalizedLang = getCanonicalLanguage(language);
-    if (!loadedLanguages.has(normalizedLang) && SUPPORTED_LANGUAGES[normalizedLang]) {
-      return loadLanguage(normalizedLang);
+    if (languageState.loaded.has(normalizedLang)) {
+      return Promise.resolve(true);
     }
-    return Promise.resolve();
+    
+    if (!SUPPORTED_LANGUAGES[normalizedLang]) {
+      return Promise.resolve(false);
+    }
+    
+    try {
+      return await loadLanguage(normalizedLang);
+    } catch (error) {
+      console.error(`Erro ao carregar linguagem ${normalizedLang}:`, error);
+      return false;
+    }
+  },
+  
+  // Verifica o estado de carregamento de uma linguagem
+  getLanguageState: (language) => {
+    const normalizedLang = getCanonicalLanguage(language);
+    return {
+      isLoaded: languageState.loaded.has(normalizedLang),
+      isLoading: languageState.loading.has(normalizedLang),
+      hasFailed: languageState.failed.has(normalizedLang)
+    };
   },
   id: 'codeHighlight',
   name: 'Destaque de Código',
@@ -276,14 +320,24 @@ const codeHighlightPlugin = {
           .toggleCodeBlock({ language: validLanguage })
           .run();
         
-        // Se a linguagem não estiver carregada, carrega em segundo plano
-        if (SUPPORTED_LANGUAGES[validLanguage] && !loadedLanguages.has(validLanguage)) {
-          await loadLanguage(validLanguage);
-          // Força a atualização do editor para aplicar o destaque
-          const { from } = editor.state.selection;
-          editor.view.dispatch(editor.view.state.tr.setSelection(
-            editor.state.selection.constructor.near(editor.state.doc.resolve(from))
-          ));
+        // Se a linguagem não estiver carregada, tenta carregar
+        if (SUPPORTED_LANGUAGES[validLanguage] && !languageState.loaded.has(validLanguage)) {
+          try {
+            // Tenta carregar a linguagem
+            const loaded = await loadLanguage(validLanguage);
+            
+            if (loaded) {
+              // Força a atualização do editor para aplicar o destaque
+              const { from } = editor.state.selection;
+              editor.view.dispatch(editor.view.state.tr.setSelection(
+                editor.state.selection.constructor.near(editor.state.doc.resolve(from))
+              ));
+            } else {
+              console.warn(`Não foi possível carregar o suporte para ${validLanguage}`);
+            }
+          } catch (error) {
+            console.error(`Erro ao processar a linguagem ${validLanguage}:`, error);
+          }
         }
       },
       isActive: (editor) => editor && editor.isActive('codeBlock'),
@@ -324,24 +378,43 @@ const codeHighlightPlugin = {
   
   // Função de inicialização do plugin
   setup: (editor) => {
-    // Adiciona manipulador para atualizar a linguagem quando o bloco de código for criado
-    editor.on('update', () => {
-      const codeBlocks = document.querySelectorAll('pre[data-language]');
+    // Função para processar blocos de código no editor
+    const processCodeBlocks = () => {
+      if (!editor.isEditable) return;
+      
+      const codeBlocks = editor.view.dom.querySelectorAll('pre[data-language]');
       
       codeBlocks.forEach(block => {
         const language = block.getAttribute('data-language');
-        if (language && SUPPORTED_LANGUAGES[language] && !loadedLanguages.has(language)) {
-          loadLanguage(language).then(() => {
-            // Força a atualização do destaque de sintaxe
-            const content = block.textContent;
-            block.textContent = content;
+        if (language && SUPPORTED_LANGUAGES[language] && !languageState.loaded.has(language)) {
+          loadLanguage(language).then(success => {
+            if (success) {
+              // Força a atualização do destaque de sintaxe
+              const content = block.textContent;
+              block.textContent = content + ' '; // Adiciona e remove espaço para forçar atualização
+              block.textContent = content;
+            }
           });
         }
       });
-    });
+    };
     
-    // Retorna uma função vazia para limpeza (os estilos são gerenciados pelo CSS importado)
-    return () => {};
+    // Adiciona manipulador para atualizar a linguagem quando o conteúdo mudar
+    const updateHandler = () => {
+      requestAnimationFrame(processCodeBlocks);
+    };
+    
+    editor.on('update', updateHandler);
+    
+    // Processa os blocos iniciais
+    updateHandler();
+    
+    // Função de limpeza
+    return () => {
+      if (editor && editor.off) {
+        editor.off('update', updateHandler);
+      }
+    };
   },
 };
 
