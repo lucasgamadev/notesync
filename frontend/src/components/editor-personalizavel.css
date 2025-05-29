@@ -1,4 +1,53 @@
 /* Estilos para o editor personalizado */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+/* Estilos de foco acessível */
+:focus-visible {
+  outline: 3px solid var(--primary-color);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Esconder outline apenas para interações com mouse */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Garantir que o foco seja acessível */
+.editor-personalizavel:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Variáveis de tema */
+:root {
+  --primary-color: #4a86e8;
+  --primary-hover: #3b78e7;
+  --bg-color: #ffffff;
+  --text-color: #2c3e50;
+  --border-color: #e1e4e8;
+  --toolbar-bg: rgba(246, 248, 250, 0.9);
+  --toolbar-hover: #e9ecef;
+  --code-bg: #f8f9fa;
+  --code-text: #2c3e50;
+  --code-border: #e1e4e8;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 4px 20px rgba(0, 0, 0, 0.05);
+  --transition: all 0.2s ease;
+}
+
+/* Reset básico */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Estilos para o editor personalizado */
 .editor-personalizavel {
   position: relative;
   width: 100%;
@@ -12,18 +61,28 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
+  box-shadow: var(--shadow-lg);
+  transition: var(--transition);
+  line-height: 1.6;
 }
 
 /* Melhorando o foco do editor */
 .editor-personalizavel:focus-within {
   border-color: var(--primary-color);
   box-shadow: 0 0 0 2px rgba(74, 134, 232, 0.2);
+  outline: none;
+}
+
+/* Garantir que o foco seja acessível */
+.editor-personalizavel:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
 }
 
 /* Estilos para o conteúdo do editor */
 .editor-content {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
@@ -31,6 +90,8 @@
   cursor: text !important;
   background-color: var(--bg-color);
   transition: var(--transition);
+  position: relative;
+  z-index: 1;
 }
 
 .editor-content:hover {
@@ -40,7 +101,16 @@
 /* Estilos para melhorar a aparência do editor */
 .ProseMirror {
   min-height: 580px;
-  padding: 1.75rem 2rem;
+  padding: 2rem 2.5rem;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
   border: none;
   outline: none;
   background-color: var(--bg-color);
@@ -51,47 +121,36 @@
   height: auto;
   overflow-y: auto;
   transition: all 0.3s ease;
-  -webkit-caret-color: var(--primary-color) !important;
-  -moz-caret-color: var(--primary-color) !important;
-  caret-color: var(--primary-color) !important;
+  -webkit-caret-color: var(--primary-color);
+  caret-color: var(--primary-color);
   scroll-behavior: smooth;
-  /* Estilização de fallback para navegadores antigos */
   -ms-overflow-style: -ms-autohiding-scrollbar; /* IE e Edge */
-  
-  /* Para navegadores WebKit (Chrome, Safari, etc.) */
-  &::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-  
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  
-  &::-webkit-scrollbar-thumb {
-    background-color: var(--border-color);
-    border-radius: 4px;
-  }
-  
-  /* Para navegadores modernos (Firefox) */
-  @supports (scrollbar-width: thin) {
+}
+
+/* Estilização da barra de rolagem */
+.ProseMirror::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.ProseMirror::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ProseMirror::-webkit-scrollbar-thumb {
+  background-color: var(--border-color);
+  border-radius: 4px;
+}
+
+.ProseMirror::-webkit-scrollbar-thumb:hover {
+  background-color: var(--toolbar-hover);
+}
+
+/* Suporte para Firefox */
+@supports (scrollbar-width: thin) {
+  .ProseMirror {
     scrollbar-width: thin;
     scrollbar-color: var(--border-color) transparent;
-  }
-  
-  /* Para navegadores WebKit (Chrome, Safari, etc.) */
-  &::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-  
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  
-  &::-webkit-scrollbar-thumb {
-    background-color: var(--border-color);
-    border-radius: 4px;
   }
 }
 
@@ -384,6 +443,26 @@
   padding: 8px 12px;
 }
 
+/* Estilos para cabeçalhos */
+.ProseMirror h1,
+.ProseMirror h2,
+.ProseMirror h3,
+.ProseMirror h4,
+.ProseMirror h5,
+.ProseMirror h6 {
+  margin: 1.5em 0 0.75em;
+  line-height: 1.3;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.ProseMirror h1 { font-size: 2em; }
+.ProseMirror h2 { font-size: 1.7em; }
+.ProseMirror h3 { font-size: 1.4em; }
+.ProseMirror h4 { font-size: 1.2em; }
+.ProseMirror h5 { font-size: 1.1em; }
+.ProseMirror h6 { font-size: 1em; }
+
 /* Estilos para o placeholder */
 .ProseMirror p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
@@ -410,21 +489,478 @@
   font-style: italic;
 }
 
+/* Estilos para listas */
+.ProseMirror ul,
+.ProseMirror ol {
+  padding-left: 1.5em;
+  margin: 0.75em 0;
+}
+
+.ProseMirror li {
+  margin: 0.4em 0;
+  position: relative;
+}
+
+.ProseMirror li > p {
+  margin: 0.4em 0;
+}
+
+/* Estilos para blocos de citação */
+.ProseMirror blockquote {
+  border-left: 4px solid var(--border-color);
+  margin: 1em 0;
+  padding: 0.5em 0 0.5em 1em;
+  color: var(--text-color);
+  font-style: normal;
+  background-color: rgba(0, 0, 0, 0.02);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+.ProseMirror blockquote p {
+  margin: 0.5em 0;
+}
+
+/* Estilos para links */
+.ProseMirror a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+  border-bottom: 1px solid rgba(74, 134, 232, 0.3);
+  transition: var(--transition);
+}
+
+.ProseMirror a:hover {
+  color: var(--primary-hover);
+  border-bottom-color: currentColor;
+}
+
+/* Estilos para imagens */
+.ProseMirror img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+  margin: 1.5em auto;
+  display: block;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ProseMirror img:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilo para imagens com legenda */
+.ProseMirror figure {
+  margin: 1.5em 0;
+  text-align: center;
+}
+
+.ProseMirror figure img {
+  margin: 0 auto;
+}
+
+.ProseMirror figcaption {
+  margin-top: 0.5em;
+  font-size: 0.9em;
+  color: var(--text-color);
+  opacity: 0.8;
+  font-style: italic;
+}
+
+/* Melhorias de acessibilidade para leitores de tela */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Estilos para elementos de formulário */
+.ProseMirror input[type="text"],
+.ProseMirror input[type="email"],
+.ProseMirror input[type="password"],
+.ProseMirror input[type="number"],
+.ProseMirror input[type="search"],
+.ProseMirror input[type="tel"],
+.ProseMirror input[type="url"],
+.ProseMirror input[type="date"],
+.ProseMirror input[type="time"],
+.ProseMirror input[type="datetime-local"],
+.ProseMirror input[type="month"],
+.ProseMirror input[type="week"],
+.ProseMirror textarea,
+.ProseMirror select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  margin: 0.5rem 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.ProseMirror input[type="text"]:focus,
+.ProseMirror input[type="email"]:focus,
+.ProseMirror input[type="password"]:focus,
+.ProseMirror input[type="number"]:focus,
+.ProseMirror input[type="search"]:focus,
+.ProseMirror input[type="tel"]:focus,
+.ProseMirror input[type="url"]:focus,
+.ProseMirror input[type="date"]:focus,
+.ProseMirror input[type="time"]:focus,
+.ProseMirror input[type="datetime-local"]:focus,
+.ProseMirror input[type="month"]:focus,
+.ProseMirror input[type="week"]:focus,
+.ProseMirror textarea:focus,
+.ProseMirror select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(74, 134, 232, 0.25);
+  outline: 0;
+}
+
+.ProseMirror textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.ProseMirror button,
+.ProseMirror input[type="button"],
+.ProseMirror input[type="reset"],
+.ProseMirror input[type="submit"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: white;
+  background-color: var(--primary-color);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.ProseMirror button:hover,
+.ProseMirror input[type="button"]:hover,
+.ProseMirror input[type="reset"]:hover,
+.ProseMirror input[type="submit"]:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.ProseMirror button:active,
+.ProseMirror input[type="button"]:active,
+.ProseMirror input[type="reset"]:active,
+.ProseMirror input[type="submit"]:active {
+  transform: translateY(0);
+}
+
+.ProseMirror button:focus,
+.ProseMirror input[type="button"]:focus,
+.ProseMirror input[type="reset"]:focus,
+.ProseMirror input[type="submit"]:focus {
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(74, 134, 232, 0.25);
+}
+
+/* Estilos para tabelas */
+.ProseMirror table {
+  border-collapse: collapse;
+  margin: 1.5em 0;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  display: block;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Estilos para tabelas */
+.ProseMirror table {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  margin: 1.5em 0;
+  border-collapse: collapse;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  scroll-behavior: smooth;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+}
+
+/* Container para rolagem horizontal em telas pequenas */
+.table-container {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  margin: 1.5em 0;
+  border-radius: var(--radius-sm);
+  /* Melhora a rolagem em dispositivos com touch */
+  scroll-behavior: smooth;
+  /* Forçar aceleração de hardware para melhor desempenho */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  /* 
+    Nota: -webkit-overflow-scrolling foi removido por ser obsoleto.
+    Para rolagem suave em iOS, use scroll-behavior: smooth;
+    e garanta que o container tenha overflow: auto/scroll.
+  */
+}
+
+.ProseMirror th,
+.ProseMirror td {
+  border: 1px solid var(--border-color);
+  padding: 0.75em 1em;
+  text-align: left;
+  vertical-align: top;
+  min-width: 100px;
+}
+
+.ProseMirror th {
+  background-color: var(--toolbar-bg);
+  font-weight: 600;
+  color: var(--text-color);
+  white-space: nowrap;
+}
+
+.ProseMirror tr:nth-child(even) {
+  background-color: var(--toolbar-hover);
+}
+
+.ProseMirror tr:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+/* Melhorias para telas pequenas */
+@media (max-width: 768px) {
+  .ProseMirror th,
+  .ProseMirror td {
+    padding: 0.5em 0.75em;
+    font-size: 0.95em;
+  }
+  
+  .table-container {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+  }
+}
+
 /* Estilos para blocos de código */
 .ProseMirror pre {
-  background-color: var(--code-bg);
-  color: var(--code-text);
-  padding: 1.25rem 1.5rem;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--code-border);
-  overflow-x: auto;
-  margin: 1.25em 0;
-  font-family: 'Fira Code', 'Cascadia Code', 'Consolas', 'Monaco', 'Andale Mono', 'Ubuntu Mono', monospace;
-  font-size: 0.9em;
-  line-height: 1.7;
   position: relative;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin: 1.5em 0;
+  padding: 1.5em;
+  border-radius: var(--radius-md);
+  background: var(--code-bg);
+  color: var(--code-text);
+  font-family: 'Fira Code', 'Cascadia Code', 'Consolas', 'Monaco', 'Andale Mono', 'Ubuntu Mono', monospace;
+  font-size: 0.95em;
+  line-height: 1.6;
+  -moz-tab-size: 2;
+  -o-tab-size: 2;
+  tab-size: 2;
+  overflow-x: auto;
+  box-shadow: var(--shadow-sm);
   transition: all 0.2s ease;
+  border: 1px solid var(--code-border);
+  /* Melhorar renderização de fonte */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.ProseMirror pre:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+/* Números de linha */
+.ProseMirror pre code {
+  counter-reset: line;
+  display: block;
+  padding: 0;
+  background: transparent;
+}
+
+.ProseMirror pre code .line {
+  display: block;
+  counter-increment: line;
+  position: relative;
+  padding-left: 3em;
+}
+
+.ProseMirror pre code .line::before {
+  content: counter(line);
+  position: absolute;
+  left: 0;
+  width: 2.5em;
+  text-align: right;
+  padding-right: 1em;
+  color: var(--text-color);
+  opacity: 0.4;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Botão de copiar código */
+.copy-code-button {
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+  padding: 0.25em 0.5em;
+  background: var(--toolbar-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-color);
+  font-size: 0.8em;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.2s ease;
+  z-index: 1;
+}
+
+.ProseMirror pre:hover .copy-code-button {
+  opacity: 1;
+}
+
+.copy-code-button:hover {
+  background: var(--toolbar-hover);
+  color: var(--primary-color);
+}
+
+.copy-code-button.copied {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+/* Destaque de sintaxe */
+.ProseMirror pre .token.comment,
+.ProseMirror pre .token.prolog,
+.ProseMirror pre .token.doctype,
+.ProseMirror pre .token.cdata {
+  color: #6a9955;
+}
+
+.ProseMirror pre .token.punctuation {
+  color: #d4d4d4;
+}
+
+.ProseMirror pre .token.property,
+.ProseMirror pre .token.tag,
+.ProseMirror pre .token.boolean,
+.ProseMirror pre .token.number,
+.ProseMirror pre .token.constant,
+.ProseMirror pre .token.symbol,
+.ProseMirror pre .token.deleted {
+  color: #b5cea8;
+}
+
+.ProseMirror pre .token.selector,
+.ProseMirror pre .token.attr-name,
+.ProseMirror pre .token.string,
+.ProseMirror pre .token.char,
+.ProseMirror pre .token.builtin,
+.ProseMirror pre .token.inserted {
+  color: #ce9178;
+}
+
+.ProseMirror pre .token.operator,
+.ProseMirror pre .token.entity,
+.ProseMirror pre .token.url,
+.ProseMirror pre .language-css .token.string,
+.ProseMirror pre .style .token.string {
+  color: #d4d4d4;
+}
+
+.ProseMirror pre .token.atrule,
+.ProseMirror pre .token.attr-value,
+.ProseMirror pre .token.keyword {
+  color: #569cd6;
+}
+
+.ProseMirror pre .token.function,
+.ProseMirror pre .token.class-name {
+  color: #dcdcaa;
+}
+
+.ProseMirror pre .token.regex,
+.ProseMirror pre .token.important,
+.ProseMirror pre .token.variable {
+  color: #d16969;
+}
+
+/* Tema escuro para blocos de código */
+[data-theme="dark"] .ProseMirror pre {
+  --code-bg: #1e1e1e;
+  --code-text: #d4d4d4;
+  --code-border: #333;
+}
+
+/* Melhorias para telas pequenas */
+@media (max-width: 768px) {
+  .ProseMirror pre {
+    padding: 1em;
+    font-size: 0.9em;
+  }
+  
+  .copy-code-button {
+    opacity: 1; /* Sempre visível em dispositivos móveis */
+  }
+}
+
+/* Estilos para blocos de código inline */
+.ProseMirror code:not(pre code) {
+  background: var(--code-bg);
+  color: var(--code-text);
+  padding: 0.2em 0.4em;
+  border-radius: var(--radius-sm);
+  font-size: 0.9em;
+  border: 1px solid var(--code-border);
+}
+
+
+
+/* Adicionar número de linhas */
+.ProseMirror pre code {
+  counter-reset: line;
+}
+
+.ProseMirror pre code .line {
+  counter-increment: line;
+  position: relative;
+  display: block;
+  padding-left: 1.5em;
+}
+
+.ProseMirror pre code .line::before {
+  content: counter(line);
+  position: absolute;
+  left: 0;
+  color: #adb5bd;
+  width: 1.5em;
+  text-align: right;
+  padding-right: 0.75em;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .ProseMirror pre:hover {
@@ -474,7 +1010,45 @@
   color: var(--primary-color);
 }
 
+/* Melhorias de impressão */
+@media print {
+  .editor-personalizavel {
+    height: auto;
+    min-height: 0;
+    border: none;
+    box-shadow: none;
+  }
+  
+  .menu-bar {
+    display: none;
+  }
+  
+  .ProseMirror {
+    padding: 0 !important;
+    min-height: 0 !important;
+    height: auto !important;
+    /* Garante que o conteúdo não seja cortado na impressão */
+    overflow: visible !important;
+  }
+  
+  .ProseMirror pre,
+  .ProseMirror blockquote,
+  .ProseMirror table {
+    page-break-inside: avoid;
+  }
+  
+  .ProseMirror img {
+    max-height: 100vh;
+  }
+}
+
 /* Responsividade */
+@media (max-width: 1024px) {
+  .ProseMirror {
+    padding: 1.5rem;
+  }
+}
+
 @media (max-width: 768px) {
   .editor-personalizavel {
     min-height: 480px;
@@ -487,20 +1061,18 @@
     overflow-x: auto;
     /* Esconder barra de rolagem mantendo a rolagem */
     -ms-overflow-style: none; /* Para IE e Edge */
-    
-    /* Para navegadores WebKit (Chrome, Safari, etc.) */
-    &::-webkit-scrollbar {
-      display: none;
-    }
-    
-    /* Para navegadores modernos (Firefox) */
-    @supports (scrollbar-width: none) {
-      scrollbar-width: none;
-    }
   }
   
+  /* Esconde a barra de rolagem no Chrome, Safari e Opera */
   .menu-bar::-webkit-scrollbar {
     display: none;
+  }
+  
+  /* Esconde a barra de rolagem no Firefox */
+  @supports (scrollbar-width: none) {
+    .menu-bar {
+      scrollbar-width: none;
+    }
   }
   
   .menu-group button {
@@ -542,14 +1114,13 @@
 .menu-group button:nth-child(4) { animation-delay: 0.2s; }
 .menu-group button:nth-child(5) { animation-delay: 0.25s; }
 
-/* Variáveis de tema */
 :root {
   --primary-color: #4a86e8;
   --primary-hover: #3b78e7;
   --bg-color: #ffffff;
   --text-color: #2c3e50;
   --border-color: #e1e4e8;
-  --toolbar-bg: #f6f8fa;
+  --toolbar-bg: rgba(246, 248, 250, 0.9);
   --toolbar-hover: #e9ecef;
   --toolbar-active: #e1e4e8;
   --code-bg: #f8f9fa;
@@ -557,9 +1128,10 @@
   --code-border: #e1e4e8;
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.08);
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
+  --shadow-lg: 0 4px 20px rgba(0, 0, 0, 0.05);
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
   --transition: all 0.2s ease;
 }
 
