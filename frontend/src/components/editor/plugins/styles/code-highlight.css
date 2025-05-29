@@ -1,0 +1,197 @@
+/**
+ * Estilos para o plugin de destaque de sintaxe
+ * Este arquivo contém os estilos para os blocos de código com destaque de sintaxe
+ */
+
+/* Contêiner principal do bloco de código */
+pre {
+  background-color: #282c34;
+  color: #abb2bf;
+  padding: 0.75em 1em;
+  border-radius: 5px;
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Andale Mono', 'Ubuntu Mono', monospace;
+  font-size: 0.9em;
+  overflow-x: auto;
+  position: relative;
+  margin: 1em 0;
+  line-height: 1.5;
+  tab-size: 2;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Indicador de linguagem no canto superior direito */
+pre::before {
+  content: attr(data-language);
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0.25em 0.5em;
+  font-size: 0.75em;
+  background-color: rgba(0, 0, 0, 0.3);
+  color: #e6e6e6;
+  border-bottom-left-radius: 4px;
+  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  pointer-events: none;
+}
+
+/* Estilo para o elemento de código dentro do bloco */
+code {
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Andale Mono', 'Ubuntu Mono', monospace;
+  display: block;
+  padding: 1em 0;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1.5;
+}
+
+/* Estilos de sintaxe para diferentes elementos de código */
+
+/* Comentários */
+.hljs-comment,
+.hljs-quote {
+  color: #5c6370;
+  font-style: italic;
+}
+
+/* Palavras-chave, tags, atributos */
+.hljs-doctag,
+.hljs-keyword,
+.hljs-formula,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-tag,
+.hljs-deletion,
+.hljs-subst {
+  color: #e06c75;
+}
+
+/* Strings, caracteres, números, booleanos */
+.hljs-literal,
+.hljs-number {
+  color: #d19a66;
+}
+
+/* Strings */
+.hljs-string,
+.hljs-regexp,
+.hljs-addition,
+.hljs-attribute,
+.hljs-meta-string {
+  color: #98c379;
+}
+
+/* Funções, classes, títulos */
+.hljs-built_in,
+.hljs-class .hljs-title {
+  color: #e6c07b;
+}
+
+/* Variáveis, parâmetros */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-type,
+.hljs-selector-class,
+.hljs-selector-attr,
+.hljs-selector-pseudo {
+  color: #d19a66;
+}
+
+/* Constantes, símbolos, bullets */
+.hljs-symbol,
+.hljs-bullet,
+.hljs-link,
+.hljs-meta,
+.hljs-selector-id,
+.hljs-title {
+  color: #61aeee;
+}
+
+/* Ênfase */
+.hljs-emphasis {
+  font-style: italic;
+}
+
+/* Negrito */
+.hljs-strong {
+  font-weight: bold;
+}
+
+/* Links */
+.hljs-link {
+  text-decoration: underline;
+}
+
+/* Títulos */
+.hljs-section,
+.hljs-title.function_ {
+  color: #61aeee;
+  font-weight: bold;
+}
+
+/* Atributos */
+.hljs-attr,
+.hljs-attribute {
+  color: #d19a66;
+}
+
+/* Parâmetros de função */
+.hljs-params {
+  color: #abb2bf;
+}
+
+/* Números de linha (se usado) */
+.hljs-ln-numbers {
+  color: #5c6370;
+  text-align: right;
+  padding-right: 1em;
+  -webkit-user-select: none; /* Safari 3+, Safari on iOS 3+ */
+  user-select: none;
+}
+
+/* Linha destacada (se usado) */
+.hljs-ln-line.hljs-ln-line-highlighted {
+  background-color: rgba(255, 255, 0, 0.1);
+}
+
+/* Barra de rolagem personalizada */
+pre::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+pre::-webkit-scrollbar-track {
+  background: #1e2227;
+  border-radius: 4px;
+}
+
+pre::-webkit-scrollbar-thumb {
+  background: #4b5362;
+  border-radius: 4px;
+}
+
+pre::-webkit-scrollbar-thumb:hover {
+  background: #5c6370;
+}
+
+/* Melhorias de acessibilidade */
+pre:focus {
+  outline: 2px solid #4dabf7;
+  outline-offset: 2px;
+}
+
+/* Modo de impressão */
+@media print {
+  pre {
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+  }
+  
+  pre::before {
+    display: none;
+  }
+}
