@@ -7,6 +7,12 @@
   flex-direction: column;
   height: calc(100vh - 80px); /* Reduzido para 80px para maximizar o espaço */
   min-height: 650px; /* Ajustado para equilibrar com a altura reduzida */
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  border: 1px solid #e2e8f0; /* Adicionando borda sutil */
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
 }
 
 /* Estilos para o conteúdo do editor */
@@ -15,8 +21,9 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  margin-top: 5px; /* Reduz o espaço entre os elementos */
   cursor: text !important;
+  background-color: var(--bg-color);
+  transition: var(--transition);
 }
 
 .editor-content:hover {
@@ -26,39 +33,82 @@
 /* Estilos para melhorar a aparência do editor */
 .ProseMirror {
   min-height: 580px; /* Ajustado para equilibrar com a altura reduzida */
-  padding: 0.8rem; /* Reduzido para dar mais espaço ao conteúdo */
-  border-radius: 0 0 8px 8px;
-  border: 1px solid #e1e4e8;
-  border-top: none;
+  padding: 1.5rem;
+  border: none;
   outline: none;
-  background-color: white;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  font-size: 16px;
-  line-height: 1.6;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-size: 1rem;
+  line-height: 1.7;
   flex-grow: 1;
   height: auto;
   overflow-y: auto; /* Garantir que o conteúdo tenha scroll quando necessário */
-  /* Configurações essenciais para visibilidade do cursor */
-  cursor: text !important;
-  caret-color: #000000 !important;
-  -webkit-caret-color: #000000 !important;
-  -moz-caret-color: #000000 !important;
+  transition: var(--transition);
+  -webkit-caret-color: var(--primary-color) !important;
+  -moz-caret-color: var(--primary-color) !important;
+  caret-color: var(--primary-color) !important;
+  /* Estilização de fallback para navegadores antigos */
+  -ms-overflow-style: -ms-autohiding-scrollbar; /* IE e Edge */
+  
+  /* Para navegadores WebKit (Chrome, Safari, etc.) */
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 4px;
+  }
+  
+  /* Para navegadores modernos (Firefox) */
+  @supports (scrollbar-width: thin) {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) transparent;
+  }
+  
+  /* Para navegadores WebKit (Chrome, Safari, etc.) */
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 4px;
+  }
 }
 
 .ProseMirror:focus {
-  border-color: #4a86e8;
-  box-shadow: 0 0 0 2px rgba(74, 134, 232, 0.2);
-  cursor: text !important;
-  caret-color: #000000 !important;
-  -webkit-caret-color: #000000 !important;
-  -moz-caret-color: #000000 !important;
+  outline: none;
+  box-shadow: 0 0 0 2px var(--primary-color);
 }
 
-.ProseMirror:hover {
-  cursor: text !important;
-  caret-color: #000000 !important;
-  -webkit-caret-color: #000000 !important;
-  -moz-caret-color: #000000 !important;
+/* Estilização da barra de rolagem */
+.ProseMirror::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.ProseMirror::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ProseMirror::-webkit-scrollbar-thumb {
+  background-color: var(--border-color);
+  border-radius: 4px;
+}
+
+.ProseMirror::-webkit-scrollbar-thumb:hover {
+  background-color: var(--toolbar-hover);
 }
 
 /* Garante cursor visível em todos os elementos de texto */
@@ -66,30 +116,32 @@
   cursor: text !important;
 }
 
+/* Estilos de tipografia */
 .ProseMirror p {
-  margin: 0.6em 0;
-  line-height: 1.5;
+  margin: 0.75em 0;
+  line-height: 1.7;
+  color: var(--text-color);
 }
 
 .ProseMirror h1 {
   font-size: 1.7em;
   margin: 0.9em 0 0.5em;
   line-height: 1.3;
-  color: #2c3e50;
+  color: var(--text-color);
 }
 
 .ProseMirror h2 {
   font-size: 1.4em;
   margin: 0.8em 0 0.4em;
   line-height: 1.35;
-  color: #2c3e50;
+  color: var(--text-color);
 }
 
 .ProseMirror h3 {
   font-size: 1.2em;
   margin: 0.7em 0 0.4em;
   line-height: 1.4;
-  color: #2c3e50;
+  color: var(--text-color);
 }
 
 .ProseMirror ul, .ProseMirror ol {
@@ -102,33 +154,39 @@
 }
 
 .ProseMirror blockquote {
-  border-left: 3px solid #4a86e8;
+  border-left: 3px solid var(--primary-color);
   margin: 0.7em 0;
   padding-left: 0.8em;
-  color: #666;
+  color: var(--text-color);
   font-style: italic;
 }
 
 .ProseMirror code {
-  background-color: #f5f5f5;
+  background-color: var(--code-bg);
   padding: 0.2em 0.4em;
   border-radius: 3px;
   font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
   font-size: 0.9em;
+  color: var(--code-text);
 }
 
 .ProseMirror pre {
-  background-color: #f5f5f5;
+  background-color: var(--code-bg);
   padding: 0.75em 1em;
   border-radius: 5px;
   overflow-x: auto;
   margin: 1em 0;
+  font-family: 'Fira Code', 'Cascadia Code', 'Consolas', 'Monaco', 'Andale Mono', 'Ubuntu Mono', monospace;
+  font-size: 0.9em;
+  line-height: 1.6;
+  position: relative;
 }
 
 .ProseMirror pre code {
-  background-color: transparent;
+  background: none;
   padding: 0;
-  font-size: 0.9em;
+  font-size: inherit;
+  color: inherit;
 }
 
 .ProseMirror img {
@@ -138,66 +196,151 @@
 }
 
 .ProseMirror a {
-  color: #4a86e8;
+  color: var(--primary-color);
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 .ProseMirror a:hover {
-  color: #3b78e7;
+  color: var(--primary-hover);
   text-decoration: underline;
 }
 
 .menu-bar {
-  border-radius: 8px 8px 0 0;
-  border: 1px solid #e1e4e8;
-  border-bottom: none;
-  background-color: #f6f8fa;
-  padding: 4px 6px; /* Reduzido para ocupar menos espaço vertical */
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--toolbar-bg);
+  padding: 6px 8px;
   display: flex;
   flex-wrap: wrap;
-  gap: 4px; /* Reduzido para compactar os botões */
+  gap: 8px;
+  position: relative;
+  z-index: 10;
+  transition: var(--transition);
 }
 
 .menu-group {
   display: flex;
-  gap: 3px; /* Reduzido para compactar os botões */
-  margin-right: 4px; /* Reduzido para ocupar menos espaço horizontal */
-  padding-right: 4px; /* Reduzido para ocupar menos espaço horizontal */
-  border-right: 1px solid #e0e4e8;
+  gap: 4px;
+  position: relative;
 }
 
-.menu-group:last-child {
-  border-right: none;
+.menu-group:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 24px;
+  background-color: var(--border-color);
 }
 
 .menu-group button {
-  transition: all 0.2s ease;
-  padding: 4px 8px; /* Reduzido para botões mais compactos */
-  border-radius: 4px;
-  display: flex;
+  position: relative;
+  transition: var(--transition);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.9em; /* Reduzido para texto mais compacto */
+  font-size: 0.9em;
+  background: none;
+  border: none;
+  color: var(--text-color);
+  cursor: pointer;
+  white-space: nowrap;
 }
 
 .menu-group button:hover {
-  background-color: #e1e4e8;
-  transform: translateY(-1px);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  background-color: var(--toolbar-hover);
+  color: var(--primary-color);
 }
 
 .menu-group button.is-active {
-  background-color: #4a86e8;
+  background-color: var(--primary-color);
   color: white;
 }
 
-/* Estilos responsivos */
+/* Tooltips */
+.menu-group button::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  background-color: #333;
+  color: white;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8em;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  pointer-events: none;
+  z-index: 100;
+  box-shadow: var(--shadow-md);
+}
+
+.menu-group button:hover::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(-12px);
+}
+
+/* Ícones */
+.menu-group button i {
+  font-size: 1rem;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Botão de alternar tema */
+.theme-toggle {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  background: none;
+  border: none;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.theme-toggle:hover {
+  background-color: var(--toolbar-hover);
+}
+
+/* Estilo para o seletor de linguagem */
+.language-selector {
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-size: 0.85em;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.language-selector:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(74, 134, 232, 0.2);
+}
+
 /* Estilos para o placeholder */
 .ProseMirror p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
   float: left;
-  color: #adb5bd;
+  color: var(--text-color);
+  opacity: 0.5;
   pointer-events: none;
   height: 0;
   font-style: italic;
@@ -213,14 +356,164 @@
   font-style: italic;
 }
 
+/* Estilos para blocos de código */
+.ProseMirror pre {
+  background-color: var(--code-bg);
+  color: var(--code-text);
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--code-border);
+  overflow-x: auto;
+  margin: 1em 0;
+  font-family: 'Fira Code', 'Cascadia Code', 'Consolas', 'Monaco', 'Andale Mono', 'Ubuntu Mono', monospace;
+  font-size: 0.9em;
+  line-height: 1.6;
+  position: relative;
+}
+
+.ProseMirror pre code {
+  background: none;
+  padding: 0;
+  font-size: inherit;
+  color: inherit;
+}
+
+/* Barra de ferramentas do bloco de código */
+.code-block-toolbar {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  gap: 0.25rem;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.ProseMirror pre:hover .code-block-toolbar {
+  opacity: 1;
+}
+
+.code-block-toolbar button {
+  background: var(--toolbar-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-color);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.8em;
+  transition: var(--transition);
+}
+
+.code-block-toolbar button:hover {
+  background: var(--toolbar-hover);
+  color: var(--primary-color);
+}
+
+/* Responsividade */
 @media (max-width: 768px) {
   .editor-personalizavel {
-    min-height: 480px; /* Ajustado para equilibrar com a altura reduzida */
-    height: calc(100vh - 60px); /* Reduzido para maximizar o espaço em dispositivos móveis */
+    min-height: 480px;
+    height: calc(100vh - 60px);
+  }
+  
+  .menu-bar {
+    gap: 4px;
+    padding: 4px;
+    overflow-x: auto;
+    /* Esconder barra de rolagem mantendo a rolagem */
+    -ms-overflow-style: none; /* Para IE e Edge */
+    
+    /* Para navegadores WebKit (Chrome, Safari, etc.) */
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    
+    /* Para navegadores modernos (Firefox) */
+    @supports (scrollbar-width: none) {
+      scrollbar-width: none;
+    }
+  }
+  
+  .menu-bar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .menu-group button {
+    padding: 6px 8px;
+    font-size: 0.8em;
   }
   
   .ProseMirror {
-    min-height: 430px; /* Ajustado para equilibrar com a altura reduzida */
-    padding: 0.6rem; /* Reduzido para dar mais espaço ao conteúdo */
+    padding: 1rem;
+    font-size: 0.95em;
   }
+}
+
+/* Animações */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-10px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* Transições suaves */
+.ProseMirror {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.menu-group button {
+  animation: slideIn 0.2s ease-out;
+  animation-fill-mode: both;
+}
+
+/* Atraso para os botões da barra de ferramentas */
+.menu-group button:nth-child(1) { animation-delay: 0.05s; }
+.menu-group button:nth-child(2) { animation-delay: 0.1s; }
+.menu-group button:nth-child(3) { animation-delay: 0.15s; }
+.menu-group button:nth-child(4) { animation-delay: 0.2s; }
+.menu-group button:nth-child(5) { animation-delay: 0.25s; }
+
+/* Variáveis de tema */
+:root {
+  --primary-color: #4a86e8;
+  --primary-hover: #3b78e7;
+  --bg-color: #ffffff;
+  --text-color: #2c3e50;
+  --border-color: #e1e4e8;
+  --toolbar-bg: #f6f8fa;
+  --toolbar-hover: #e9ecef;
+  --toolbar-active: #e1e4e8;
+  --code-bg: #f8f9fa;
+  --code-text: #2c3e50;
+  --code-border: #e1e4e8;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --transition: all 0.2s ease;
+}
+
+/* Tema escuro */
+[data-theme="dark"] {
+  --primary-color: #5d9cec;
+  --primary-hover: #4a89dc;
+  --bg-color: #1e1e1e;
+  --text-color: #e0e0e0;
+  --border-color: #444;
+  --toolbar-bg: #2d2d2d;
+  --toolbar-hover: #3d3d3d;
+  --toolbar-active: #4d4d4d;
+  --code-bg: #2d2d2d;
+  --code-text: #e0e0e0;
+  --code-border: #444;
 }
