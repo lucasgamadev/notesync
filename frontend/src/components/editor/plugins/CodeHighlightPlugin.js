@@ -62,17 +62,12 @@ const SUPPORTED_LANGUAGES = Object.freeze({
 const languageState = {
   loaded: new Set(),
   loading: new Set(),
-  failed: new Set()
+  failed: new Map() // Usando Map para armazenar o timestamp da falha
 };
 
 // Mapa para armazenar os callbacks de linguagens em carregamento
 const languageLoadingCallbacks = new Map();
 
-/**
- * Carrega dinamicamente uma linguagem de destaque de sintaxe
- * @param {string} language - Nome da linguagem a ser carregada
- * @returns {Promise<boolean>} - True se o carregamento for bem-sucedido
- */
 // Mapa de aliases para nomes canônicos (otimização para busca)
 const languageAliasMap = (() => {
   const map = new Map();
@@ -105,19 +100,40 @@ const loadLanguage = async (language) => {
   const normalizedLang = language.toLowerCase();
   
   // Verifica se a linguagem já foi carregada
-  if (loadedLanguages.has(normalizedLang)) {
+  if (languageState.loaded.has(normalizedLang)) {
     return true;
   }
-
-  // Obtém o nome canônico da linguagem (usado para referência futura)
-  const canonicalLang = getCanonicalLanguage(normalizedLang);
   
-  // Se a linguagem não for suportada, registra um aviso mas tenta carregar mesmo assim
-  if (!languageAliasMap.has(normalizedLang) && normalizedLang !== canonicalLang) {
-    console.warn(`Linguagem não mapeada: ${normalizedLang} (tratada como ${canonicalLang})`);
+  // Verifica se a linguagem está em cooldown após falha
+  if (languageState.failed.has(normalizedLang)) {
+    const failedTime = languageState.failed.get(normalizedLang);
+    if (Date.now() - failedTime < 30000) { // 30 segundos de cooldown
+      console.warn(`Tentativa de recarregar linguagem ${normalizedLang} muito rápida após falha`);
+      return false;
+    }
+    languageState.failed.delete(normalizedLang);
   }
   
+  // Se já está carregando, retorna a promessa existente
+  if (languageState.loading.has(normalizedLang)) {
+    return new Promise((resolve) => {
+      const callbacks = languageLoadingCallbacks.get(normalizedLang) || [];
+      callbacks.push(resolve);
+      languageLoadingCallbacks.set(normalizedLang, callbacks);
+    });
+  }
+  
+  // Marca como carregando
+  languageState.loading.add(normalizedLang);
+  
   try {
+    // Obtém o nome canônico da linguagem (usado para referência futura)
+    const canonicalLang = getCanonicalLanguage(normalizedLang);
+    
+    // Se a linguagem não for suportada, registra um aviso
+    if (!languageAliasMap.has(normalizedLang) && normalizedLang !== canonicalLang) {
+      console.warn(`Linguagem não mapeada: ${normalizedLang} (tratada como ${canonicalLang})`);
+    }
     // Tenta carregar o módulo da linguagem
     const langModule = await import(
       /* webpackChunkName: "syntax-[request]" */
@@ -155,6 +171,9 @@ const loadLanguage = async (language) => {
     languageLoadingCallbacks.delete(normalizedLang);
     
     return false;
+  } finally {
+    // Garante que a linguagem seja removida do estado de carregamento
+    languageState.loading.delete(normalizedLang);
   }
 };
 
@@ -223,7 +242,8 @@ const CodeEditorPlugin = Extension.create({
 const codeHighlightPlugin = {
   // Função para validar e normalizar a linguagem
   validateLanguage: (language) => {
-    if (!language) return 'javascript'; // Valor padrão
+    // Retorna 'text' como padrão se não houver linguagem definida
+    if (!language) return 'text';
     
     const normalizedLang = getCanonicalLanguage(language);
     
@@ -378,6 +398,10 @@ const codeHighlightPlugin = {
   
   // Função de inicialização do plugin
   setup: (editor) => {
+    if (!editor || !editor.view || !editor.view.dom) {
+      console.error('Editor inválido ou não inicializado corretamente');
+      return () => {};
+    }
     // Função para processar blocos de código no editor
     const processCodeBlocks = () => {
       if (!editor.isEditable) return;
