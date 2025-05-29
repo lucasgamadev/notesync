@@ -1,26 +1,9 @@
-/* Estilos para o editor personalizado */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+/* Otimização de fontes - carregamento otimizado */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap&display=swap');
 
-/* Estilos de foco acessível */
-:focus-visible {
-  outline: 3px solid var(--primary-color);
-  outline-offset: 2px;
-  border-radius: var(--radius-sm);
-}
-
-/* Esconder outline apenas para interações com mouse */
-:focus:not(:focus-visible) {
-  outline: none;
-}
-
-/* Garantir que o foco seja acessível */
-.editor-personalizavel:focus-visible {
-  outline: 2px solid var(--primary-color);
-  outline-offset: 2px;
-}
-
-/* Variáveis de tema */
+/* Variáveis de tema - agrupadas para melhor desempenho */
 :root {
+  /* Cores */
   --primary-color: #4a86e8;
   --primary-hover: #3b78e7;
   --bg-color: #ffffff;
@@ -31,33 +14,58 @@
   --code-bg: #f8f9fa;
   --code-text: #2c3e50;
   --code-border: #e1e4e8;
+  
+  /* Bordas */
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 12px;
+  
+  /* Sombras */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 4px 20px rgba(0, 0, 0, 0.05);
+  
+  /* Transições */
   --transition: all 0.2s ease;
+  
+  /* Melhorias de desempenho */
+  --will-change: transform, opacity;
 }
 
-/* Reset básico */
-*,
-*::before,
-*::after {
+/* Reset básico otimizado */
+*, *::before, *::after {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-/* Estilos para o editor personalizado */
+/* Foco acessível - apenas para teclado */
+:focus-visible {
+  outline: 3px solid var(--primary-color);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 0 0 2px rgba(74, 134, 232, 0.2);
+}
 
-/* Estilos para os tamanhos de texto */
-.ProseMirror span[style*="font-size: 0.875em"] { font-size: 0.875em !important; }
-.ProseMirror span[style*="font-size: 1em"] { font-size: 1em !important; }
-.ProseMirror span[style*="font-size: 1.25em"] { font-size: 1.25em !important; }
-.ProseMirror span[style*="font-size: 1.5em"] { font-size: 1.5em !important; }
-.ProseMirror span[style*="font-size: 2em"] { font-size: 2em !important; }
+:focus:not(:focus-visible) {
+  outline: none;
+}
 
+/* Melhoria de performance para animações */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Estilos para o editor */
+/* Estilos base do container do editor */
 .editor-personalizavel {
-
   position: relative;
   width: 100%;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -73,6 +81,20 @@
   box-shadow: var(--shadow-lg);
   transition: var(--transition);
   line-height: 1.6;
+  
+  /* Otimizações de desempenho */
+  will-change: transform, opacity;
+  contain: content;
+  transform: translateZ(0);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  backface-visibility: hidden;
+  
+  /* Melhora a renderização de fontes */
+  font-kerning: normal;
+  font-variant-ligatures: common-ligatures;
+  font-feature-settings: "kern", "liga", "clig", "calt";
 }
 
 /* Melhorando o foco do editor */
@@ -90,65 +112,98 @@
 
 /* Estilos para o conteúdo do editor */
 .editor-content {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  flex-grow: 1;
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   height: 100%;
-  cursor: text !important;
+  min-height: 0; /* Importante para Flexbox em navegadores antigos */
+  cursor: text;
   background-color: var(--bg-color);
-  transition: var(--transition);
   position: relative;
   z-index: 1;
+  contain: content;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+  will-change: transform, opacity;
 }
 
-.editor-content:hover {
-  cursor: text !important;
-}
-
-/* Estilos para melhorar a aparência do editor */
+/* Estilos para o editor principal */
 .ProseMirror {
+  /* Dimensões e layout */
+  flex: 1 1 auto;
   min-height: 580px;
   padding: 2rem 2.5rem;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-  position: relative;
-  z-index: 1;
   max-width: 1200px;
-  margin: 0 auto;
   width: 100%;
+  margin: 0 auto;
   box-sizing: border-box;
-  border: none;
-  outline: none;
+  
+  /* Estilo visual */
   background-color: var(--bg-color);
   color: var(--text-color);
+  border: none;
+  outline: none;
+  
+  /* Tipografia */
   font-size: 1.05rem;
   line-height: 1.8;
-  flex-grow: 1;
-  height: auto;
+  font-kerning: normal;
+  font-variant-ligatures: common-ligatures;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+  /* Comportamento */
   overflow-y: auto;
-  transition: all 0.3s ease;
-  -webkit-caret-color: var(--primary-color);
-  caret-color: var(--primary-color);
   scroll-behavior: smooth;
   -ms-overflow-style: -ms-autohiding-scrollbar; /* IE e Edge */
+  
+  /* Cursor e seleção */
+  -webkit-caret-color: var(--primary-color);
+  caret-color: var(--primary-color);
+  
+  /* Otimizações de desempenho */
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  contain: content;
+  transform: translateZ(0);
+  
+  /* Suporte para impressão */
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
 }
 
-/* Estilização da barra de rolagem */
+/* Melhorias de desempenho para dispositivos móveis */
+@media (hover: none) {
+  .ProseMirror {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-touch-callout: none;
+    -webkit-user-select: text;
+    user-select: text;
+  }
+}
+
+/* ===== BARRA DE ROLAGEM ===== */
+/* Estilização da barra de rolagem - WebKit (Chrome, Safari, Edge) */
 .ProseMirror::-webkit-scrollbar {
   width: 8px;
   height: 8px;
+  /* Otimização de desempenho */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 .ProseMirror::-webkit-scrollbar-track {
   background: transparent;
+  border-radius: 4px;
 }
 
 .ProseMirror::-webkit-scrollbar-thumb {
   background-color: var(--border-color);
   border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: background-color 0.2s ease;
 }
 
 .ProseMirror::-webkit-scrollbar-thumb:hover {
@@ -160,36 +215,51 @@
   .ProseMirror {
     scrollbar-width: thin;
     scrollbar-color: var(--border-color) transparent;
+    scrollbar-gutter: stable;
   }
 }
 
+/* Suporte para Edge e IE */
+.ProseMirror {
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+/* Suporte moderno para Chrome e outros navegadores */
+@supports (scrollbar-width: thin) {
+  .ProseMirror {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) transparent;
+  }
+}
+
+/* Melhorias de foco e interação */
 .ProseMirror:focus {
   outline: none;
   box-shadow: 0 0 0 2px var(--primary-color);
 }
 
-/* Estilização da barra de rolagem */
-.ProseMirror::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+/* Otimização de cursor - reduzindo o uso de !important */
+.ProseMirror,
+.ProseMirror p,
+.ProseMirror h1,
+.ProseMirror h2,
+.ProseMirror h3,
+.ProseMirror h4,
+.ProseMirror h5,
+.ProseMirror h6,
+.ProseMirror div,
+.ProseMirror span {
+  cursor: text;
 }
 
-.ProseMirror::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.ProseMirror::-webkit-scrollbar-thumb {
-  background-color: var(--border-color);
-  border-radius: 4px;
-}
-
-.ProseMirror::-webkit-scrollbar-thumb:hover {
-  background-color: var(--toolbar-hover);
-}
-
-/* Garante cursor visível em todos os elementos de texto */
-.ProseMirror *:not(a):not(button):not([role="button"]) {
-  cursor: text !important;
+/* Exceções para elementos interativos */
+.ProseMirror a,
+.ProseMirror button,
+.ProseMirror [role="button"],
+.ProseMirror input,
+.ProseMirror select,
+.ProseMirror textarea {
+  cursor: default;
 }
 
 /* Estilos de tipografia */
