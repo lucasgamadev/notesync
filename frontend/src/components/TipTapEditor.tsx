@@ -20,7 +20,7 @@ import './editor-contrast-fix.css';
 import './editor-cursor-fix.css';
 import './editor-cursor-visibility.css';
 import './editor-loading.css';
-import { FaUndo, FaRedo, FaBold, FaItalic, FaUnderline, FaStrikethrough, FaListUl, FaListOl, FaQuoteLeft, FaAlignLeft, FaAlignCenter, FaAlignRight, FaLink, FaImage, FaTable, FaSun, FaMoon } from 'react-icons/fa';
+import { FaUndo, FaRedo, FaBold, FaItalic, FaUnderline, FaStrikethrough, FaListUl, FaListOl, FaQuoteLeft, FaAlignLeft, FaAlignCenter, FaAlignRight, FaLink, FaImage, FaTable, FaSun, FaMoon, FaTextHeight } from 'react-icons/fa';
 import { BiHeading, BiCodeBlock } from 'react-icons/bi';
 import { BubbleMenu } from '@tiptap/react';
 import { createLowlight } from 'lowlight';
@@ -30,6 +30,7 @@ import Highlight from '@tiptap/extension-highlight';
 import TextStyle from '@tiptap/extension-text-style';
 import Superscript from '@tiptap/extension-superscript';
 import Subscript from '@tiptap/extension-subscript';
+
 
 // Tipos para as propriedades do editor
 interface TipTapEditorProps {
@@ -322,6 +323,12 @@ const TipTapEditor = ({
       TextStyle,
       Superscript,
       Subscript,
+      // Extensão para estilos de texto personalizados
+      TextStyle.configure({
+        HTMLAttributes: {
+          class: 'text-style',
+        },
+      }),
     ],
     content: editorContent,
     editable: !readOnly,
@@ -468,6 +475,37 @@ const TipTapEditor = ({
               icon={<FaStrikethrough />}
               tooltip="Tachado (Ctrl+Shift+S)"
             />
+            <Dropdown
+              trigger={<FaTextHeight />}
+              tooltip="Tamanho do texto"
+              items={[
+                {
+                  label: 'Pequeno',
+                  onClick: () => editor.chain().focus().setMark('textStyle', { fontSize: '0.875em' }).run(),
+                  isActive: editor.isActive('textStyle', { fontSize: '0.875em' })
+                },
+                {
+                  label: 'Normal',
+                  onClick: () => editor.chain().focus().setMark('textStyle', { fontSize: '1em' }).run(),
+                  isActive: editor.isActive('textStyle', { fontSize: '1em' })
+                },
+                {
+                  label: 'Grande',
+                  onClick: () => editor.chain().focus().setMark('textStyle', { fontSize: '1.25em' }).run(),
+                  isActive: editor.isActive('textStyle', { fontSize: '1.25em' })
+                },
+                {
+                  label: 'Muito Grande',
+                  onClick: () => editor.chain().focus().setMark('textStyle', { fontSize: '1.5em' }).run(),
+                  isActive: editor.isActive('textStyle', { fontSize: '1.5em' })
+                },
+                {
+                  label: 'Enorme',
+                  onClick: () => editor.chain().focus().setMark('textStyle', { fontSize: '2em' }).run(),
+                  isActive: editor.isActive('textStyle', { fontSize: '2em' })
+                },
+              ]}
+            />
           </div>
           
           {/* Cabeçalhos e parágrafos */}
@@ -568,6 +606,41 @@ const TipTapEditor = ({
               isActive={editor.isActive({ textAlign: 'justify' })}
               icon={<FaAlignLeft className="justify" />}
               tooltip="Justificar (Ctrl+Shift+J)"
+            />
+          </div>
+          
+          {/* Tamanho do texto */}
+          <div className="menu-group">
+            <Dropdown
+              trigger={<FaTextHeight />}
+              tooltip="Tamanho do texto"
+              items={[
+                {
+                  label: 'Pequeno',
+                  onClick: () => document.execCommand('fontSize', false, '2'),
+                  isActive: false
+                },
+                {
+                  label: 'Normal',
+                  onClick: () => document.execCommand('fontSize', false, '3'),
+                  isActive: true
+                },
+                {
+                  label: 'Grande',
+                  onClick: () => document.execCommand('fontSize', false, '4'),
+                  isActive: false
+                },
+                {
+                  label: 'Muito Grande',
+                  onClick: () => document.execCommand('fontSize', false, '5'),
+                  isActive: false
+                },
+                {
+                  label: 'Enorme',
+                  onClick: () => document.execCommand('fontSize', false, '6'),
+                  isActive: false
+                },
+              ]}
             />
           </div>
           
