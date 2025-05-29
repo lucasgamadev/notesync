@@ -12,20 +12,26 @@ import { FaCode } from 'react-icons/fa';
 import './styles/code-highlight.css';
 
 // Linguagens suportadas e seus aliases
-const SUPPORTED_LANGUAGES = {
+const SUPPORTED_LANGUAGES = Object.freeze({
   javascript: ['js', 'jsx', 'mjs', 'cjs'],
   typescript: ['ts', 'tsx', 'mts', 'cts'],
-  xml: ['html', 'xhtml', 'rss', 'atom', 'xjb', 'xsd', 'xsl', 'plist', 'svg'],
+  xml: ['html', 'xhtml', 'rss', 'atom', 'xjb', 'xsd', 'xsl', 'plist', 'svg', 'rng'],
   css: ['css', 'scss', 'sass', 'less', 'stylus'],
-  python: ['py', 'py3', 'python3', 'pyi', 'pyw', 'pyc', 'pyd', 'pyo', 'pyw', 'pyz'],
+  python: ['py', 'py3', 'python3', 'pyi', 'pyw', 'pyc', 'pyd', 'pyo', 'pyz'],
   java: ['java', 'jsp', 'jspx', 'wss', 'do', 'action'],
   csharp: ['csharp', 'cs', 'c#', 'csx'],
   php: ['php', 'php3', 'php4', 'php5', 'php6', 'php7', 'php8', 'phtml'],
-  ruby: ['rb', 'gemspec', 'podspec', 'thor', 'irb', 'jbuilder', 'rabl', 'ru', 'rake', 'watchr'],
+  ruby: [
+    'rb', 'rbx', 'rjs', 'gemspec', 'podspec', 'thor', 'irb', 
+    'jbuilder', 'rabl', 'ru', 'rake', 'watchr'
+  ],
   go: ['go'],
   json: ['json', 'json5', 'jsonc', 'jsonl', 'jsonnet', 'jsonp'],
-  markdown: ['md', 'markdown', 'mkd', 'mkdn', 'mdwn', 'mdown', 'mkd'],
-  sql: ['sql', 'mysql', 'pgsql', 'postgres', 'postgresql', 'plpgsql', 'plsql', 'psql', 'oracle', 'hql'],
+  markdown: ['md', 'markdown', 'mkd', 'mkdn', 'mdwn', 'mdown'],
+  sql: [
+    'sql', 'mysql', 'pgsql', 'postgres', 'postgresql', 
+    'plpgsql', 'plsql', 'psql', 'oracle', 'hql', 'ddl', 'dml'
+  ],
   bash: ['bash', 'sh', 'shell', 'zsh', 'fish', 'csh', 'ksh', 'tcsh', 'dash'],
   yaml: ['yaml', 'yml'],
   dockerfile: ['dockerfile', 'docker-compose'],
@@ -34,12 +40,11 @@ const SUPPORTED_LANGUAGES = {
   makefile: ['makefile', 'make', 'mk', 'mak'],
   diff: ['diff', 'patch'],
   rust: ['rs', 'rs.in'],
-  kotlin: ['kt', 'kts', 'ktm', 'kts'],
+  kotlin: ['kt', 'kts', 'ktm'],
   swift: ['swift'],
   dart: ['dart'],
   c: ['c', 'h'],
   cpp: ['cpp', 'c++', 'cc', 'cp', 'cxx', 'h', 'h++', 'hh', 'hpp', 'hxx', 'inc', 'inl', 'ino', 'ipp', 'tcc', 'tpp'],
-  csharp: ['cs', 'csx'],
   objectivec: ['m', 'mm', 'objc', 'objc++', 'objective-c++', 'obj-c++', 'h'],
   objectivecpp: ['mm', 'objc++', 'objective-c++', 'obj-c++'],
   r: ['r', 'rdata', 'rds', 'rda'],
@@ -48,15 +53,10 @@ const SUPPORTED_LANGUAGES = {
   lua: ['lua'],
   perl: ['pl', 'pm', 'pod', 't', 'PL', 'psgi', 'perl'],
   powershell: ['ps1', 'psd1', 'psm1', 'ps1xml', 'psc1', 'pssc'],
-  r: ['r', 'rdata', 'rds', 'rda'],
-  ruby: ['rb', 'rbx', 'rjs', 'gemspec', 'podspec', 'thor', 'irb', 'jbuilder', 'rabl', 'ru', 'rake', 'watchr'],
   sass: ['sass', 'scss'],
-  sql: ['sql', 'ddl', 'dml', 'pgsql', 'plpgsql', 'plsql', 'psql', 'oracle', 'hql'],
   vim: ['vim'],
-  wasm: ['wat', 'wast'],
-  xml: ['xml', 'xsd', 'rng', 'rss', 'svg'],
-  yaml: ['yaml', 'yml']
-};
+  wasm: ['wat', 'wast']
+});
 
 // Cache para linguagens já carregadas
 const loadedLanguages = new Set();
@@ -66,38 +66,73 @@ const loadedLanguages = new Set();
  * @param {string} language - Nome da linguagem a ser carregada
  * @returns {Promise<boolean>} - True se o carregamento for bem-sucedido
  */
-const loadLanguage = async (language) => {
-  // Verifica se a linguagem já foi carregada
-  if (loadedLanguages.has(language)) {
-    return true;
+// Mapa de aliases para nomes canônicos (otimização para busca)
+const languageAliasMap = (() => {
+  const map = new Map();
+  
+  for (const [lang, aliases] of Object.entries(SUPPORTED_LANGUAGES)) {
+    // Adiciona o próprio nome da linguagem
+    map.set(lang, lang);
+    
+    // Adiciona todos os aliases
+    for (const alias of aliases) {
+      map.set(alias, lang);
+    }
   }
+  
+  return map;
+})();
 
-  // Verifica se a linguagem é suportada
-  if (!Object.keys(SUPPORTED_LANGUAGES).includes(language) && 
-      !Object.values(SUPPORTED_LANGUAGES).some(aliases => aliases.includes(language))) {
-    console.warn(`Linguagem não suportada: ${language}`);
+/**
+ * Carrega dinamicamente uma linguagem de destaque de sintaxe
+ * @param {string} language - Nome da linguagem a ser carregada
+ * @returns {Promise<boolean>} - True se o carregamento for bem-sucedido
+ */
+const loadLanguage = async (language) => {
+  // Verificação de parâmetro vazio
+  if (!language || typeof language !== 'string') {
+    console.warn('Nome da linguagem não fornecido ou inválido');
     return false;
   }
 
+  const normalizedLang = language.toLowerCase();
+  
+  // Verifica se a linguagem já foi carregada
+  if (loadedLanguages.has(normalizedLang)) {
+    return true;
+  }
+
+  // Obtém o nome canônico da linguagem (usado para referência futura)
+  const canonicalLang = getCanonicalLanguage(normalizedLang);
+  
+  // Se a linguagem não for suportada, registra um aviso mas tenta carregar mesmo assim
+  if (!languageAliasMap.has(normalizedLang) && normalizedLang !== canonicalLang) {
+    console.warn(`Linguagem não mapeada: ${normalizedLang} (tratada como ${canonicalLang})`);
+  }
+  
   try {
     // Tenta carregar o módulo da linguagem
     const langModule = await import(
       /* webpackChunkName: "syntax-[request]" */
-      `highlight.js/lib/languages/${language}`
+      `highlight.js/lib/languages/${normalizedLang}`
     );
     
     // Registra a linguagem no lowlight
-    lowlight.registerLanguage(language, langModule.default);
+    lowlight.registerLanguage(normalizedLang, langModule.default);
     
     // Adiciona ao cache
-    loadedLanguages.add(language);
+    loadedLanguages.add(normalizedLang);
     
-    console.log(`Linguagem carregada com sucesso: ${language}`);
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`Linguagem carregada: ${normalizedLang}`);
+    }
+    
     return true;
   } catch (error) {
-    console.warn(`Falha ao carregar suporte para ${language}:`, error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.warn(`Falha ao carregar suporte para ${normalizedLang}:`, errorMessage);
     // Remove do cache em caso de falha para permitir novas tentativas
-    loadedLanguages.delete(language);
+    loadedLanguages.delete(normalizedLang);
     return false;
   }
 };
@@ -108,22 +143,15 @@ const loadLanguage = async (language) => {
  * @returns {string} - Nome canônico da linguagem ou o próprio alias se não encontrado
  */
 const getCanonicalLanguage = (alias) => {
+  if (!alias || typeof alias !== 'string') {
+    return 'plaintext';
+  }
+  
   const lowerAlias = alias.toLowerCase();
   
-  // Verifica se é um nome direto
-  if (SUPPORTED_LANGUAGES[lowerAlias]) {
-    return lowerAlias;
-  }
-  
-  // Procura por aliases
-  for (const [lang, aliases] of Object.entries(SUPPORTED_LANGUAGES)) {
-    if (aliases.includes(lowerAlias)) {
-      return lang;
-    }
-  }
-  
-  // Se não encontrar, retorna o próprio alias (será tratado como texto simples)
-  return lowerAlias;
+  // Usa o mapa de aliases para busca mais rápida
+  // Se não encontrar, retorna 'plaintext' como fallback
+  return languageAliasMap.get(lowerAlias) || 'plaintext';
 };
 
 // Carrega as linguagens mais comuns por padrão de forma otimizada
