@@ -13,21 +13,49 @@ import './styles/code-highlight.css';
 
 // Linguagens suportadas e seus aliases
 const SUPPORTED_LANGUAGES = {
-  javascript: ['js', 'jsx'],
-  typescript: ['ts', 'tsx'],
-  xml: ['html', 'xhtml', 'rss', 'atom', 'xjb', 'xsd', 'xsl', 'plist'],
-  css: ['css', 'scss', 'sass', 'less'],
-  python: ['py', 'py3', 'python3'],
-  java: ['java'],
-  csharp: ['csharp', 'cs', 'c#'],
-  php: ['php', 'php3', 'php4', 'php5', 'php6', 'php7'],
-  ruby: ['rb', 'gemspec', 'podspec', 'thor', 'irb'],
+  javascript: ['js', 'jsx', 'mjs', 'cjs'],
+  typescript: ['ts', 'tsx', 'mts', 'cts'],
+  xml: ['html', 'xhtml', 'rss', 'atom', 'xjb', 'xsd', 'xsl', 'plist', 'svg'],
+  css: ['css', 'scss', 'sass', 'less', 'stylus'],
+  python: ['py', 'py3', 'python3', 'pyi', 'pyw', 'pyc', 'pyd', 'pyo', 'pyw', 'pyz'],
+  java: ['java', 'jsp', 'jspx', 'wss', 'do', 'action'],
+  csharp: ['csharp', 'cs', 'c#', 'csx'],
+  php: ['php', 'php3', 'php4', 'php5', 'php6', 'php7', 'php8', 'phtml'],
+  ruby: ['rb', 'gemspec', 'podspec', 'thor', 'irb', 'jbuilder', 'rabl', 'ru', 'rake', 'watchr'],
   go: ['go'],
-  json: ['json', 'json5', 'jsonc'],
-  markdown: ['md', 'markdown', 'mkd'],
-  sql: ['sql', 'mysql', 'pgsql', 'postgres', 'postgresql'],
-  bash: ['bash', 'sh', 'shell', 'zsh'],
-  // Adicione mais linguagens conforme necessário
+  json: ['json', 'json5', 'jsonc', 'jsonl', 'jsonnet', 'jsonp'],
+  markdown: ['md', 'markdown', 'mkd', 'mkdn', 'mdwn', 'mdown', 'mkd'],
+  sql: ['sql', 'mysql', 'pgsql', 'postgres', 'postgresql', 'plpgsql', 'plsql', 'psql', 'oracle', 'hql'],
+  bash: ['bash', 'sh', 'shell', 'zsh', 'fish', 'csh', 'ksh', 'tcsh', 'dash'],
+  yaml: ['yaml', 'yml'],
+  dockerfile: ['dockerfile', 'docker-compose'],
+  toml: ['toml'],
+  ini: ['ini', 'cfg', 'prefs', 'pro', 'properties'],
+  makefile: ['makefile', 'make', 'mk', 'mak'],
+  diff: ['diff', 'patch'],
+  rust: ['rs', 'rs.in'],
+  kotlin: ['kt', 'kts', 'ktm', 'kts'],
+  swift: ['swift'],
+  dart: ['dart'],
+  c: ['c', 'h'],
+  cpp: ['cpp', 'c++', 'cc', 'cp', 'cxx', 'h', 'h++', 'hh', 'hpp', 'hxx', 'inc', 'inl', 'ino', 'ipp', 'tcc', 'tpp'],
+  csharp: ['cs', 'csx'],
+  objectivec: ['m', 'mm', 'objc', 'objc++', 'objective-c++', 'obj-c++', 'h'],
+  objectivecpp: ['mm', 'objc++', 'objective-c++', 'obj-c++'],
+  r: ['r', 'rdata', 'rds', 'rda'],
+  scala: ['scala', 'sc', 'sbt'],
+  haskell: ['hs', 'lhs'],
+  lua: ['lua'],
+  perl: ['pl', 'pm', 'pod', 't', 'PL', 'psgi', 'perl'],
+  powershell: ['ps1', 'psd1', 'psm1', 'ps1xml', 'psc1', 'pssc'],
+  r: ['r', 'rdata', 'rds', 'rda'],
+  ruby: ['rb', 'rbx', 'rjs', 'gemspec', 'podspec', 'thor', 'irb', 'jbuilder', 'rabl', 'ru', 'rake', 'watchr'],
+  sass: ['sass', 'scss'],
+  sql: ['sql', 'ddl', 'dml', 'pgsql', 'plpgsql', 'plsql', 'psql', 'oracle', 'hql'],
+  vim: ['vim'],
+  wasm: ['wat', 'wast'],
+  xml: ['xml', 'xsd', 'rng', 'rss', 'svg'],
+  yaml: ['yaml', 'yml']
 };
 
 // Cache para linguagens já carregadas
@@ -40,16 +68,36 @@ const loadedLanguages = new Set();
  */
 const loadLanguage = async (language) => {
   // Verifica se a linguagem já foi carregada
-  if (loadedLanguages.has(language)) return true;
+  if (loadedLanguages.has(language)) {
+    return true;
+  }
+
+  // Verifica se a linguagem é suportada
+  if (!Object.keys(SUPPORTED_LANGUAGES).includes(language) && 
+      !Object.values(SUPPORTED_LANGUAGES).some(aliases => aliases.includes(language))) {
+    console.warn(`Linguagem não suportada: ${language}`);
+    return false;
+  }
 
   try {
     // Tenta carregar o módulo da linguagem
-    const langModule = await import(`highlight.js/lib/languages/${language}`);
+    const langModule = await import(
+      /* webpackChunkName: "syntax-[request]" */
+      `highlight.js/lib/languages/${language}`
+    );
+    
+    // Registra a linguagem no lowlight
     lowlight.registerLanguage(language, langModule.default);
+    
+    // Adiciona ao cache
     loadedLanguages.add(language);
+    
+    console.log(`Linguagem carregada com sucesso: ${language}`);
     return true;
   } catch (error) {
     console.warn(`Falha ao carregar suporte para ${language}:`, error);
+    // Remove do cache em caso de falha para permitir novas tentativas
+    loadedLanguages.delete(language);
     return false;
   }
 };
@@ -78,9 +126,26 @@ const getCanonicalLanguage = (alias) => {
   return lowerAlias;
 };
 
-// Carrega as linguagens mais comuns por padrão
-const DEFAULT_LANGUAGES = ['javascript', 'html', 'css', 'json', 'bash'];
-DEFAULT_LANGUAGES.forEach(lang => loadLanguage(lang));
+// Carrega as linguagens mais comuns por padrão de forma otimizada
+const DEFAULT_LANGUAGES = ['javascript', 'html', 'css', 'json', 'bash', 'python', 'java', 'csharp', 'php', 'ruby', 'go'];
+
+// Carrega as linguagens padrão de forma não-bloqueante
+const loadDefaultLanguages = async () => {
+  try {
+    await Promise.allSettled(
+      DEFAULT_LANGUAGES.map(lang => 
+        loadLanguage(lang).catch(err => 
+          console.warn(`Falha ao carregar linguagem padrão ${lang}:`, err)
+        )
+      )
+    );
+  } catch (error) {
+    console.error('Erro ao carregar linguagens padrão:', error);
+  }
+};
+
+// Inicia o carregamento das linguagens padrão
+loadDefaultLanguages();
 
 // Extensão para blocos de código com syntax highlighting
 const CodeBlockExtension = CodeBlockLowlight.configure({
