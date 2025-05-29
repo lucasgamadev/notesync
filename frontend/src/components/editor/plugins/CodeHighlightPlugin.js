@@ -1,13 +1,16 @@
 /**
- * Plugin para adicionar suporte a blocos de código com syntax highlighting
- * Permite criar e editar blocos de código com destaque de sintaxe para várias linguagens
+ * @file Plugin de destaque de sintaxe para blocos de código no editor
+ * @module CodeHighlightPlugin
+ * @description Plugin para o editor TipTap que adiciona suporte a blocos de código com destaque de sintaxe para várias linguagens de programação.
+ * Utiliza a biblioteca lowlight para destacar o código e carrega as linguagens dinamicamente para melhor desempenho.
  * 
- * Carrega linguagens dinamicamente para melhor desempenho
+ * @author Lucas Gama
+ * @version 1.0.0
  */
 
 import { Extension } from '@tiptap/core';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
-import { lowlight } from 'lowlight/lib/core';
+import { common, createLowlight } from 'lowlight';
 import { FaCode } from 'react-icons/fa';
 import './styles/code-highlight.css';
 
@@ -188,8 +191,6 @@ const getCanonicalLanguage = (alias) => {
   }
   
   const lowerAlias = alias.toLowerCase();
-  
-  // Usa o mapa de aliases para busca mais rápida
   // Se não encontrar, retorna 'plaintext' como fallback
   return languageAliasMap.get(lowerAlias) || 'plaintext';
 };
@@ -197,28 +198,151 @@ const getCanonicalLanguage = (alias) => {
 // Carrega as linguagens mais comuns por padrão de forma otimizada
 const DEFAULT_LANGUAGES = ['javascript', 'html', 'css', 'json', 'bash', 'python', 'java', 'csharp', 'php', 'ruby', 'go'];
 
-// Carrega as linguagens padrão de forma não-bloqueante
+// Atualiza a função loadLanguage existente para melhor tratamento de erros
+const originalLoadLanguage = loadLanguage;
+loadLanguage = async (language) => {
+  if (!language || typeof language !== 'string') {
+    console.warn('Nome da linguagem não fornecido ou inválido');
+    return false;
+  }
+
+  const normalizedLang = getCanonicalLanguage(language);
+  
+  // Se já está carregada
+  if (languageState.loaded.has(normalizedLang)) {
+    return true;
+  }
+  
+  // Se já está em processo de carregamento
+  if (languageState.loading.has(normalizedLang)) {
+    return new Promise((resolve) => {
+      const checkLoaded = () => {
+        if (languageState.loaded.has(normalizedLang)) {
+          resolve(true);
+        } else if (!languageState.loading.has(normalizedLang)) {
+          resolve(false);
+        } else {
+          setTimeout(checkLoaded, 100);
+        }
+      };
+      checkLoaded();
+    });
+  }
+
+  // Verifica se houve falha recente (dentro de 5 minutos)
+  const lastFailure = languageState.failed.get(normalizedLang);
+  if (lastFailure && (Date.now() - lastFailure) < 300000) {
+    return false;
+  }
+
+  // Marca como carregando
+  languageState.loading.add(normalizedLang);
+
+  try {
+    // Tenta carregar usando a implementação original primeiro
+    const originalLoaded = await originalLoadLanguage(language);
+    if (originalLoaded) {
+      languageState.loaded.add(normalizedLang);
+      languageState.failed.delete(normalizedLang);
+      return true;
+    }
+    
+    // Se a implementação original falhar, tenta carregar diretamente
+    const langModule = await import(
+      /* webpackChunkName: "syntax-[request]" */
+      `highlight.js/lib/languages/${normalizedLang}`
+    );
+    
+    // Registra a linguagem no lowlight
+    if (langModule && langModule.default) {
+      lowlight.register({ [normalizedLang]: langModule.default });
+      languageState.loaded.add(normalizedLang);
+      languageState.failed.delete(normalizedLang);
+      return true;
+    }
+    
+    throw new Error('Módulo de linguagem inválido');
+  } catch (error) {
+    const errorMessage = `Erro ao carregar a linguagem ${normalizedLang}: ${error.message || 'Erro desconhecido'}`;
+    console.error(errorMessage, error);
+    languageState.failed.set(normalizedLang, Date.now());
+    
+    // Log adicional para erros de rede
+    if (error.message && error.message.includes('Failed to fetch')) {
+      console.error('Erro de rede ao carregar a linguagem. Verifique sua conexão com a internet.');
+    }
+    
+    return false;
+  } finally {
+    try {
+      languageState.loading.delete(normalizedLang);
+    } catch (cleanupError) {
+      console.error('Erro ao limpar estado de carregamento:', cleanupError);
+    }
+  }
+};
+
+/**
+ * Carrega as linguagens padrão de forma assíncrona
+ * @returns {Promise<void>}
+ */
 const loadDefaultLanguages = async () => {
   try {
-    await Promise.allSettled(
+    console.log('Iniciando carregamento de linguagens padrão:', DEFAULT_LANGUAGES.join(', '));
+    
+    const results = await Promise.allSettled(
       DEFAULT_LANGUAGES.map(lang => 
-        loadLanguage(lang).catch(err => 
-          console.warn(`Falha ao carregar linguagem padrão ${lang}:`, err)
+        loadLanguage(lang).then(
+          success => ({
+            lang,
+            success,
+            error: null
+          }),
+          error => ({
+            lang,
+            success: false,
+            error: error?.message || 'Erro desconhecido'
+          })
         )
       )
     );
+    
+    // Log de resumo do carregamento
+    const loaded = results.filter(r => r.status === 'fulfilled' && r.value.success).length;
+    const failed = results.length - loaded;
+    
+    console.log(`Carregamento concluído: ${loaded} linguagens carregadas, ${failed} falhas`);
+    
+    // Log detalhado de falhas
+    results.forEach((result, index) => {
+      if (result.status === 'fulfilled' && !result.value.success) {
+        const lang = DEFAULT_LANGUAGES[index];
+        console.warn(`Falha ao carregar linguagem ${lang}:`, result.value.error);
+      }
+    });
+    
   } catch (error) {
-    console.error('Erro ao carregar linguagens padrão:', error);
+    console.error('Erro inesperado ao carregar linguagens padrão:', error);
+  } finally {
+    console.log('Finalizado o carregamento de linguagens padrão');
   }
 };
 
 // Inicia o carregamento das linguagens padrão
 loadDefaultLanguages();
 
+// Cria uma instância de lowlight com suporte comum
+const lowlight = createLowlight(common);
+
 // Extensão para blocos de código com syntax highlighting
-const CodeBlockExtension = CodeBlockLowlight.configure({
-  lowlight,
-  defaultLanguage: 'javascript',
+const CodeBlockExtension = CodeBlockLowlight.extend({
+  addOptions() {
+    return {
+      ...this.parent?.(),
+      lowlight,
+      defaultLanguage: 'javascript',
+    };
+  },
 });
 
 // Plugin para melhorar a experiência de edição de código
