@@ -80,7 +80,8 @@
   background-color: var(--bg-color);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  overflow: hidden;
+  /* Permite que os tooltips ultrapassem as bordas */
+  overflow: visible;
   box-shadow: var(--shadow-lg);
   transition: var(--transition);
   line-height: 1.6;
@@ -119,9 +120,16 @@
 
 /* Estilos para o conteúdo do editor */
 .editor-content {
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+  scroll-behavior: smooth;
+  /* Garante que o conteúdo não fique muito próximo das bordas */
+  padding-top: 24px;
+  padding-bottom: 24px;
+  /* Permite que os menus flutuantes ultrapassem as bordas */
+  position: relative;
+  z-index: 1;
   height: 100%;
   min-height: 0; /* Importante para Flexbox em navegadores antigos */
   cursor: text;
@@ -465,76 +473,106 @@
 }
 
 /* ===== TOOLTIPS ===== */
-.toolbar-button {
+/* Garantindo que o editor tenha prioridade de exibição */
+.ProseMirror {
+  z-index: 1;
   position: relative;
-  overflow: visible !important;
 }
 
+/* Barra de ferramentas e controles */
+.editor-toolbar,
+.menu-bubble,
+.menu-floating {
+  z-index: 100 !important;
+}
+
+/* Botões e controles */
+.toolbar-button,
+.menu-item,
+.menu-group {
+  z-index: 101 !important;
+  position: relative;
+}
+
+/* Tooltips */
 .toolbar-button {
   position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  cursor: pointer;
+  /* Garante que o tooltip não fique cortado */
   overflow: visible !important;
 }
 
 .toolbar-button::after {
   content: attr(data-tooltip);
   position: absolute;
-  top: 100%;
+  bottom: 100%;
   left: 50%;
-  transform: translateX(-50%) translateY(8px);
-  transform-origin: top center;
+  transform: translateX(-50%) translateY(-8px);
   background-color: var(--text-color);
   color: var(--bg-color);
   padding: 6px 12px;
   border-radius: var(--radius-sm);
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 500;
+  text-align: center;
   white-space: nowrap;
+  min-width: max-content;
+  max-width: 200px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  pointer-events: none;
   opacity: 0;
   visibility: hidden;
-  pointer-events: none;
-  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: var(--shadow-md);
-  z-index: 10000;
-  min-width: max-content;
-  max-width: 250px;
-  text-align: center;
+  transition: all 0.15s ease-out;
+  z-index: 1000;
+  /* Melhorar legibilidade */
   line-height: 1.4;
   letter-spacing: 0.01em;
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
-  margin-top: 8px;
+  /* Evitar quebra de linha */
+  white-space: nowrap;
+  /* Previne que o tooltip fique muito junto do botão */
+  margin-bottom: 8px;
 }
 
+/* Mostra o tooltip no hover */
 .toolbar-button:hover::after,
+.toolbar-button:focus::after,
 .toolbar-button:focus-visible::after {
   opacity: 1;
   visibility: visible;
-  transform: translateX(-50%) translateY(0);
-  transition-delay: 0.15s;
+  transform: translateX(-50%) translateY(-12px);
+  transition-delay: 100ms;
 }
 
-/* Seta do tooltip */
+/* Adiciona uma seta ao tooltip */
 .toolbar-button::before {
   content: '';
   position: absolute;
-  bottom: -5px;
+  bottom: 100%;
   left: 50%;
-  transform: translateX(-50%) translateY(-8px);
-  border-width: 5px;
+  transform: translateX(-50%) translateY(0);
+  border-width: 5px 5px 0 5px;
   border-style: solid;
-  border-color: transparent transparent var(--text-color) transparent;
+  border-color: var(--text-color) transparent transparent transparent;
   opacity: 0;
   visibility: hidden;
-  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 10001;
+  transition: all 0.15s ease-out;
+  z-index: 1001;
   pointer-events: none;
+  margin-bottom: 2px;
 }
 
+/* Mostra a seta do tooltip no hover */
 .toolbar-button:hover::before,
+.toolbar-button:focus::before,
 .toolbar-button:focus-visible::before {
   opacity: 1;
   visibility: visible;
-  transform: translateX(-50%) translateY(0);
+  transform: translateX(-50%) translateY(-4px);
+  transition-delay: 100ms;
 }
 
 /* Ajustes para temas escuros */
@@ -545,7 +583,7 @@
 }
 
 [data-theme='dark'] .toolbar-button::before {
-  border-color: var(--bg-color) transparent transparent transparent;
+  border-color: var(--border-color) transparent transparent transparent;
 }
 
 /* Acessibilidade: garantir contraste adequado */
