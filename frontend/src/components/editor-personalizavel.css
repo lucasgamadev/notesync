@@ -1,4 +1,4 @@
-/* Otimização de fontes - carregamento otimizado */
+/* Importação da fonte Inter com pesos 400, 500 e 600 */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
 /* Variáveis de tema - agrupadas para melhor desempenho */
@@ -6,14 +6,21 @@
   /* ===== CORES ===== */
   --primary-color: #4a86e8;
   --primary-hover: #3b78e7;
+  --primary-focus: rgba(74, 134, 232, 0.2);
   --bg-color: #ffffff;
   --text-color: #2c3e50;
+  --text-muted: #6c757d;
   --border-color: #e1e4e8;
-  --toolbar-bg: rgba(246, 248, 250, 0.9);
+  --toolbar-bg: rgba(246, 248, 250, 0.95);
   --toolbar-hover: #e9ecef;
+  --toolbar-active: #dee2e6;
   --code-bg: #f8f9fa;
   --code-text: #2c3e50;
   --code-border: #e1e4e8;
+  --success-color: #28a745;
+  --error-color: #dc3545;
+  --warning-color: #ffc107;
+  --selection-bg: rgba(74, 134, 232, 0.2);
   
   /* ===== BORDAS ===== */
   --radius-sm: 6px;
@@ -40,6 +47,14 @@
   /* Otimização de renderização */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Melhora o desempenho de animações */
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  /* Suaviza as fontes */
+  text-rendering: optimizeLegibility;
+  -webkit-font-kerning: normal;
+  font-kerning: normal;
 }
 
 /* Foco acessível - apenas para teclado */
@@ -47,11 +62,25 @@
   outline: 3px solid var(--primary-color);
   outline-offset: 2px;
   border-radius: var(--radius-sm);
-  box-shadow: 0 0 0 2px rgba(74, 134, 232, 0.2);
+  box-shadow: 0 0 0 2px var(--primary-focus);
+  z-index: 1;
+  position: relative;
 }
 
 :focus:not(:focus-visible) {
   outline: none;
+}
+
+/* Melhoria na seleção de texto */
+::selection {
+  background-color: var(--selection-bg);
+  color: inherit;
+}
+
+/* Melhor contraste para links selecionados */
+a::selection {
+  color: var(--primary-color);
+  background-color: transparent;
 }
 
 /* Melhoria de performance para animações */
@@ -66,9 +95,45 @@
   }
 }
 
+/* ===== MELHORIAS DE ACESSIBILIDADE ===== */
+@media (prefers-contrast: more) {
+  :root {
+    --primary-color: #1a56db;
+    --text-color: #1a1a1a;
+    --border-color: #8b8b8b;
+  }
+  
+  .ProseMirror {
+    -webkit-text-stroke: 0.4px;
+  }
+}
+
+/* Suporte para modo escuro */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: #1e1e1e;
+    --text-color: #f0f0f0;
+    --text-muted: #a0a0a0;
+    --border-color: #444;
+    --toolbar-bg: rgba(30, 30, 30, 0.95);
+    --toolbar-hover: #333;
+    --toolbar-active: #444;
+    --code-bg: #2d2d2d;
+    --code-text: #f0f0f0;
+    --code-border: #444;
+  }
+  
+  .ProseMirror {
+    caret-color: #4a86e8;
+  }
+}
+
 /* ===== ESTRUTURA PRINCIPAL ===== */
 /* Container principal do editor */
 .editor-personalizavel {
+  --editor-padding: 2rem;
+  --toolbar-height: 48px;
+  
   position: relative;
   width: 100%;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -76,33 +141,26 @@
   flex-direction: column;
   height: calc(100vh - 80px);
   min-height: 650px;
+  max-height: 100vh;
   color: var(--text-color);
   background-color: var(--bg-color);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   /* Permite que os tooltips ultrapassem as bordas */
-  overflow: visible;
+  overflow: hidden;
   box-shadow: var(--shadow-lg);
   transition: var(--transition);
   line-height: 1.6;
-  
-  /* Otimizações de desempenho */
-  will-change: transform, opacity;
-  contain: content;
-  /* Aceleração de hardware */
-  transform: translate3d(0, 0, 0);
-  /* Otimização de renderização de texto */
+  /* Melhora o alinhamento do texto */
+  text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-  backface-visibility: hidden;
-  -webkit-font-kerning: normal;
-  font-kerning: normal;
   
-  /* Melhora a renderização de fontes */
-  font-kerning: normal;
-  font-variant-ligatures: common-ligatures;
-  font-feature-settings: "kern", "liga", "clig", "calt";
+  /* Otimizações de desempenho */
+  will-change: transform, opacity, scroll-position;
+  contain: layout style paint;
+  /* Aceleração de hardware */
+  transform: translateZ(0);
 }
 
 /* Melhorando o foco do editor */
@@ -137,17 +195,77 @@
   position: relative;
   z-index: 1;
   contain: content;
+  /* Remove espaçamento extra no topo do editor */
+  margin-top: 0;
   backface-visibility: hidden;
   transform: translateZ(0);
   will-change: transform, opacity;
 }
 
 /* Estilos para o editor principal */
+/* Container do conteúdo editável */
 .ProseMirror {
   /* Dimensões e layout */
   flex: 1 1 auto;
   min-height: 580px;
-  padding: 2rem 2.5rem;
+  padding: var(--editor-padding);
+  overflow-y: auto;
+  
+  /* Melhora a experiência de rolagem */
+  scroll-behavior: smooth;
+  
+  /* Estilização da barra de rolagem para navegadores WebKit */
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: var(--text-muted);
+  }
+  
+  /* Suaviza o alinhamento do texto */
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+  /* Melhora a aparência da seleção de texto */
+  &::selection {
+    background-color: var(--selection-bg);
+    color: inherit;
+  }
+  
+  /* Melhora a visibilidade do cursor */
+  caret-color: var(--primary-color);
+  
+  /* Estilo para links */
+  a {
+    color: var(--primary-color);
+    text-decoration: none;
+    border-bottom: 1px solid var(--primary-color);
+    transition: all 0.2s ease;
+    
+    &:hover {
+      color: var(--primary-hover);
+      border-bottom-color: var(--primary-hover);
+    }
+    
+    &:focus-visible {
+      outline: 2px solid var(--primary-focus);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
+  }
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
@@ -162,11 +280,15 @@
   /* Tipografia */
   font-size: 1.05rem;
   line-height: 1.8;
+  /* Otimiza a tipografia */
   font-kerning: normal;
   font-variant-ligatures: common-ligatures;
+  font-feature-settings: 'kern', 'liga', 'clig', 'calt';
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Melhora o espaçamento entre letras */
+  letter-spacing: 0.01em;
   
   /* Comportamento */
   overflow-y: auto;
