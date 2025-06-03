@@ -273,10 +273,29 @@
 .ProseMirror:focus {
   outline: none;
   box-shadow: 0 0 0 2px var(--primary-color);
+  caret-color: var(--primary-color);
 }
 
-/* Otimização de cursor - reduzindo o uso de !important */
-.ProseMirror,
+/* Garante que o foco seja visível para navegação por teclado */
+.ProseMirror:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Melhora a experiência em dispositivos móveis */
+@media (hover: none) {
+  .ProseMirror {
+    -webkit-tap-highlight-color: rgba(74, 134, 232, 0.3);
+  }
+}
+
+/* Estilos otimizados para o cursor */
+.ProseMirror {
+  caret-color: var(--primary-color, #4a86e8);
+  caret-shape: block;
+}
+
 .ProseMirror p,
 .ProseMirror h1,
 .ProseMirror h2,
@@ -285,8 +304,23 @@
 .ProseMirror h5,
 .ProseMirror h6,
 .ProseMirror div,
-.ProseMirror span {
-  cursor: text;
+.ProseMirror span,
+.ProseMirror {
+  cursor: text !important;
+  caret-color: var(--primary-color, #4a86e8) !important;
+}
+
+/* Garante que o cursor seja visível mesmo em elementos vazios */
+.ProseMirror > *:first-child:empty::before {
+  content: ' ';
+  display: inline-block;
+  width: 0;
+}
+
+/* Melhora a visibilidade da seleção de texto */
+.ProseMirror *::selection {
+  background-color: rgba(74, 134, 232, 0.2);
+  color: inherit;
 }
 
 /* Exceções para elementos interativos */
@@ -396,13 +430,29 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  position: relative;
+  /* Suporte para navegadores antigos */
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
   z-index: 1000;
   transition: var(--transition);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   border-top-left-radius: var(--radius-lg);
   border-top-right-radius: var(--radius-lg);
+  /* Garante que a barra de ferramentas fique acima do conteúdo */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Efeito de vidro fosco para navegadores que suportam */
+@supports (backdrop-filter: blur(8px)) or (-webkit-backdrop-filter: blur(8px)) {
+  .menu-bar {
+    background-color: rgba(246, 248, 250, 0.85);
+  }
+  
+  [data-theme="dark"] .menu-bar {
+    background-color: rgba(45, 45, 45, 0.85);
+  }
 }
 
 .menu-group {
@@ -797,6 +847,111 @@
   border: 0;
 }
 
+/* Melhorias de acessibilidade */
+.ProseMirror a {
+  color: var(--primary-color);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(74, 134, 232, 0.3);
+  transition: all 0.2s ease;
+}
+
+.ProseMirror a:hover,
+.ProseMirror a:focus {
+  color: var(--primary-hover);
+  border-bottom-color: currentColor;
+  outline: none;
+  text-decoration: none;
+}
+
+/* Melhora o foco para navegação por teclado */
+.ProseMirror [tabindex="0"]:focus,
+.ProseMirror button:focus,
+.ProseMirror [role="button"]:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* Melhora a legibilidade para usuários que preferem reduzir movimento */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .ProseMirror img,
+  .ProseMirror pre,
+  .menu-group button {
+    transition: none !important;
+  }
+}
+
+/* Melhora o contraste para modo de alto contraste */
+/* Para navegadores modernos com suporte a forced-colors */
+@supports (forced-colors: active) {
+  .ProseMirror {
+    /* Usa a propriedade padrão apenas em navegadores que suportam */
+    @supports (forced-color-adjust: none) {
+      forced-color-adjust: none;
+    }
+  }
+  
+  .menu-bar,
+  .floating-menu {
+    border: 1px solid ButtonText !important;
+    background: ButtonFace !important;
+  }
+}
+
+/* Para IE/Edge */
+@media (-ms-high-contrast: active) {
+  .ProseMirror {
+    -ms-high-contrast-adjust: none;
+  }
+  
+  .menu-bar,
+  .floating-menu {
+    border: 1px solid ButtonText !important;
+    background: ButtonFace !important;
+  }
+}
+
+/* Fallback genérico para navegadores antigos */
+@media (prefers-contrast: more) {
+  .ProseMirror {
+    -ms-high-contrast-adjust: none;
+  }
+  
+  .menu-bar,
+  .floating-menu {
+    border: 1px solid !important;
+    background: #fff !important;
+  }
+  
+  [data-theme="dark"] .menu-bar,
+  [data-theme="dark"] .floating-menu {
+    background: #000 !important;
+  }
+}
+
+/* Estilos para a barra de menu e menu flutuante */
+.menu-group button,
+.toolbar-button {
+  border: 1px solid ButtonText;
+  color: ButtonText !important;
+  background: ButtonFace !important;
+}
+  
+  .menu-group button.is-active,
+  .toolbar-button.is-active {
+    background: Highlight !important;
+    color: HighlightText !important;
+  }
+
 /* Estilos para elementos de formulário */
 .ProseMirror input[type="text"],
 .ProseMirror input[type="email"],
@@ -1131,13 +1286,148 @@
 
 /* Melhorias para telas pequenas */
 @media (max-width: 768px) {
-  .ProseMirror pre {
-    padding: 1em;
-    font-size: 0.9em;
+  .ProseMirror {
+    padding: 1rem;
+    font-size: 1rem; /* Garante tamanho de fonte legível */
+    min-height: calc(100vh - 120px); /* Ajusta a altura para preencher a tela */
   }
   
-  .copy-code-button {
-    opacity: 1; /* Sempre visível em dispositivos móveis */
+  /* Melhora a legibilidade em dispositivos móveis */
+  .ProseMirror p,
+  .ProseMirror li,
+  .ProseMirror td,
+  .ProseMirror th {
+    font-size: 1.05em;
+    line-height: 1.7;
+  }
+  
+  /* Ajusta o espaçamento para melhor leitura */
+  .ProseMirror h1 { font-size: 1.8em; margin: 1.5em 0 0.8em; }
+  .ProseMirror h2 { font-size: 1.6em; margin: 1.3em 0 0.7em; }
+  .ProseMirror h3 { font-size: 1.4em; margin: 1.1em 0 0.6em; }
+  .ProseMirror h4 { font-size: 1.2em; margin: 1em 0 0.5em; }
+  
+  /* Melhora a experiência de toque */
+  .menu-group button {
+    min-width: 40px;
+    height: 40px;
+    padding: 8px;
+  }
+  
+  /* Ajusta o menu flutuante para dispositivos móveis */
+  .floating-menu {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    max-width: 90%;
+    overflow-x: auto;
+    white-space: nowrap;
+    scroll-behavior: smooth;
+    padding: 8px;
+    border-radius: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    z-index: 1100;
+    /* Melhora a performance de rolagem */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    /* Garante que o conteúdo não seja cortado */
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+  
+  /* Melhora a rolagem em dispositivos com touch */
+  @media (hover: none) and (pointer: coarse) {
+    .floating-menu {
+      position: -webkit-sticky;
+      position: sticky;
+      bottom: 20px;
+      margin: 0 auto;
+      left: 0;
+      right: 0;
+      transform: none;
+      width: max-content;
+      max-width: 90%;
+      overflow-y: auto;
+      
+      /* Melhora a performance de rolagem */
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+      
+      /* Previne o bounce e melhora a rolagem em dispositivos móveis */
+      max-height: 90vh;
+      overflow-y: auto;
+      
+      /* Suporte para navegadores modernos */
+      @supports (overscroll-behavior: none) {
+        overscroll-behavior: none;
+      }
+      
+      /* Otimização de rolagem para dispositivos móveis */
+      @media (hover: none) and (pointer: coarse) {
+        /* Força a renderização por hardware para melhor performance */
+        -webkit-transform: translateZ(0);
+        transform: translate3d(0, 0, 0);
+        
+        /* Otimizações para navegadores modernos */
+        @supports (overscroll-behavior: contain) {
+          overscroll-behavior: contain;
+          overscroll-behavior-y: none;
+        }
+        
+        /* Previne o bounce no iOS de forma mais ampla compatível */
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+      
+      /* Força aceleração por hardware */
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+      
+      /* Otimiza a renderização */
+      will-change: transform;
+    }
+    
+    /* Melhora a experiência de toque */
+    .floating-menu * {
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    /* Melhora a experiência em telas pequenas */
+    @media (max-width: 480px) {
+      .floating-menu {
+        bottom: 10px;
+        max-width: 95%;
+      }
+    }
+  }
+  
+  .floating-menu .toolbar-button {
+    width: 42px;
+    height: 42px;
+    margin: 0 2px;
+    font-size: 1.1em;
+  }
+  
+  /* Melhora a acessibilidade em dispositivos móveis */
+  @media (max-width: 480px) {
+    .ProseMirror {
+      padding: 12px;
+    }
+    
+    .menu-bar {
+      padding: 6px 8px;
+      gap: 4px;
+    }
+    
+    .menu-group button {
+      min-width: 36px;
+      height: 36px;
+      padding: 6px;
+    }
   }
 }
 
