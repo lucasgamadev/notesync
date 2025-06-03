@@ -1,14 +1,17 @@
-import { AxiosResponse } from "axios";
+import { AxiosResponse, AxiosHeaders, InternalAxiosRequestConfig } from "axios";
 
 // Tipos para as notas e tags
-interface Note {
-  id: string;
+interface BaseNote {
   title: string;
   content: string;
-  createdAt: string;
-  updatedAt: string;
   tags: Tag[];
   notebookId: string;
+}
+
+interface Note extends BaseNote {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface Tag {
@@ -85,13 +88,34 @@ const mockData = {
 
 // Função para criar resposta simulada
 const createResponse = <T>(data: T): Promise<AxiosResponse<T>> => {
-  return Promise.resolve({
+  const response: AxiosResponse<T> = {
     data,
     status: 200,
-    statusText: "OK",
+    statusText: 'OK',
     headers: {},
-    config: {} as any
-  });
+    config: {
+      headers: new AxiosHeaders(),
+      // Adicionando propriedades obrigatórias do InternalAxiosRequestConfig
+      url: '',
+      method: 'get',
+      data: undefined,
+      params: {},
+      timeout: 0,
+      withCredentials: false,
+      responseType: 'json',
+      xsrfCookieName: '',
+      xsrfHeaderName: '',
+      maxContentLength: -1,
+      maxBodyLength: -1,
+      validateStatus: () => true,
+      transitional: {
+        silentJSONParsing: true,
+        forcedJSONParsing: true,
+        clarifyTimeoutError: false,
+      },
+    } as unknown as InternalAxiosRequestConfig
+  };
+  return Promise.resolve(response);
 };
 
 // Função para simular delay de rede
@@ -100,7 +124,7 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 // API Mock
 const mockApi = {
   // Notas
-  get: async (url: string): Promise<AxiosResponse<any>> => {
+  get: async (url: string): Promise<AxiosResponse<Note[] | Note | Tag[] | Notebook[]>> => {
     await delay(300); // Simular latência de rede
 
     // Buscar todas as notas
@@ -136,31 +160,33 @@ const mockApi = {
     }
 
     // Buscar tags
-    if (url === "/tags") {
+    if (url === "/tags" || url === "/api/tags") {
       return createResponse(mockData.tags);
     }
 
     // Buscar cadernos
-    if (url === "/notebooks") {
+    if (url === "/notebooks" || url === "/api/notebooks") {
       return createResponse(mockData.notebooks);
     }
 
     throw new Error(`URL não suportada: ${url}`);
   },
 
-  post: async (url: string, data: any): Promise<AxiosResponse<any>> => {
+  post: async (url: string, data: Partial<BaseNote>): Promise<AxiosResponse<Note | Tag | Notebook>> => {
     await delay(300); // Simular latência de rede
 
     // Criar nova nota
     if (url === "/notes") {
       const newNote: Note = {
         id: `note-${Date.now()}`,
-        title: data.title,
-        content: data.content,
+        title: data.title || 'Nova Nota',
+        content: data.content || '',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        tags: data.tags ? mockData.tags.filter((tag) => data.tags.includes(tag.id)) : [],
-        notebookId: data.notebookId || ""
+        tags: data.tags ? mockData.tags.filter(tag => 
+          data.tags?.some(t => typeof t === 'string' ? t === tag.id : t.id === tag.id)
+        ) || [] : [],
+        notebookId: data.notebookId || ''
       };
 
       mockData.notes.push(newNote);
@@ -170,7 +196,7 @@ const mockApi = {
     throw new Error(`URL não suportada: ${url}`);
   },
 
-  put: async (url: string, data: any): Promise<AxiosResponse<any>> => {
+  put: async (url: string, data: Partial<BaseNote>): Promise<AxiosResponse<Note | Tag | Notebook>> => {
     await delay(300); // Simular latência de rede
 
     // Atualizar nota existente
@@ -182,11 +208,13 @@ const mockApi = {
         // Atualizar nota existente
         const updatedNote: Note = {
           ...mockData.notes[noteIndex],
-          title: data.title,
-          content: data.content,
+          title: data.title || mockData.notes[noteIndex].title,
+          content: data.content || mockData.notes[noteIndex].content,
           updatedAt: new Date().toISOString(),
-          tags: data.tags ? mockData.tags.filter((tag) => data.tags.includes(tag.id)) : [],
-          notebookId: data.notebookId || ""
+          tags: data.tags ? mockData.tags.filter(tag => 
+            data.tags?.some(t => typeof t === 'string' ? t === tag.id : t.id === tag.id)
+          ) || [] : mockData.notes[noteIndex].tags,
+          notebookId: data.notebookId || mockData.notes[noteIndex].notebookId
         };
 
         mockData.notes[noteIndex] = updatedNote;
@@ -198,12 +226,14 @@ const mockApi = {
         // Criar uma nova nota a partir da temporária
         const newNote: Note = {
           id: `note-${Date.now()}`,
-          title: data.title,
-          content: data.content,
+          title: data.title || 'Nova Nota',
+          content: data.content || '',
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-          tags: data.tags ? mockData.tags.filter((tag) => data.tags.includes(tag.id)) : [],
-          notebookId: data.notebookId || ""
+          tags: data.tags ? mockData.tags.filter(tag => 
+            data.tags?.some(t => typeof t === 'string' ? t === tag.id : t.id === tag.id)
+          ) || [] : [],
+          notebookId: data.notebookId || ''
         };
 
         mockData.notes.push(newNote);
@@ -216,7 +246,7 @@ const mockApi = {
     throw new Error(`URL não suportada: ${url}`);
   },
 
-  delete: async (url: string): Promise<AxiosResponse<any>> => {
+  delete: async (url: string): Promise<AxiosResponse<{ success: boolean; deletedNote: Note }>> => {
     await delay(300); // Simular latência de rede
 
     // Excluir nota
@@ -227,7 +257,7 @@ const mockApi = {
       if (noteIndex >= 0) {
         const deletedNote = mockData.notes[noteIndex];
         mockData.notes.splice(noteIndex, 1);
-        return createResponse({ success: true, deletedNote });
+        return createResponse({ success: true, deletedNote } as { success: boolean; deletedNote: Note });
       }
 
       throw new Error("Nota não encontrada");
