@@ -389,7 +389,7 @@
   flex-wrap: wrap;
   gap: 6px;
   position: relative;
-  z-index: 10;
+  z-index: 1000;
   transition: var(--transition);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
@@ -464,31 +464,101 @@
   transform: translateY(-1px);
 }
 
-/* Tooltips */
-.menu-group button::after {
+/* ===== TOOLTIPS ===== */
+.toolbar-button {
+  position: relative;
+  overflow: visible !important;
+}
+
+.toolbar-button {
+  position: relative;
+  overflow: visible !important;
+}
+
+.toolbar-button::after {
   content: attr(data-tooltip);
   position: absolute;
-  bottom: 100%;
+  top: 100%;
   left: 50%;
-  transform: translateX(-50%) translateY(-8px);
-  background-color: #333;
-  color: white;
-  padding: 4px 8px;
+  transform: translateX(-50%) translateY(8px);
+  transform-origin: top center;
+  background-color: var(--text-color);
+  color: var(--bg-color);
+  padding: 6px 12px;
   border-radius: var(--radius-sm);
-  font-size: 0.8em;
+  font-size: 0.75rem;
+  font-weight: 500;
   white-space: nowrap;
   opacity: 0;
   visibility: hidden;
-  transition: all 0.2s ease;
   pointer-events: none;
-  z-index: 100;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: var(--shadow-md);
+  z-index: 10000;
+  min-width: max-content;
+  max-width: 250px;
+  text-align: center;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  margin-top: 8px;
 }
 
-.menu-group button:hover::after {
+.toolbar-button:hover::after,
+.toolbar-button:focus-visible::after {
   opacity: 1;
   visibility: visible;
-  transform: translateX(-50%) translateY(-12px);
+  transform: translateX(-50%) translateY(0);
+  transition-delay: 0.15s;
+}
+
+/* Seta do tooltip */
+.toolbar-button::before {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent var(--text-color) transparent;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10001;
+  pointer-events: none;
+}
+
+.toolbar-button:hover::before,
+.toolbar-button:focus-visible::before {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Ajustes para temas escuros */
+[data-theme='dark'] .toolbar-button::after {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+}
+
+[data-theme='dark'] .toolbar-button::before {
+  border-color: var(--bg-color) transparent transparent transparent;
+}
+
+/* Acessibilidade: garantir contraste adequado */
+@media (prefers-contrast: more) {
+  .toolbar-button::after {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Melhorar acessibilidade no foco */
+.toolbar-button:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
 }
 
 /* Ícones */
