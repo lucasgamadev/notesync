@@ -163,23 +163,61 @@ a::selection {
   transform: translateZ(0);
 }
 
-/* Melhorando o foco do editor */
+/* Melhorando o foco e a acessibilidade do editor */
 .editor-personalizavel:focus-within {
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 2px rgba(74, 134, 232, 0.2);
+  box-shadow: 0 0 0 2px var(--primary-focus);
   outline: none;
+  position: relative;
+  z-index: 2;
 }
 
-/* Garantir que o foco seja acessível */
+/* Garantir que o foco seja acessível e visível */
 .editor-personalizavel:focus-visible {
-  outline: 2px solid var(--primary-color);
+  outline: 3px solid var(--primary-color);
   outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Melhorias para navegação por teclado */
+.editor-personalizavel [role="textbox"]:focus-visible {
+  outline: 2px dashed var(--primary-color);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
 
 /* Estilos para o conteúdo do editor */
 .editor-content {
+  --scrollbar-width: 8px;
+  --scrollbar-track: transparent;
+  --scrollbar-thumb: var(--border-color);
+  --scrollbar-thumb-hover: var(--text-muted);
+  
   flex: 1;
   overflow-y: auto;
+  scroll-behavior: smooth;
+  
+  /* Melhora a rolagem em navegadores modernos */
+  scroll-behavior: smooth;
+  
+  /* Estilo da barra de rolagem para WebKit (Chrome, Safari) */
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: var(--scrollbar-track, #f1f1f1);
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb, #888);
+    border-radius: 4px;
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: var(--scrollbar-thumb-hover, #555);
+  }
   padding: 1.5rem;
   scroll-behavior: smooth;
   /* Garante que o conteúdo não fique muito próximo das bordas */
@@ -277,18 +315,33 @@ a::selection {
   border: none;
   outline: none;
   
-  /* Tipografia */
+  /* Tipografia aprimorada */
   font-size: 1.05rem;
   line-height: 1.8;
   /* Otimiza a tipografia */
   font-kerning: normal;
   font-variant-ligatures: common-ligatures;
-  font-feature-settings: 'kern', 'liga', 'clig', 'calt';
+  font-feature-settings: 'kern', 'liga', 'clig', 'calt', 'tnum', 'lnum';
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* Melhora o espaçamento entre letras */
+  /* Melhora a legibilidade */
   letter-spacing: 0.01em;
+  word-spacing: 0.02em;
+  /* Melhora a quebra de palavras longas */
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
+  /* Alinhamento de texto consistente */
+  text-align: left;
+  
+  /* Garante que o texto fique alinhado à esquerda */
+  p, div, h1, h2, h3, h4, h5, h6, li {
+    text-align: left;
+  }
   
   /* Comportamento */
   overflow-y: auto;
