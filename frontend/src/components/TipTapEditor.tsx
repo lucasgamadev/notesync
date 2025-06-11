@@ -1,36 +1,17 @@
 "use client";
 
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Placeholder from '@tiptap/extension-placeholder';
-import TextAlign from '@tiptap/extension-text-align';
-import Underline from '@tiptap/extension-underline';
-import Typography from '@tiptap/extension-typography';
-import Link from '@tiptap/extension-link';
-import Image from '@tiptap/extension-image';
-import Table from '@tiptap/extension-table';
-import TableRow from '@tiptap/extension-table-row';
-import TableCell from '@tiptap/extension-table-cell';
-import TableHeader from '@tiptap/extension-table-header';
-import TaskList from '@tiptap/extension-task-list';
-import TaskItem from '@tiptap/extension-task-item';
+import { useEditor, EditorContent, BubbleMenu } from '@tiptap/react';
 import { useEffect, useRef, useCallback, useState } from 'react';
+import { FaUndo, FaRedo, FaBold, FaItalic, FaUnderline, FaStrikethrough, FaListUl, FaListOl, FaQuoteLeft, FaAlignLeft, FaAlignCenter, FaAlignRight, FaLink, FaImage, FaTable, FaSun, FaMoon, FaTextHeight } from 'react-icons/fa';
+import { BiHeading, BiCodeBlock } from 'react-icons/bi';
+import { getExtensions } from '../config/tiptap-extensions';
+
+// Importar estilos
 import './editor-personalizavel.css';
 import './editor-contrast-fix.css';
 import './editor-cursor-fix.css';
 import './editor-cursor-visibility.css';
 import './editor-loading.css';
-import { FaUndo, FaRedo, FaBold, FaItalic, FaUnderline, FaStrikethrough, FaListUl, FaListOl, FaQuoteLeft, FaAlignLeft, FaAlignCenter, FaAlignRight, FaLink, FaImage, FaTable, FaSun, FaMoon, FaTextHeight } from 'react-icons/fa';
-import { BiHeading, BiCodeBlock } from 'react-icons/bi';
-import { BubbleMenu } from '@tiptap/react';
-import { createLowlight } from 'lowlight';
-import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
-import Color from '@tiptap/extension-color';
-import Highlight from '@tiptap/extension-highlight';
-import TextStyle from '@tiptap/extension-text-style';
-import Superscript from '@tiptap/extension-superscript';
-import Subscript from '@tiptap/extension-subscript';
-
 
 // Tipos para as propriedades do editor
 interface TipTapEditorProps {
@@ -274,87 +255,7 @@ const TipTapEditor = ({
 
   // Inicializa o editor com as extensões disponíveis
   const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        codeBlock: false, // Desativa o codeBlock padrão para usar a versão com destaque de sintaxe
-      }),
-      CodeBlockLowlight.configure({
-        lowlight: createLowlight(),
-        defaultLanguage: 'plaintext',
-      }),
-      Placeholder.configure({
-        placeholder: ({ node }) => {
-          if (node.type.name === 'heading') {
-            return `Título ${node.attrs.level}`;
-          }
-          return placeholder;
-        },
-      }),
-      TextAlign.configure({
-        types: ['heading', 'paragraph', 'image'],
-        alignments: ['left', 'center', 'right', 'justify'],
-        defaultAlignment: 'left',
-      }),
-      Underline,
-      Typography,
-      Link.configure({
-        openOnClick: false,
-        HTMLAttributes: {
-          class: 'text-primary underline',
-        },
-      }),
-      Image.configure({
-        inline: true,
-        allowBase64: true,
-      }),
-      Table.configure({
-        resizable: true,
-      }),
-      TableRow,
-      TableHeader,
-      TableCell,
-      TaskList,
-      TaskItem.configure({
-        nested: true,
-      }),
-      // Extensões adicionais recomendadas
-      Color,
-      Highlight,
-      TextStyle,
-      Superscript,
-      Subscript,
-      // Extensão para estilos de texto personalizados
-      TextStyle.extend({
-        addAttributes() {
-          return {
-            ...this.parent?.(),
-            style: {
-              default: null,
-              parseHTML: element => element.getAttribute('style'),
-              renderHTML: attributes => {
-                if (!attributes.style) {
-                  return {};
-                }
-                return { style: attributes.style };
-              },
-            },
-            fontSize: {
-              default: null,
-              parseHTML: element => {
-                const size = element.style.fontSize;
-                return size || null;
-              },
-              renderHTML: attributes => {
-                if (!attributes.fontSize) {
-                  return {};
-                }
-                return { style: `font-size: ${attributes.fontSize}` };
-              },
-            },
-          };
-        },
-      }),
-    ],
+    extensions: getExtensions(placeholder),
     content: editorContent,
     editable: !readOnly,
     autofocus: autoFocus ? 'end' : false,
