@@ -2,28 +2,63 @@
 
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import NotesService, { Note } from '../services/notes';
+import Link from 'next/link';
 
 /**
  * Componente de Botões de Ação Rápida
  * 
  * Fornece botões para criar rapidamente notas e cadernos sem precisar navegar para outras páginas.
- * Implementa modais simples e diretos para criação rápida.
+ * Também exibe as notas recentes do usuário.
  */
 export default function QuickActionButtons() {
   const router = useRouter();
   const [isNotebookModalOpen, setIsNotebookModalOpen] = useState(false);
+  const [recentNotes, setRecentNotes] = useState<Note[]>([]);
+  const [loading, setLoading] = useState(true);
   
   // Estados para novo caderno
   const [notebookName, setNotebookName] = useState('');
   
+  // Carrega as notas recentes ao montar o componente
+  useEffect(() => {
+    const loadRecentNotes = async () => {
+      try {
+        const notes = await NotesService.getRecentNotes(5);
+        setRecentNotes(notes);
+      } catch (error) {
+        console.error('Erro ao carregar notas recentes:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadRecentNotes();
+  }, []);
+  
+  // Função para formatar a data de atualização
+  const formatUpdatedAt = (dateString: string) => {
+    const now = new Date();
+    const updatedAt = new Date(dateString);
+    const diffInHours = Math.floor((now.getTime() - updatedAt.getTime()) / (1000 * 60 * 60));
+    
+    if (diffInHours < 1) {
+      const diffInMinutes = Math.floor((now.getTime() - updatedAt.getTime()) / (1000 * 60));
+      return `Atualizado há ${diffInMinutes} minuto${diffInMinutes !== 1 ? 's' : ''}`;
+    } else if (diffInHours < 24) {
+      return `Atualizado há ${diffInHours} hora${diffInHours !== 1 ? 's' : ''}`;
+    } else {
+      const diffInDays = Math.floor(diffInHours / 24);
+      return `Atualizado há ${diffInDays} dia${diffInDays !== 1 ? 's' : ''}`;
+    }
+  };
+
   // Função para abrir o modal de criação de nota
   const handleCreateNote = () => {
     // Redireciona para a página de criação de nota
     router.push('/dashboard/notes/new');
   };
-  
-  // Não precisamos mais da função de fechar o editor lateral, pois agora ele é exibido na área principal
   
   // Função para criar um novo caderno rapidamente
   const handleCreateNotebook = async (e: React.FormEvent) => {
@@ -33,7 +68,7 @@ export default function QuickActionButtons() {
         name: notebookName,
       });
       
-      // Redireciona para o caderno criado
+      // Redireciona para a lista de cadernos
       router.push(`/dashboard/notebooks`);
       setIsNotebookModalOpen(false);
       
@@ -47,7 +82,7 @@ export default function QuickActionButtons() {
   
   return (
     <>
-      <div className="mb-8">
+      <div className="mb-6">
         <div className="flex flex-col gap-3 w-full">
           <button
             onClick={handleCreateNote}
@@ -65,8 +100,37 @@ export default function QuickActionButtons() {
           </button>
         </div>
       </div>
-      
-      {/* O editor de notas agora é exibido diretamente na área principal do dashboard */}
+
+      {/* Seção de Notas Recentes */}
+      <div className="mb-6">
+        <h2 className="text-lg font-bold text-blue-700 mb-3">Notas Recentes</h2>
+        {loading ? (
+          <div className="flex justify-center py-4">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-700"></div>
+          </div>
+        ) : recentNotes.length > 0 ? (
+          <div className="space-y-2">
+            {recentNotes.map((note) => (
+              <Link 
+                key={note.id} 
+                href={`/dashboard/notes/${note.id}`}
+                className="block p-2 hover:bg-blue-50 rounded transition-colors"
+              >
+                <p className="font-medium text-gray-800 truncate">{note.title || 'Sem título'}</p>
+                <p className="text-xs text-gray-500">{formatUpdatedAt(note.updatedAt)}</p>
+              </Link>
+            ))}
+            <Link 
+              href="/dashboard/notes"
+              className="text-blue-600 text-sm font-medium hover:underline inline-block mt-2"
+            >
+              Ver todas as notas →
+            </Link>
+          </div>
+        ) : (
+          <p className="text-sm text-gray-500">Nenhuma nota recente encontrada.</p>
+        )}
+      </div>
       
       {/* Modal para criar caderno */}
       {isNotebookModalOpen && (
