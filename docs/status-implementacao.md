@@ -63,7 +63,7 @@ Este documento rastreia o progresso de implementação dos componentes definidos
 
 | Subcomponente | Status | Observações |
 |---------------|--------|-------------|
-| Cache Local (Frontend) | 🟡 Parcial | Hook useLocalStorage.js implementado |
+| Armazenamento Local (IndexedDB) | 🟢 Completo | Serviço IndexedDB implementado com suporte a operações CRUD e sincronização |
 | Sincronização Offline | 🟡 Parcial | Hook useOfflineSync.js implementado |
 | Cache em Memória (Backend) | 🟢 Completo | Serviço cacheService.js implementado |
 | Cache HTTP | 🟢 Completo | Middleware cacheMiddleware.js implementado |
@@ -71,22 +71,27 @@ Este documento rastreia o progresso de implementação dos componentes definidos
 ## Próximos Passos Prioritários
 
 ### Frontend (Next.js)
+
 - **Estado (Zustand):** Implementar hooks avançados para manipulação de estado global, como seleção de notas, filtros e preferências do usuário.
 - **Requisições (Axios/React Query):** Finalizar integração dos endpoints REST, incluindo tratamento de erros e estados de carregamento.
 - **Autenticação (JWT):** Garantir proteção de rotas e renovação automática do token.
 
 ### Backend (Express)
+
 - **Microserviço de Sincronização:** Completar lógica de resolução de conflitos de sincronização e integração total com Google Drive.
 
 ### Sincronização Google Drive
+
 - **Estratégia de Sincronização:** Implementar lógica de merge e detecção de conflitos, além de testes de integração.
 
 ### Cache e Otimização
-- **Cache Local (Frontend):** Expandir o uso do hook useLocalStorage.js para armazenar preferências e dados temporários.
+
+- **Armazenamento Local (IndexedDB):** Expandir o uso do serviço IndexedDB para armazenar preferências e dados temporários, com suporte a consultas avançadas.
 - **Sincronização Offline:** Completar o ciclo de sincronização automática e feedback visual para o usuário.
 
+### Próximas Tarefas
 
-1. **Frontend**:
+1. **Frontend:**
    - Completar implementação dos componentes de UI restantes
    - Finalizar integração com API backend
    - Implementar gerenciamento de estado completo
