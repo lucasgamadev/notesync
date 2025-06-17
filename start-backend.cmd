@@ -1,86 +1,118 @@
 @echo off
-setlocal enabledelayedexpansion
+:: Inicia uma nova instância do CMD que não fecha automaticamente
+if "%~1"=="" (
+    cmd /k ""%~f0" executed"
+    exit /b
+)
 
-REM Define codificação UTF-8 para suportar acentos
-chcp 65001 >nul
+chcp 65001 > nul
+title NoteSync - Backend
 
-title NoteSync - Servidor de Desenvolvimento Backend
-
-echo ===================================================
-echo    NoteSync - Servidor de Desenvolvimento Backend
-echo ===================================================
+:: Mostrar informações iniciais
+echo ===================================
+echo    INICIANDO BACKEND - NOTESYNC
+echo ===================================
 echo.
 
-REM Verifica se o diretório backend existe
-if not exist backend (
-    echo [ERRO] O diretório backend não foi encontrado.
-    echo Certifique-se de estar executando este script na pasta raiz do projeto.
+echo [1/6] Verificando Node.js...
+node -v
+if errorlevel 1 (
     echo.
-    echo Pressione qualquer tecla para fechar esta janela...
-    pause >nul
+    echo ERRO: Node.js nao encontrado.
+    echo Por favor, instale o Node.js em: https://nodejs.org/
+    pause
     exit /b 1
 )
 
-REM Entra no diretório backend
-cd backend
-
-REM Verifica a versão do Node.js
-echo [INFO] Verificando versão do Node.js...
-for /f "tokens=*" %%a in ('node -v') do set node_version=%%a
-echo [INFO] Versão do Node.js encontrada: !node_version!
-
-REM Extrai o número da versão principal (v20.x.x -> 20)
-set "node_major=!node_version:~1,2!"
-
-REM Verifica se a versão é pelo menos 20
-if !node_major! LSS 20 (
-    echo [AVISO] A versão do Node.js é inferior à recomendada (v20+).
-    echo Recomendamos atualizar o Node.js para a versão mais recente LTS (v20+).
-    echo Você pode continuar, mas podem ocorrer problemas de compatibilidade.
+echo.
+echo [2/6] Verificando npm...
+npm -v
+if errorlevel 1 (
     echo.
-    choice /C SN /M "Deseja continuar mesmo assim? (S=Sim, N=Não)"
-    if !errorlevel! equ 2 (
+    echo ERRO: npm nao encontrado.
+    echo Tente reinstalar o Node.js
+    pause
+    exit /b 1
+)
+
+echo.
+echo [3/6] Verificando estrutura do projeto...
+if not exist "backend\" (
+    echo.
+    echo ERRO: Pasta 'backend' nao encontrada.
+    echo Certifique-se de que este script esta na pasta raiz do projeto.
+    echo.
+    echo Conteudo do diretorio atual:
+    dir /b
+    pause
+    exit /b 1
+)
+
+:: Entrar na pasta backend
+pushd backend
+
+if errorlevel 1 (
+    echo.
+    echo ERRO: Nao foi possivel acessar a pasta backend.
+    pause
+    exit /b 1
+)
+
+echo.
+echo [4/6] Verificando dependencias...
+if not exist "node_modules" (
+    echo Instalando dependencias...
+    npm install
+    if errorlevel 1 (
         echo.
-        echo [INFO] Operação cancelada pelo usuário.
-        cd ..
-        echo.
-        echo Pressione qualquer tecla para fechar esta janela...
-        pause >nul
+        echo ERRO: Falha ao instalar as dependencias.
+        echo Tente executar 'npm cache clean --force' e tente novamente.
+        pause
         exit /b 1
     )
-    echo.
-)
-
-echo [INFO] Verificando dependências...
-call npm install
-if !errorlevel! neq 0 (
-    echo.
-    echo [ERRO] Falha ao instalar as dependências.
-    echo Verifique sua conexão com a internet ou execute o comando manualmente.
-    cd ..
-    echo.
-    echo Pressione qualquer tecla para fechar esta janela...
-    pause >nul
-    exit /b 1
+else
+    echo Dependencias ja estao instaladas.
 )
 
 echo.
-echo [INFO] Iniciando o servidor de desenvolvimento...
-echo [INFO] O servidor backend estará disponível em http://localhost:4000
-echo [INFO] Pressione Ctrl+C para encerrar o servidor quando desejar
+echo [5/6] Verificando configuracoes...
+if not exist ".env" (
+    echo AVISO: Arquivo .env nao encontrado.
+    echo Criando arquivo .env de exemplo...
+    (
+        echo # Configuracoes do Banco de Dados
+        echo DB_HOST=localhost
+        echo DB_USER=root
+        echo DB_PASS=
+        echo DB_NAME=notesync
+        echo.
+        echo # Configuracoes do Servidor
+        echo PORT=4000
+        echo NODE_ENV=development
+    ) > .env
+    echo Arquivo .env de exemplo criado. Por favor, configure as variaveis necessarias.
+    pause
+)
+
+echo.
+echo [6/6] Iniciando servidor...
+echo ===================================
+echo URL: http://localhost:4000
+echo Pressione Ctrl+C para parar o servidor
+echo ===================================
 echo.
 
-REM Executa o comando npm run dev diretamente
-REM Isso mantém a janela aberta até que o processo seja encerrado
+echo Executando: npm run dev
 npm run dev
 
-REM O código abaixo será executado quando o servidor for encerrado
-echo.
-echo [INFO] O servidor de desenvolvimento foi encerrado.
+if errorlevel 1 (
+    echo.
+    echo ERRO: Falha ao iniciar o servidor.
+    echo Verifique as mensagens acima para mais detalhes.
+)
 
-REM Retorna ao diretório original
-cd ..
+:: Voltar para o diretorio original
+popd
 
 echo.
-echo Pressione qualquer tecla para fechar esta janela...
-pause >nul
+pause
