@@ -1,0 +1,156 @@
+/* Efeito de ripple para o botão */
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Estilos base para o botão */
+button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s ease-in-out;
+  outline: none;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  vertical-align: middle;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  --ripple-x: 0;
+  --ripple-y: 0;
+}
+
+/* Efeito de ripple usando pseudo-elemento */
+button::before {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.7);
+  transform: scale(0);
+  opacity: 1;
+  pointer-events: none;
+  width: 20px;
+  height: 20px;
+  left: var(--ripple-x, 0);
+  top: var(--ripple-y, 0);
+  margin-left: -10px;
+  margin-top: -10px;
+  z-index: 1;
+  transform-origin: center;
+}
+
+/* Classe para ativar a animação de ripple */
+button.ripple-active::before {
+  animation: ripple 600ms linear;
+}
+
+/* Estilos para o botão desabilitado */
+button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Efeito de elevação ao passar o mouse */
+button:not(:disabled):not(.ghost):not(.link):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+button:not(:disabled):not(.ghost):not(.link):active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo para botão de carregamento */
+.loading-spinner {
+  margin-right: 0.5rem;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Garante que apenas um spinner seja exibido */
+button .animate-spin {
+  display: inline-block !important;
+  margin-right: 0.5rem;
+}
+
+/* Remove qualquer estilo de loading duplicado */
+button.loading::after {
+  display: none !important;
+}
+
+/* Variantes de botão */
+button.primary {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3), 0 2px 4px -1px rgba(79, 70, 229, 0.1);
+}
+
+button.primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
+  box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.2), 0 4px 6px -2px rgba(79, 70, 229, 0.1);
+}
+
+/* Tamanhos de botão */
+button.sm {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+button.md {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+}
+
+button.lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.125rem;
+}
+
+/* Largura total */
+button.full-width {
+  width: 100%;
+  display: block;
+}
+
+/* Estado de carregamento */
+button.loading {
+  position: relative;
+  color: transparent;
+  pointer-events: none;
+}
+
+button.loading::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
