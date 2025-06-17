@@ -121,7 +121,7 @@ Acesse o aplicativo em [http://localhost:3000](http://localhost:3000)
 
 ## Estrutura do Projeto
 
-```
+```text
 notesync/
 ├── backend/               # Código-fonte do backend
 │   ├── src/
@@ -161,13 +161,3 @@ Contribuições são bem-vindas! Siga estes passos para contribuir:
 ## Licença
 
 Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
-
-## Contato
-
-Seu Nome - [@seu_twitter](https://twitter.com/seu_twitter) - seu_email@exemplo.com
-
-Link do Projeto: [https://github.com/seu-usuario/notesync](https://github.com/seu-usuario/notesync)
-
----
-
-<p align="center">Feito com ❤️ por Você</p>
