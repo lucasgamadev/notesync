@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import AuthService from "../services/auth";
 
 type ProtectedRouteProps = {
   children: React.ReactNode;
@@ -19,10 +20,10 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   useEffect(() => {
     // Verificar se o usuário está autenticado
     const checkAuth = () => {
-      const token = localStorage.getItem("accessToken");
-
-      if (!token) {
-        // Redirecionar para login se não houver token
+      const authenticated = AuthService.isAuthenticated();
+      
+      if (!authenticated) {
+        // Redirecionar para login se não estiver autenticado
         try {
           router.push("/login");
         } catch (err) {
@@ -33,23 +34,25 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
       } else {
         setIsAuthenticated(true);
       }
-
+      
       setLoading(false);
     };
 
-    // Definir um timeout para garantir que o loading não fique preso
-    const timeoutId = setTimeout(() => {
-      if (loading) {
-        console.log('Timeout de autenticação atingido, assumindo autenticado');
-        setIsAuthenticated(true);
-        setLoading(false);
-      }
-    }, 3000);
-
+    // Verificar autenticação
     checkAuth();
+    
+    // Adicionar listener para mudanças de autenticação
+    const handleStorageChange = () => {
+      checkAuth();
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
 
-    return () => clearTimeout(timeoutId);
-  }, [router, loading]);
+  }, [router]);
 
   // Mostrar um indicador de carregamento enquanto verifica a autenticação
   if (loading) {
