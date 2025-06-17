@@ -158,14 +158,14 @@
   - Implementar manifest.json para instalação como PWA ✓
   - Testar instalação em diferentes dispositivos ✓
 - [x] Desenvolver sincronização offline-online
-  - Implementar fila de operações com localStorage ✓
+  - Implementar fila de operações com IndexedDB ✓
   - Criar sistema de detecção de conectividade ✓
   - Adicionar sincronização automática ao recuperar conexão ✓
   - Implementar resolução de conflitos local-remoto ✓
 - [x] Implementar armazenamento local
-  - Utilizar localStorage/sessionStorage para dados temporários ✓
-  - Criar sistema de cache local em JSON ✓
-  - Implementar estratégia de expiração e limpeza de cache ✓
+  - Utilizar IndexedDB para armazenamento local robusto ✓
+  - Criar serviço de gerenciamento do IndexedDB ✓
+  - Implementar estratégia de sincronização e limpeza de dados ✓
 - [x] Testar funcionalidade offline
   - Criar cenários de teste para diferentes padrões de conectividade ✓
   - Verificar persistência de dados entre sessões ✓
