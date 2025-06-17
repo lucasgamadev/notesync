@@ -1,25 +1,21 @@
-# NoteSync - Sistema Web de Notas com Sincronização Google Drive
+# NoteSync - Sistema Web de Notas com Sincronização em Nuvem
 
 ## Descrição do Projeto
 
-O NoteSync é um sistema web moderno para criação e gerenciamento de notas organizadas por cadernos, oferecendo uma experiência intuitiva e eficiente para usuários que precisam manter suas anotações organizadas e acessíveis em qualquer dispositivo através da sincronização com o Google Drive.
+O NoteSync é um sistema web moderno para criação e gerenciamento de notas organizadas por cadernos, oferecendo uma experiência intuitiva e eficiente para usuários que precisam manter suas anotações organizadas e acessíveis em qualquer dispositivo, mesmo offline.
 
 ## Funcionalidades Principais
 
 - **Organização por Cadernos**: Crie e gerencie múltiplos cadernos para diferentes temas ou projetos
 - **Notas Ricas**: Editor com suporte a formatação de texto, listas, imagens e anexos
 - **Etiquetas e Categorias**: Organize suas notas com etiquetas personalizáveis
-- **Sincronização com Google Drive**: Mantenha suas notas seguras e acessíveis em qualquer dispositivo
+- **Sincronização em Nuvem**: Mantenha suas notas seguras e acessíveis em qualquer dispositivo
 - **Modo Offline**: Acesse e edite suas notas mesmo sem conexão com a internet
 - **Pesquisa Avançada**: Encontre rapidamente suas notas com busca por texto, etiquetas ou cadernos
-- **Interface Responsiva**: Experiência consistente em dispositivos desktop e móveis
+- **Desempenho Otimizado**: Carregamento rápido e experiência fluida mesmo com muitas notas
+- **Sincronização Bidirecional**: Alterações feitas offline são sincronizadas automaticamente
 
 ## Tecnologias Utilizadas
-
-### Arquitetura
-
-- **Microserviços**: Arquitetura baseada em serviços independentes para autenticação, cadernos, notas, etiquetas, pesquisa e sincronização
-- Para detalhes completos, consulte o [diagrama de arquitetura](./docs/architecture.md)
 
 ### Frontend
 
@@ -29,7 +25,7 @@ O NoteSync é um sistema web moderno para criação e gerenciamento de notas org
 - **TipTap**: Editor de texto rico baseado em ProseMirror
 - **Zustand**: Gerenciamento de estado global simplificado
 - **React Query**: Gerenciamento de estado do servidor e cache
-- **Axios**: Cliente HTTP para requisições à API
+- **IndexedDB**: Armazenamento local para suporte offline avançado
 
 ### Backend
 
@@ -43,9 +39,9 @@ O NoteSync é um sistema web moderno para criação e gerenciamento de notas org
 
 ### Armazenamento de Dados
 
+- **IndexedDB**: Armazenamento local no navegador para suporte offline avançado
 - **Arquivos JSON**: Armazenamento simples e portátil em formato JSON
 - **Redis**: Cache distribuído para melhorar a performance
-- **LocalStorage**: Cache local para suporte offline no frontend
 
 ### DevOps
 
@@ -57,10 +53,10 @@ O NoteSync é um sistema web moderno para criação e gerenciamento de notas org
 ## Documentação Técnica
 
 - [Arquitetura Técnica](./docs/architecture.md): Diagrama e detalhes da arquitetura de microserviços
-- [Esquema de Dados](./docs/data_schema.md): Estrutura dos arquivos JSON e relacionamentos
+- [Esquema de Dados](./docs/data_schema.md): Estrutura dos dados e relacionamentos
+- [Guia do IndexedDB](./docs/indexeddb-guide.md): Documentação detalhada sobre o armazenamento local
 - [Workflow de Desenvolvimento](./docs/WORKFLOW.md): Processo de desenvolvimento completo
 - [Workflow Frontend](./docs/WORKFLOW-FRONTEND.md): Detalhes específicos do desenvolvimento frontend
-- [Mock API](./docs/MOCK_API_README.md): Sistema para desenvolvimento frontend independente
 - [Requisitos](./docs/requirements.md): User stories e critérios de aceitação
 
 ## Como Iniciar o Desenvolvimento
@@ -68,124 +64,110 @@ O NoteSync é um sistema web moderno para criação e gerenciamento de notas org
 ### Pré-requisitos
 
 - Node.js (v18 ou superior)
-- Docker e Docker Compose
+- npm ou yarn
+- Docker e Docker Compose (opcional, para ambiente de desenvolvimento completo)
 - Conta no Google Cloud Platform (para API do Google Drive)
-- Redis (opcional, para ambiente de desenvolvimento completo)
+- Redis (opcional, para cache distribuído)
 
-### Passos Iniciais
+### Configuração Inicial
 
-1. Clone o repositório:
+1. **Clone o repositório:**
 
 ```bash
 git clone https://github.com/seu-usuario/notesync.git
 cd notesync
 ```
 
-2. Instale as dependências do backend:
+2. **Configure o ambiente de desenvolvimento:**
 
 ```bash
+# Instale as dependências do backend
 cd backend
 npm install
-```
 
-3. Instale as dependências do frontend:
-
-```bash
+# Instale as dependências do frontend
 cd ../frontend
 npm install
 ```
 
-4. Configure as variáveis de ambiente:
+3. **Configure as variáveis de ambiente:**
 
-```bash
-cp backend/.env.example backend/.env
-cp frontend/.env.example frontend/.env
+Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
+
+```env
+# Backend
+PORT=3001
+NODE_ENV=development
+JWT_SECRET=sua_chave_secreta_aqui
+
+# Frontend
+NEXT_PUBLIC_API_URL=http://localhost:3001
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=seu_google_client_id
 ```
 
-5. Inicie os serviços com Docker:
+4. **Inicie os serviços:**
 
 ```bash
-docker-compose up -d
-```
-
-6. Inicialize os arquivos JSON para armazenamento de dados:
-
-```bash
+# Em um terminal, inicie o backend
 cd backend
-npm run init-data
-```
-
-7. Inicie o servidor de desenvolvimento do backend:
-
-```bash
 npm run dev
-```
 
-8. Inicie o servidor de desenvolvimento do frontend:
-
-```bash
+# Em outro terminal, inicie o frontend
 cd ../frontend
 npm run dev
 ```
 
-9. Acesse a aplicação em `http://localhost:3000`
+Acesse o aplicativo em [http://localhost:3000](http://localhost:3000)
 
-### Desenvolvimento Frontend Independente
+## Estrutura do Projeto
 
-O NoteSync suporta desenvolvimento frontend sem necessidade do backend, utilizando um sistema de Mock API. Para detalhes, consulte [MOCK_API_README.md](./docs/MOCK_API_README.md).
-
-## Estrutura de Diretórios
-
-```text
+```
 notesync/
-├── backend/                # Servidor Node.js/Express
-│   ├── data/              # Diretório para arquivos JSON
+├── backend/               # Código-fonte do backend
 │   ├── src/
-│   │   ├── api/           # API Gateway
-│   │   ├── services/      # Microserviços
-│   │   │   ├── auth/      # Serviço de autenticação
-│   │   │   ├── notebooks/ # Serviço de cadernos
-│   │   │   ├── notes/     # Serviço de notas
-│   │   │   ├── tags/      # Serviço de etiquetas
-│   │   │   ├── search/    # Serviço de pesquisa
-│   │   │   └── sync/      # Serviço de sincronização
-│   │   ├── middlewares/   # Middlewares Express
-│   │   ├── models/        # Modelos de dados
-│   │   ├── utils/         # Utilitários
-│   │   └── app.js         # Configuração do Express
-│   ├── .env               # Variáveis de ambiente
-│   └── package.json       # Dependências do backend
+│   │   ├── controllers/    # Controladores das rotas da API
+│   │   ├── middleware/     # Middlewares do Express
+│   │   ├── models/         # Modelos de dados
+│   │   ├── routes/         # Definição das rotas da API
+│   │   ├── services/       # Lógica de negócios
+│   │   └── utils/          # Utilitários e helpers
+│   └── package.json
 │
-├── frontend/              # Aplicação Next.js
-│   ├── public/            # Arquivos estáticos
-│   ├── src/
-│   │   ├── app/           # Rotas e páginas (App Router)
-│   │   ├── components/     # Componentes React
-│   │   ├── hooks/          # Hooks personalizados
-│   │   ├── lib/            # Bibliotecas e utilitários
-│   │   ├── services/       # Serviços de API
-│   │   ├── utils/          # Utilitários
-│   │   │   └── mockApi.ts  # Sistema de Mock API
-│   │   ├── store/          # Estado global (Zustand)
-│   │   └── styles/         # Estilos globais
-│   ├── .env                # Variáveis de ambiente
-│   └── package.json        # Dependências do frontend
+├── frontend/              # Código-fonte do frontend
+│   ├── public/             # Arquivos estáticos
+│   └── src/
+│       ├── components/     # Componentes React reutilizáveis
+│       ├── hooks/          # Hooks personalizados
+│       ├── pages/          # Páginas da aplicação
+│       ├── services/       # Serviços da aplicação
+│       ├── stores/         # Gerenciamento de estado global
+│       └── styles/         # Estilos globais
 │
-├── docs/                  # Documentação técnica
-├── docker-compose.yml     # Configuração do Docker
-└── README.md              # Documentação do projeto
+├── docs/                  # Documentação do projeto
+├── docker-compose.yml      # Configuração do Docker Compose
+└── README.md               # Este arquivo
 ```
 
 ## Contribuição
 
-Contribuições são bem-vindas! Por favor, siga estes passos para contribuir:
+Contribuições são bem-vindas! Siga estes passos para contribuir:
 
-1. Faça um fork do repositório
-2. Crie uma branch para sua feature (`git checkout -b feature/nova-funcionalidade`)
-3. Faça commit das suas alterações (`git commit -m 'Adiciona nova funcionalidade'`)
-4. Faça push para a branch (`git push origin feature/nova-funcionalidade`)
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Faça commit das suas alterações (`git commit -m 'Add some AmazingFeature'`)
+4. Faça push para a branch (`git push origin feature/AmazingFeature`)
 5. Abra um Pull Request
 
 ## Licença
 
-Este projeto está licenciado sob a licença MIT - veja o arquivo LICENSE para mais detalhes.
+Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
+
+## Contato
+
+Seu Nome - [@seu_twitter](https://twitter.com/seu_twitter) - seu_email@exemplo.com
+
+Link do Projeto: [https://github.com/seu-usuario/notesync](https://github.com/seu-usuario/notesync)
+
+---
+
+<p align="center">Feito com ❤️ por Você</p>
