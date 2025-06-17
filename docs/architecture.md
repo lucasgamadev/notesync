@@ -74,10 +74,19 @@ O NoteSync é uma aplicação de notas com sincronização em nuvem, construída
 - **Estratégia**: Sincronização bidirecional com detecção de conflitos
 - **Formato**: Armazenamento de notas em formato JSON estruturado
 
-### Cache (LocalStorage)
+### Armazenamento Local (IndexedDB)
 
-- **Uso**: Cache local para melhorar performance e suporte offline
+- **Uso**: Armazenamento local para suporte offline avançado e melhoria de desempenho
+- **Estrutura**:
+  - `notes`: Armazena todas as notas do usuário
+  - `notebooks`: Armazena os cadernos do usuário
+  - `tags`: Armazena as etiquetas do usuário
+  - `syncQueue`: Fila de operações para sincronização quando online
 - **Sincronização**: Estratégia de sincronização baseada em timestamps e detecção de conflitos
+- **Vantagens**:
+  - Suporte a grandes volumes de dados
+  - Consultas indexadas para melhor desempenho
+  - Transações atômicas para garantir a integridade dos dados
 
 ## Padrões de API
 
