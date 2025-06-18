@@ -1,12 +1,13 @@
-import axios from "axios";
+import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from "axios";
 import mockApi from "./mockApi";
+import { ApiResponse, RequestData, ApiParams } from "../types/api";
 
 // Flag para controlar se devemos usar o mock API em vez do backend real
 const USE_MOCK_API = true; // Altere para false quando quiser usar o backend real
 
 // Criando instância do axios com URL base da API
 // Utilizando o proxy configurado no Next.js para redirecionar para http://localhost:5000/api
-const api = axios.create({
+const api: AxiosInstance = axios.create({
   baseURL: '/api',
   headers: {
     "Content-Type": "application/json"
@@ -15,51 +16,65 @@ const api = axios.create({
 
 // Interceptor para adicionar token de autenticação em todas as requisições
 api.interceptors.request.use(
-  (config) => {
+  (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig | Promise<InternalAxiosRequestConfig> => {
     // Verificar se estamos no browser antes de acessar localStorage
     if (typeof window !== "undefined") {
       const token = localStorage.getItem("accessToken");
-      if (token) {
+      if (token && config.headers) {
         config.headers.Authorization = `Bearer ${token}`;
       }
     }
     return config;
   },
-  (error) => {
+  (error: AxiosError) => {
     return Promise.reject(error);
   }
 );
 
 // Função para substituir as chamadas de API pelo mock quando necessário
 const apiProxy = {
-  get: async (url: string) => {
+  get: async <T = unknown>(url: string, params?: Record<string, string | number | boolean>): Promise<ApiResponse<T>> => {
     if (USE_MOCK_API) {
-      console.log(`[MOCK API] GET ${url}`);
-      return mockApi.get(url);
+      console.log(`[MOCK API] GET ${url}`, { params });
+      const response = await mockApi.get(url, { params });
+      return response.data as unknown as ApiResponse<T>;
     }
-    return api.get(url);
+    const response = await api.get<ApiResponse<T>>(url, { params });
+    return response.data;
   },
-  post: async (url: string, data: any) => {
+  
+  post: async <T = unknown, D = RequestData>(url: string, data?: D, config?: Omit<ApiParams<D>, 'url' | 'data'>): Promise<ApiResponse<T>> => {
     if (USE_MOCK_API) {
-      console.log(`[MOCK API] POST ${url}`, data);
-      return mockApi.post(url, data);
+      console.log(`[MOCK API] POST ${url}`, { data, ...config });
+      const response = await mockApi.post(url, data, config);
+      return response.data as unknown as ApiResponse<T>;
     }
-    return api.post(url, data);
+    const response = await api.post<ApiResponse<T>>(url, data, config);
+    return response.data;
   },
-  put: async (url: string, data: any) => {
+  
+  put: async <T = unknown, D = RequestData>(url: string, data?: D, config?: Omit<ApiParams<D>, 'url' | 'data'>): Promise<ApiResponse<T>> => {
     if (USE_MOCK_API) {
-      console.log(`[MOCK API] PUT ${url}`, data);
-      return mockApi.put(url, data);
+      console.log(`[MOCK API] PUT ${url}`, { data, ...config });
+      const response = await mockApi.put(url, data, config);
+      return response.data as unknown as ApiResponse<T>;
     }
-    return api.put(url, data);
+    const response = await api.put<ApiResponse<T>>(url, data, config);
+    return response.data;
   },
-  delete: async (url: string) => {
+  
+  delete: async <T = void>(url: string, config?: Omit<ApiParams, 'url'>): Promise<ApiResponse<T>> => {
     if (USE_MOCK_API) {
-      console.log(`[MOCK API] DELETE ${url}`);
-      return mockApi.delete(url);
+      console.log(`[MOCK API] DELETE ${url}`, { ...config });
+      const response = await mockApi.delete(url, config);
+      return response.data as unknown as ApiResponse<T>;
     }
-    return api.delete(url);
-  }
+    const response = await api.delete<ApiResponse<T>>(url, config);
+    return response.data;
+  },
+  
+  // Nota: Removido o método patch já que não está implementado no mockApi
+  // Se precisar de PATCH, implemente no mockApi primeiro
 };
 
 // Interceptor para lidar com erros de autenticação (token expirado)
