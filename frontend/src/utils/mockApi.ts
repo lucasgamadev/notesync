@@ -9,30 +9,33 @@ const mockData: MockData = {
       content: "<p>Esta é sua primeira nota no NoteSync. Comece a organizar suas ideias!</p>",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      tags: [{ id: "tag1", name: "Importante" }],
-      notebookId: "notebook1"
+      tags: ["tag1"],
+      notebookId: "notebook1",
+      _mockTags: [{ id: "tag1", name: "Importante", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }]
     },
     {
       id: "note2",
       title: "Dicas para produtividade",
-      tags: [
-        { id: '1', name: 'importante', createdAt: new Date('2023-01-01T12:00:00Z').toISOString(), updatedAt: new Date('2023-01-01T12:00:00Z').toISOString() },
-        { id: '2', name: 'trabalho', createdAt: new Date('2023-01-01T12:00:00Z').toISOString(), updatedAt: new Date('2023-01-01T12:00:00Z').toISOString() }
-      ],
+      tags: ['1', '2'],
       notebookId: '1',
       createdAt: new Date('2023-01-01T12:00:00Z').toISOString(),
-      updatedAt: new Date('2023-01-01T12:00:00Z').toISOString()
+      updatedAt: new Date('2023-01-01T12:00:00Z').toISOString(),
+      _mockTags: [
+        { id: '1', name: 'importante', createdAt: new Date('2023-01-01T12:00:00Z').toISOString(), updatedAt: new Date('2023-01-01T12:00:00Z').toISOString() },
+        { id: '2', name: 'trabalho', createdAt: new Date('2023-01-01T12:00:00Z').toISOString(), updatedAt: new Date('2023-01-01T12:00:00Z').toISOString() }
+      ]
     },
     {
       id: '2',
       title: 'Segunda Nota',
       content: 'Conteúdo da segunda nota',
-      tags: [
-        { id: '3', name: 'pessoal', createdAt: new Date('2023-01-02T12:00:00Z').toISOString(), updatedAt: new Date('2023-01-02T12:00:00Z').toISOString() }
-      ],
+      tags: ['3'],
       notebookId: '2',
       createdAt: new Date('2023-01-02T12:00:00Z').toISOString(),
-      updatedAt: new Date('2023-01-02T12:30:00Z').toISOString()
+      updatedAt: new Date('2023-01-02T12:30:00Z').toISOString(),
+      _mockTags: [
+        { id: '3', name: 'pessoal', createdAt: new Date('2023-01-02T12:00:00Z').toISOString(), updatedAt: new Date('2023-01-02T12:00:00Z').toISOString() }
+      ]
     }
   ] as MockNote[],
   tags: [
@@ -58,7 +61,22 @@ const mockData: MockData = {
   ] as MockNotebook[]
 };
 
-// Função para criar resposta simulada
+// Função auxiliar para criar uma resposta de erro
+const createErrorResponse = (status: number, message: string): Promise<MockResponse<null>> => {
+  return Promise.resolve({
+    data: {
+      success: false,
+      message,
+      data: null
+    },
+    status,
+    statusText: status === 404 ? 'Not Found' : 'Error',
+    headers: {},
+    config: {}
+  });
+};
+
+// Função auxiliar para criar uma resposta simulada
 const createResponse = <T>(data: T): Promise<MockResponse<T>> => {
   return Promise.resolve({
     data: {
@@ -71,6 +89,33 @@ const createResponse = <T>(data: T): Promise<MockResponse<T>> => {
     headers: {},
     config: {}
   });
+};
+
+// Função auxiliar para processar tags (converte entre string[] e MockTag[])
+const processTags = (tags?: string[] | MockTag[]): { tagIds: string[], mockTags: MockTag[] } => {
+  if (!tags || tags.length === 0) {
+    return { tagIds: [], mockTags: [] };
+  }
+
+  // Se for um array de strings, retorna como está
+  if (typeof tags[0] === 'string') {
+    const tagIds = tags as string[];
+    const mockTags = tagIds.map(id => {
+      const existingTag = mockData.tags.find(t => t.id === id);
+      return existingTag || { 
+        id, 
+        name: id, 
+        createdAt: new Date().toISOString(), 
+        updatedAt: new Date().toISOString() 
+      };
+    });
+    return { tagIds, mockTags };
+  }
+
+  // Se for um array de MockTag, extrai os IDs
+  const mockTags = tags as MockTag[];
+  const tagIds = mockTags.map(tag => tag.id);
+  return { tagIds, mockTags };
 };
 
 // Função para simular delay de rede
@@ -91,7 +136,16 @@ const mockApi: {
 
     // Buscar todas as notas
     if (url === "/notes" || url === "/api/notes") {
-      return createResponse(mockData.notes);
+      // Garante que as notas tenham as tags no formato correto
+      const notes = mockData.notes.map(note => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { _mockTags, ...noteWithoutTags } = note;
+        return {
+          ...noteWithoutTags,
+          tags: note._mockTags ? note._mockTags.map(t => t.id) : []
+        };
+      });
+      return createResponse(notes);
     }
 
     // Buscar nota por ID
@@ -100,7 +154,13 @@ const mockApi: {
       const noteId = noteMatch[1];
       const note = mockData.notes.find((n: MockNote) => n.id === noteId);
       if (note) {
-        return createResponse(note);
+        // Retorna a nota com as tags no formato correto
+        const { _mockTags = [], ...noteWithoutTags } = note;
+        const responseNote: MockNote = {
+          ...noteWithoutTags,
+          tags: _mockTags.map(t => t.id)
+        };
+        return createResponse(responseNote);
       } else {
         // Se for uma nota temporária (criada sem backend)
         if (noteId.startsWith("temp-")) {
@@ -123,9 +183,28 @@ const mockApi: {
     const tagMatch = /^\/tags\/([^/]+)\/notes$/.exec(url);
     if (tagMatch) {
       const tagName = tagMatch[1];
-      const notes = mockData.notes.filter((note: MockNote) => 
-        note.tags.some(tag => tag.name === tagName)
-      );
+      const notes = mockData.notes.filter((note: MockNote) => {
+        if (!note.tags || note.tags.length === 0) return false;
+        
+        // Verifica se é um array de strings
+        if (typeof note.tags[0] === 'string') {
+          return (note.tags as string[]).includes(tagName);
+        }
+        
+        // Se for um array de objetos, verifica se tem a propriedade 'name'
+        try {
+          const tagsArray = note.tags as unknown[];
+          return tagsArray.some(tag => 
+            tag && 
+            typeof tag === 'object' && 
+            'name' in tag && 
+            typeof (tag as { name: unknown }).name === 'string' &&
+            (tag as { name: string }).name === tagName
+          );
+        } catch {
+          return false;
+        }
+      });
       return createResponse(notes);
     }
 
@@ -158,17 +237,20 @@ const mockApi: {
     // Criar nova nota
     if (url === "/notes") {
       const noteData = data as Partial<BaseNote>;
+      
+      // Processa as tags se existirem
+      const { tagIds, mockTags } = noteData.tags ? 
+        processTags(noteData.tags) : 
+        { tagIds: [], mockTags: [] };
+      
       const newNote: MockNote = {
         id: `note-${Date.now()}`,
         title: noteData.title || 'Nova Nota',
         content: noteData.content || '',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        tags: noteData.tags ? mockData.tags.filter(tag => 
-          Array.isArray(noteData.tags) && noteData.tags.some(t => 
-            typeof t === 'string' ? t === tag.id : 'id' in t && t.id === tag.id
-          )
-        ) || [] : [],
+        tags: tagIds,
+        _mockTags: mockTags,
         notebookId: noteData.notebookId || ''
       };
 
@@ -179,8 +261,18 @@ const mockApi: {
     // Criar nova tag
     if (url === "/tags") {
       const tagData = data as { name: string };
+      if (!tagData?.name) {
+        throw new Error('O nome da tag é obrigatório');
+      }
+      
+      // Verificar se já existe uma tag com o mesmo nome
+      const existingTag = mockData.tags.find(t => t.name.toLowerCase() === tagData.name.toLowerCase());
+      if (existingTag) {
+        return createResponse(existingTag);
+      }
+      
       const newTag: MockTag = {
-        id: `tag-${Date.now()}`,
+        id: `tag-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         name: tagData.name,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
@@ -219,23 +311,43 @@ const mockApi: {
 
       if (noteIndex >= 0) {
         // Atualizar nota existente
+        const existingNote = mockData.notes[noteIndex];
+        
+        // Processa as tags se fornecidas
+        let tagUpdates: { tagIds: string[], mockTags: MockTag[] } | null = null;
+        if (noteData.tags) {
+          tagUpdates = processTags(noteData.tags);
+        }
+        
         const updatedNote: MockNote = {
-          ...mockData.notes[noteIndex],
-          title: noteData.title || mockData.notes[noteIndex].title,
-          content: noteData.content || mockData.notes[noteIndex].content,
+          ...existingNote,
+          title: noteData.title !== undefined ? noteData.title : existingNote.title,
+          content: noteData.content !== undefined ? noteData.content : existingNote.content,
           updatedAt: new Date().toISOString(),
-          tags: noteData.tags ? mockData.tags.filter(tag => 
-            noteData.tags?.some(t => typeof t === 'string' ? t === tag.id : t.id === tag.id)
-          ) || [] : mockData.notes[noteIndex].tags,
-          notebookId: noteData.notebookId || mockData.notes[noteIndex].notebookId
+          notebookId: noteData.notebookId !== undefined ? noteData.notebookId : existingNote.notebookId
         };
+        
+        // Atualiza as tags se fornecidas
+        if (tagUpdates) {
+          updatedNote.tags = tagUpdates.tagIds;
+          updatedNote._mockTags = tagUpdates.mockTags;
+        }
 
         mockData.notes[noteIndex] = updatedNote;
-        return createResponse(updatedNote);
+        
+        // Retorna a nota atualizada (sem o campo _mockTags na resposta)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { _mockTags, ...responseNote } = updatedNote;
+        return createResponse(responseNote);
       }
 
       // Se for uma nota temporária (criada sem backend)
       if (noteId.startsWith("temp-")) {
+        // Processa as tags se fornecidas
+        const { tagIds, mockTags } = noteData.tags ? 
+          processTags(noteData.tags) : 
+          { tagIds: [], mockTags: [] };
+        
         // Criar uma nova nota a partir da temporária
         const newNote: MockNote = {
           id: `note-${Date.now()}`,
@@ -243,42 +355,64 @@ const mockApi: {
           content: noteData.content || '',
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-          tags: noteData.tags ? mockData.tags.filter(tag => 
-            noteData.tags?.some(t => typeof t === 'string' ? t === tag.id : t.id === tag.id)
-          ) || [] : [],
+          tags: tagIds,
+          _mockTags: mockTags,
           notebookId: noteData.notebookId || ''
         };
 
         mockData.notes.push(newNote);
-        return createResponse(newNote);
+        
+        // Retorna a nova nota (sem o campo _mockTags na resposta)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { _mockTags, ...responseNote } = newNote;
+        return createResponse(responseNote);
       }
-
-      throw new Error("Nota não encontrada");
+      
+      // Se não encontrou a nota e não é temporária, retornar erro
+      return createErrorResponse(404, `Nota com ID ${noteId} não encontrada`);
     }
-
-    throw new Error(`URL não suportada: ${url}`);
+    
+    // Se a URL não for suportada, retornar erro
+    return {
+      data: {
+        success: false,
+        message: `URL não suportada: ${url}`,
+        data: null
+      },
+      status: 400,
+      statusText: 'Bad Request',
+      headers: {},
+      config: {}
+    };
   },
 
   delete: async (url: string, _config?: { params?: Record<string, unknown> }): Promise<MockResponse<unknown>> => {
     // Usar _config para evitar avisos de variável não utilizada
     if (_config) { /* noop */ }
+    
     await delay(300); // Simular latência de rede
 
-    // Excluir nota
-    if (url.startsWith("/notes/")) {
-      const noteId = url.split("/")[2];
-      const noteIndex = mockData.notes.findIndex((n) => n.id === noteId);
-
-      if (noteIndex >= 0) {
-        const deletedNote = mockData.notes[noteIndex];
-        mockData.notes.splice(noteIndex, 1);
-        return createResponse({ success: true, deletedNote } as { success: boolean; deletedNote: MockNote });
+    // Deletar nota
+    const noteMatch = /^\/notes\/([^/]+)$/.exec(url);
+    if (noteMatch) {
+      const noteId = noteMatch[1];
+      const noteIndex = mockData.notes.findIndex((n: MockNote) => n.id === noteId);
+      
+      if (noteIndex === -1) {
+        return createErrorResponse(404, `Nota com ID ${noteId} não encontrada`);
       }
-
-      throw new Error("Nota não encontrada");
+      
+      // Remove a nota do array
+      const [deletedNote] = mockData.notes.splice(noteIndex, 1);
+      
+      // Remove o campo _mockTags da resposta
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { _mockTags, ...responseNote } = deletedNote;
+      return createResponse(responseNote);
     }
-
-    throw new Error(`URL não suportada: ${url}`);
+    
+    // Se a URL não for suportada, retornar erro
+    return createErrorResponse(400, `URL não suportada: ${url}`);
   }
 };
 
