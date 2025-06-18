@@ -1,34 +1,7 @@
-import { AxiosResponse, AxiosHeaders, InternalAxiosRequestConfig } from "axios";
-
-// Tipos para as notas e tags
-interface BaseNote {
-  title: string;
-  content: string;
-  tags: Tag[];
-  notebookId: string;
-}
-
-interface Note extends BaseNote {
-  id: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface Tag {
-  id: string;
-  name: string;
-}
-
-interface Notebook {
-  id: string;
-  name: string;
-  userId: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { BaseNote, MockNote, MockTag, MockNotebook, MockData, MockResponse } from "../types/mockApi";
 
 // Dados mockados para desenvolvimento sem backend
-const mockData = {
+const mockData: MockData = {
   notes: [
     {
       id: "note1",
@@ -42,121 +15,126 @@ const mockData = {
     {
       id: "note2",
       title: "Dicas para produtividade",
-      content:
-        "<p>1. Faça listas de tarefas</p><p>2. Estabeleça prioridades</p><p>3. Elimine distrações</p>",
-      createdAt: new Date(Date.now() - 86400000).toISOString(), // 1 dia atrás
-      updatedAt: new Date(Date.now() - 86400000).toISOString(),
       tags: [
-        { id: "tag2", name: "Trabalho" },
-        { id: "tag4", name: "Estudo" }
+        { id: '1', name: 'importante', createdAt: new Date('2023-01-01T12:00:00Z').toISOString(), updatedAt: new Date('2023-01-01T12:00:00Z').toISOString() },
+        { id: '2', name: 'trabalho', createdAt: new Date('2023-01-01T12:00:00Z').toISOString(), updatedAt: new Date('2023-01-01T12:00:00Z').toISOString() }
       ],
-      notebookId: "notebook2"
+      notebookId: '1',
+      createdAt: new Date('2023-01-01T12:00:00Z').toISOString(),
+      updatedAt: new Date('2023-01-01T12:00:00Z').toISOString()
     },
     {
-      id: "note3",
-      title: "Ideias para o fim de semana",
-      content: "<p>- Visitar o parque</p><p>- Assistir ao novo filme</p><p>- Ler um livro</p>",
-      createdAt: new Date(Date.now() - 172800000).toISOString(), // 2 dias atrás
-      updatedAt: new Date(Date.now() - 172800000).toISOString(),
-      tags: [{ id: "tag3", name: "Pessoal" }],
-      notebookId: "notebook1"
+      id: '2',
+      title: 'Segunda Nota',
+      content: 'Conteúdo da segunda nota',
+      tags: [
+        { id: '3', name: 'pessoal', createdAt: new Date('2023-01-02T12:00:00Z').toISOString(), updatedAt: new Date('2023-01-02T12:00:00Z').toISOString() }
+      ],
+      notebookId: '2',
+      createdAt: new Date('2023-01-02T12:00:00Z').toISOString(),
+      updatedAt: new Date('2023-01-02T12:30:00Z').toISOString()
     }
-  ] as Note[],
+  ] as MockNote[],
   tags: [
-    { id: "tag1", name: "Importante" },
-    { id: "tag2", name: "Trabalho" },
-    { id: "tag3", name: "Pessoal" },
-    { id: "tag4", name: "Estudo" }
-  ] as Tag[],
+    { id: '1', name: 'importante', createdAt: new Date('2023-01-01T12:00:00Z').toISOString(), updatedAt: new Date('2023-01-01T12:00:00Z').toISOString() },
+    { id: '2', name: 'trabalho', createdAt: new Date('2023-01-01T12:00:00Z').toISOString(), updatedAt: new Date('2023-01-01T12:00:00Z').toISOString() },
+    { id: '3', name: 'pessoal', createdAt: new Date('2023-01-02T12:00:00Z').toISOString(), updatedAt: new Date('2023-01-02T12:00:00Z').toISOString() }
+  ] as MockTag[],
   notebooks: [
     {
-      id: "notebook1",
-      name: "Geral",
-      userId: "user1",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      id: '1',
+      name: 'Trabalho',
+      userId: 'user1',
+      createdAt: new Date('2023-01-01T00:00:00Z').toISOString(),
+      updatedAt: new Date('2023-01-01T00:00:00Z').toISOString()
     },
     {
-      id: "notebook2",
-      name: "Trabalho",
-      userId: "user1",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      id: '2',
+      name: 'Pessoal',
+      userId: 'user1',
+      createdAt: new Date('2023-01-01T00:00:00Z').toISOString(),
+      updatedAt: new Date('2023-01-01T00:00:00Z').toISOString()
     }
-  ] as Notebook[]
+  ] as MockNotebook[]
 };
 
 // Função para criar resposta simulada
-const createResponse = <T>(data: T): Promise<AxiosResponse<T>> => {
-  const response: AxiosResponse<T> = {
-    data,
+const createResponse = <T>(data: T): Promise<MockResponse<T>> => {
+  return Promise.resolve({
+    data: {
+      data,
+      success: true,
+      message: 'Operação realizada com sucesso'
+    },
     status: 200,
     statusText: 'OK',
     headers: {},
-    config: {
-      headers: new AxiosHeaders(),
-      // Adicionando propriedades obrigatórias do InternalAxiosRequestConfig
-      url: '',
-      method: 'get',
-      data: undefined,
-      params: {},
-      timeout: 0,
-      withCredentials: false,
-      responseType: 'json',
-      xsrfCookieName: '',
-      xsrfHeaderName: '',
-      maxContentLength: -1,
-      maxBodyLength: -1,
-      validateStatus: () => true,
-      transitional: {
-        silentJSONParsing: true,
-        forcedJSONParsing: true,
-        clarifyTimeoutError: false,
-      },
-    } as unknown as InternalAxiosRequestConfig
-  };
-  return Promise.resolve(response);
+    config: {}
+  });
 };
 
 // Função para simular delay de rede
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // API Mock
-const mockApi = {
+const mockApi: {
+  get: (url: string, config?: { params?: Record<string, unknown> }) => Promise<MockResponse<unknown>>;
+  post: (url: string, data?: unknown, config?: { params?: Record<string, unknown> }) => Promise<MockResponse<unknown>>;
+  put: (url: string, data?: unknown, config?: { params?: Record<string, unknown> }) => Promise<MockResponse<unknown>>;
+  delete: (url: string, config?: { params?: Record<string, unknown> }) => Promise<MockResponse<unknown>>;
+} = {
   // Notas
-  get: async (url: string): Promise<AxiosResponse<Note[] | Note | Tag[] | Notebook[]>> => {
+  get: async (url: string, _config?: { params?: Record<string, unknown> }): Promise<MockResponse<unknown>> => {
+    // Usar _config para evitar avisos de variável não utilizada
+    if (_config) { /* noop */ }
     await delay(300); // Simular latência de rede
 
     // Buscar todas as notas
-    if (url === "/notes") {
+    if (url === "/notes" || url === "/api/notes") {
       return createResponse(mockData.notes);
     }
 
-    // Buscar nota específica
-    if (url.startsWith("/notes/")) {
-      const noteId = url.split("/")[2];
-      const note = mockData.notes.find((n) => n.id === noteId);
-
+    // Buscar nota por ID
+    const noteMatch = /^\/notes\/([^/]+)$/.exec(url);
+    if (noteMatch) {
+      const noteId = noteMatch[1];
+      const note = mockData.notes.find((n: MockNote) => n.id === noteId);
       if (note) {
         return createResponse(note);
+      } else {
+        // Se for uma nota temporária (criada sem backend)
+        if (noteId.startsWith("temp-")) {
+          const tempNote: MockNote = {
+            id: noteId,
+            title: "Nota Temporária",
+            content: "<p>Conteúdo da nota temporária</p>",
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            tags: [],
+            notebookId: ""
+          };
+          return createResponse(tempNote);
+        }
+        throw new Error(`Nota com ID ${noteId} não encontrada`);
       }
+    }
 
-      // Se for uma nota temporária (criada sem backend)
-      if (noteId.startsWith("temp-")) {
-        // Criar uma nota temporária para exibição
-        const tempNote: Note = {
-          id: noteId,
-          title: "Nota Temporária",
-          content: "<p>Conteúdo da nota temporária</p>",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          tags: [],
-          notebookId: ""
-        };
-        return createResponse(tempNote);
-      }
+    // Buscar notas por tag
+    const tagMatch = /^\/tags\/([^/]+)\/notes$/.exec(url);
+    if (tagMatch) {
+      const tagName = tagMatch[1];
+      const notes = mockData.notes.filter((note: MockNote) => 
+        note.tags.some(tag => tag.name === tagName)
+      );
+      return createResponse(notes);
+    }
 
-      throw new Error("Nota não encontrada");
+    // Buscar notas por caderno
+    const notebookMatch = /^\/notebooks\/([^/]+)\/notes$/.exec(url);
+    if (notebookMatch) {
+      const notebookId = notebookMatch[1];
+      const notes = mockData.notes.filter((note: MockNote) => note.notebookId === notebookId);
+      return createResponse(notes);
     }
 
     // Buscar tags
@@ -172,31 +150,66 @@ const mockApi = {
     throw new Error(`URL não suportada: ${url}`);
   },
 
-  post: async (url: string, data: Partial<BaseNote>): Promise<AxiosResponse<Note | Tag | Notebook>> => {
+  post: async (url: string, data?: unknown, _config?: { params?: Record<string, unknown> }): Promise<MockResponse<unknown>> => {
+    // Usar _config para evitar avisos de variável não utilizada
+    if (_config) { /* noop */ }
     await delay(300); // Simular latência de rede
 
     // Criar nova nota
     if (url === "/notes") {
-      const newNote: Note = {
+      const noteData = data as Partial<BaseNote>;
+      const newNote: MockNote = {
         id: `note-${Date.now()}`,
-        title: data.title || 'Nova Nota',
-        content: data.content || '',
+        title: noteData.title || 'Nova Nota',
+        content: noteData.content || '',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        tags: data.tags ? mockData.tags.filter(tag => 
-          data.tags?.some(t => typeof t === 'string' ? t === tag.id : t.id === tag.id)
+        tags: noteData.tags ? mockData.tags.filter(tag => 
+          Array.isArray(noteData.tags) && noteData.tags.some(t => 
+            typeof t === 'string' ? t === tag.id : 'id' in t && t.id === tag.id
+          )
         ) || [] : [],
-        notebookId: data.notebookId || ''
+        notebookId: noteData.notebookId || ''
       };
 
       mockData.notes.push(newNote);
       return createResponse(newNote);
     }
 
+    // Criar nova tag
+    if (url === "/tags") {
+      const tagData = data as { name: string };
+      const newTag: MockTag = {
+        id: `tag-${Date.now()}`,
+        name: tagData.name,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      mockData.tags.push(newTag);
+      return createResponse(newTag);
+    }
+
+    // Criar novo caderno
+    if (url === "/notebooks") {
+      const notebookData = data as { name: string };
+      const newNotebook: MockNotebook = {
+        id: `notebook-${Date.now()}`,
+        name: notebookData.name,
+        userId: 'user1',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      mockData.notebooks.push(newNotebook);
+      return createResponse(newNotebook);
+    }
+
     throw new Error(`URL não suportada: ${url}`);
   },
 
-  put: async (url: string, data: Partial<BaseNote>): Promise<AxiosResponse<Note | Tag | Notebook>> => {
+  put: async (url: string, data?: unknown, _config?: { params?: Record<string, unknown> }): Promise<MockResponse<unknown>> => {
+    // Usar _config para evitar avisos de variável não utilizada
+    if (_config) { /* noop */ }
+    const noteData = data as Partial<BaseNote>;
     await delay(300); // Simular latência de rede
 
     // Atualizar nota existente
@@ -206,15 +219,15 @@ const mockApi = {
 
       if (noteIndex >= 0) {
         // Atualizar nota existente
-        const updatedNote: Note = {
+        const updatedNote: MockNote = {
           ...mockData.notes[noteIndex],
-          title: data.title || mockData.notes[noteIndex].title,
-          content: data.content || mockData.notes[noteIndex].content,
+          title: noteData.title || mockData.notes[noteIndex].title,
+          content: noteData.content || mockData.notes[noteIndex].content,
           updatedAt: new Date().toISOString(),
-          tags: data.tags ? mockData.tags.filter(tag => 
-            data.tags?.some(t => typeof t === 'string' ? t === tag.id : t.id === tag.id)
+          tags: noteData.tags ? mockData.tags.filter(tag => 
+            noteData.tags?.some(t => typeof t === 'string' ? t === tag.id : t.id === tag.id)
           ) || [] : mockData.notes[noteIndex].tags,
-          notebookId: data.notebookId || mockData.notes[noteIndex].notebookId
+          notebookId: noteData.notebookId || mockData.notes[noteIndex].notebookId
         };
 
         mockData.notes[noteIndex] = updatedNote;
@@ -224,16 +237,16 @@ const mockApi = {
       // Se for uma nota temporária (criada sem backend)
       if (noteId.startsWith("temp-")) {
         // Criar uma nova nota a partir da temporária
-        const newNote: Note = {
+        const newNote: MockNote = {
           id: `note-${Date.now()}`,
-          title: data.title || 'Nova Nota',
-          content: data.content || '',
+          title: noteData.title || 'Nova Nota',
+          content: noteData.content || '',
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-          tags: data.tags ? mockData.tags.filter(tag => 
-            data.tags?.some(t => typeof t === 'string' ? t === tag.id : t.id === tag.id)
+          tags: noteData.tags ? mockData.tags.filter(tag => 
+            noteData.tags?.some(t => typeof t === 'string' ? t === tag.id : t.id === tag.id)
           ) || [] : [],
-          notebookId: data.notebookId || ''
+          notebookId: noteData.notebookId || ''
         };
 
         mockData.notes.push(newNote);
@@ -246,7 +259,9 @@ const mockApi = {
     throw new Error(`URL não suportada: ${url}`);
   },
 
-  delete: async (url: string): Promise<AxiosResponse<{ success: boolean; deletedNote: Note }>> => {
+  delete: async (url: string, _config?: { params?: Record<string, unknown> }): Promise<MockResponse<unknown>> => {
+    // Usar _config para evitar avisos de variável não utilizada
+    if (_config) { /* noop */ }
     await delay(300); // Simular latência de rede
 
     // Excluir nota
@@ -257,7 +272,7 @@ const mockApi = {
       if (noteIndex >= 0) {
         const deletedNote = mockData.notes[noteIndex];
         mockData.notes.splice(noteIndex, 1);
-        return createResponse({ success: true, deletedNote } as { success: boolean; deletedNote: Note });
+        return createResponse({ success: true, deletedNote } as { success: boolean; deletedNote: MockNote });
       }
 
       throw new Error("Nota não encontrada");
