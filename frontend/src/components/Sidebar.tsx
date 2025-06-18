@@ -26,6 +26,7 @@ const Sidebar: React.FC = () => {
       </div>
       <div className="px-4 pb-6">
         <a href="/dashboard/settings" className="flex items-center gap-3 py-2.5 px-4 rounded-lg hover:bg-blue-100 transition-colors font-medium mb-2">
+          <span>⚙️</span>
           <FaCog className="text-blue-600" /> Configurações
         </a>
         <button
